@@ -112,13 +112,13 @@ class Request {
 ## Usage Kotlin
 ````
 val engine = Dynabuffers.parse("class Color { name:string }")
-val bytes = engine.serialize(mapOf(name to "red"))
+val bytes = engine.serialize(mapOf("name" to "red"))
 val map = engine.deserialize(bytes)
 ````
 
 ## Usage Python
 ````
 engine = Dynabuffers.parse("class Color { name:string }")
-bytes = engine.serialize(mapOf(name to "red"))
+bytes = engine.serialize({"name" : "red"})
 map = engine.deserialize(bytes)
 ````
