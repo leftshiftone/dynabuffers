@@ -13,7 +13,7 @@ It allows you to directly serialize from map and deserializing into map structur
 
 * *Ease of integration* - DynaBuffers don't use auto generated classes but instead creates the serializer/deserializer logic on the fly. 
 * *Memory efficiency and speed* - Only the information described in the schema definition gets stored in the byte buffer. No additional data is allocated.
-* *Schema evolution* - DynaBuffer supports schema evolution by defining class attributes as deprecated and/or optional.
+* *Schema evolution* - DynaBuffers supports schema evolution by defining class attributes as deprecated and/or optional.
 * *No code footprint* - No generated code is needed.
 
 ## Schema definition
@@ -23,7 +23,7 @@ DynaBuffers supports the top level entities *class*, *enum* and *union*.
 ### Class
 
 Classes are the date transfer objects whose data are described by fields. Fields must have a name and a datatype and
-can have options. DynaBuffers supports the datatypes
+can have options. DynaBuffers supports the following datatypes:
 * string
 * byte
 * short
@@ -112,13 +112,13 @@ class Request {
 ## Usage Kotlin
 ````
 val engine = Dynabuffers.parse("class Color { name:string }")
-val bytes = engine.serialize(mapOf(name to "red"))
+val bytes = engine.serialize(mapOf("name" to "red"))
 val map = engine.deserialize(bytes)
 ````
 
 ## Usage Python
 ````
 engine = Dynabuffers.parse("class Color { name:string }")
-bytes = engine.serialize(mapOf(name to "red"))
+bytes = engine.serialize({"name" : "red"})
 map = engine.deserialize(bytes)
 ````
