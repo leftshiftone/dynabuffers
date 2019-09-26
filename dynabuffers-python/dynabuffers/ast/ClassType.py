@@ -25,6 +25,10 @@ class ClassType(AbstractAST):
         if self.options.deprecated:
             registry.addNotification("deprecated class " + self.options.name + " used")
 
+        for field in self.options.fields:
+            if (field.options.name not in value) and field.options.defaultVal is None:
+                raise ValueError("field " + str(field.options.name) + " is missing")
+
         for element in list(filter(lambda x: (x.options.name in value) or x.options.defaultVal is not None, self.options.fields)):
             element.serialize(value[element.options.name] if element.options.name in value else element.options.defaultVal, buffer, registry)
 
