@@ -13,7 +13,7 @@ It allows you to directly serialize from map and deserializing into map structur
 
 * *Ease of integration* - DynaBuffers don't use auto generated classes but instead creates the serializer/deserializer logic on the fly. 
 * *Memory efficiency and speed* - Only the information described in the schema definition gets stored in the byte buffer. No additional data is allocated.
-* *Schema evolution* - DynaBuffer supports schema evolution by defining class attributes as deprecated and/or optional.
+* *Schema evolution* - DynaBuffers supports schema evolution by defining class attributes as deprecated and/or optional.
 * *No code footprint* - No generated code is needed.
 
 ## Schema definition
