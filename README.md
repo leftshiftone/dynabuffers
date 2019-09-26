@@ -23,7 +23,7 @@ DynaBuffers supports the top level entities *class*, *enum* and *union*.
 ### Class
 
 Classes are the date transfer objects whose data are described by fields. Fields must have a name and a datatype and
-can have options. DynaBuffers supports the datatypes
+can have options. DynaBuffers supports the following datatypes:
 * string
 * byte
 * short
