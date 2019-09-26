@@ -1,0 +1,42 @@
+/*
+ * Copyright (c) 2016-2019, Leftshift One
+ * __________________
+ * [2019] Leftshift One
+ * All Rights Reserved.
+ * NOTICE:  All information contained herein is, and remains
+ * the property of Leftshift One and its suppliers,
+ * if any.  The intellectual and technical concepts contained
+ * herein are proprietary to Leftshift One
+ * and its suppliers and may be covered by Patents,
+ * patents in process, and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material
+ * is strictly forbidden unless prior written permission is obtained
+ * from Leftshift One.
+ */
+
+apply plugin: "antlr"
+
+dependencies {
+    antlr "org.antlr:antlr4:4.7.2" // use ANTLR version 4
+}
+
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+generateGrammarSource {
+    outputDirectory = new File(project.rootDir, "dynabuffers-java/build/generated-src/antlr/dynabuffers/antlr")
+    arguments += ["-visitor"]
+}
+
+task generateGrammarSourcePython() << {
+    project.generateGrammarSource {
+        outputDirectory = new File(project.rootDir, "dynabuffers-python/dynabuffers/antlr")
+        arguments += ["-visitor", "-Dlanguage=Python3"]
+        doLast {
+            File file = new File(project.rootDir, "dynabuffers-python/dynabuffers/antlr/__init__.py")
+            file.write ""
+        }
+    }.execute()
+}

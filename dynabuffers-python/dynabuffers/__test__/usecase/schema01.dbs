@@ -1,0 +1,42 @@
+enum Type { DEP NER }
+
+union SpacyMessageType {
+    SpacyRequest
+    SpacyResponse
+}
+
+class SpacyMessage(primary) {
+    message: SpacyMessageType
+}
+
+class SpacyRequest {
+   text:string
+   type:[Type]
+}
+
+class DEPSpacyResponse {
+    lang: string
+    relation: string
+    source: string
+    sourcePos: string
+    sourceIndex: int
+    sourceTag: string
+    sourceBase: string
+    target: string
+    targetPos: string
+    targetIndex: int
+    targetTag: string
+    targetBase: string
+}
+
+class NERSpacyResponse {
+    text: string
+    startChar: int
+    endChar: int
+    label: string
+}
+
+class SpacyResponse {
+  dep: [DEPSpacyResponse]
+  ner: [NERSpacyResponse]
+}
