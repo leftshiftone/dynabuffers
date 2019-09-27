@@ -16,6 +16,9 @@ It allows you to directly serialize from map and deserializing into map structur
 * *Schema evolution* - DynaBuffers supports schema evolution by defining class attributes as deprecated and/or optional.
 * *No code footprint* - No generated code is needed.
 
+## Setup
+In order to generate the ANTLR sources invoke the gradle tasks generateGrammarSource and generateGrammarSourcePython.
+
 ## Schema definition
 
 DynaBuffers supports the top level entities *class*, *enum* and *union*.
