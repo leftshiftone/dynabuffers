@@ -43,7 +43,7 @@ class Dynabuffers {
             parser.addErrorListener(errorListener)
 
             val visitor = DynabuffersVisitor(charset)
-            val astList = visitor.visit(parser.compilation()) ?: throw DynabuffersException("invalid atreus script")
+            val astList = visitor.visit(parser.compilation()) ?: throw DynabuffersException("invalid dynabuffers scheme")
 
             if (errorListener.get() != null) {
                 throw DynabuffersException(errorListener.get())
