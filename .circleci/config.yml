@@ -129,4 +129,4 @@ workflows:
             tags:
               only: /^v\d+\.\d+\.\d+$/
           requires:
-            - release
+            - release-java
