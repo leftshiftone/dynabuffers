@@ -17,7 +17,26 @@ jobs:
           name: Webhook completed
           command: |
             curl $BUILD_STATUS_URL\?flow\=circleci-completed -d '{"repository":"'"$CIRCLE_PROJECT_REPONAME"'","branch":"'"$CIRCLE_BRANCH"'","build_number":"'"$CIRCLE_PREVIOUS_BUILD_NUM"'","build_url":"'"$CIRCLE_BUILD_URL"'"}' -H "Content-Type: application/json" -X POST -i || true
-  build:
+  build-python:
+    docker:
+      - image: circleci/python:3.7.3
+    environment:
+      TZ: "/usr/share/zoneinfo/Europe/Vienna"
+      TEST_RESULTS_PATH: build/circleci/test-results
+    steps:
+      -run:
+        <<: *webhook-created
+      - checkout
+      - run: mkdir -p $TEST_RESULTS_PATH
+      - run: pip install poetry==0.12.17
+      - run: cd ~/project/dynabuffers-python && poetry install
+      - run: cd ~/project/dynabuffers-python && poetry run pytest
+      - run: cd ~/project/dynabuffers-python && poetry run build
+      - store_test_results:
+          path: build/circleci/test-results
+      - run:
+          <<: *webhook-failed
+  build-java:
     docker:
       - image: circleci/openjdk:8-jdk-browsers
     environment:
@@ -95,17 +114,24 @@ workflows:
   version: 2
   build:
     jobs:
-      - build:
+      - build-java:
           context: bintray-jcenter
           filters:
             tags:
               ignore: /.*/
+      - build-python:
+          context: pypi
+          filters:
+            tags:
+              ignore: /.*/
+          requires:
+            - build-java
       - webhook-completed:
           filters:
             tags:
               ignore: /.*/
           requires:
-            - build
+            - build-python
   release:
     jobs:
       - release-python:
