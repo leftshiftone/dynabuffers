@@ -44,7 +44,34 @@ jobs:
           path: build/circleci/test-results
       - run:
           <<: *webhook-failed
-  release:
+  release-python:
+    docker:
+      - image: circleci/python:3.7.3
+    environment:
+      TZ: "/usr/share/zoneinfo/Europe/Vienna"
+      TEST_RESULTS_PATH: build/circleci/test-results
+    steps:
+      - run:
+          <<: *webhook-created
+      - checkout
+      - run: mkdir -p $TEST_RESULTS_PATH
+      - run: pip install poetry==0.12.17
+      - run: git config --local user.email "ci@leftshift.one" && git config --local user.name "Continuous Integration"
+      - run: git checkout master && git pull --tags
+      - run: cd ~/project/dynabuffers-python && poetry install
+      - run: echo 'export TARGET_MODULE=${CIRCLE_TAG#*-*-}' >> $BASH_ENV && source $BASH_ENV
+      - run: echo "Target module is $TARGET_MODULE"
+      - run: cd ~/project/dynabuffers-python && poetry install
+      - run: cd ~/project/dynabuffers-python && poetry run pytest
+      - store_test_results:
+          path: build/circleci/test-results
+      - run:
+          name: Cleanup release
+          when: always
+          command: git tag -d $CIRCLE_TAG && git push -d origin $CIRCLE_TAG
+      - run:
+          <<: *webhook-failed
+  release-java:
     docker:
       - image: circleci/openjdk:8-jdk-browsers
     environment:
@@ -81,7 +108,14 @@ workflows:
             - build
   release:
     jobs:
-      - release:
+      - release-python:
+          context: pypi
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v\d+\.\d+\.\d+$/
+      - release-java:
           context: bintray-jcenter
           filters:
             branches:
