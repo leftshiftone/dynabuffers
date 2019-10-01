@@ -33,7 +33,7 @@ jobs:
       - run: cd ~/project/dynabuffers-python && poetry run pytest
       - run: cd ~/project/dynabuffers-python && poetry run build
       - store_test_results:
-        path: build/circleci/test-results
+          path: build/circleci/test-results
       - run:
           <<: *webhook-failed
   build-java:
