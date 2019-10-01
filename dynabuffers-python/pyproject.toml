@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "dynabuffers"
+version = "0.1.0"
+description = ""
+authors = ["leftshift one open source group <devs@leftshift.one>"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+antlr4-python3-runtime = "^4.7.2"
+
+[tool.poetry.dev-dependencies]
+pytest = "^3.0"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
+
+[tool.poetry.scripts]
+test = "ci:test"
