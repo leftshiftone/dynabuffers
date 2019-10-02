@@ -11,9 +11,10 @@ antlr4-python3-runtime = "^4.7.2"
 [tool.poetry.dev-dependencies]
 pytest = "^3.0"
 
+[tool.poetry.scripts]
+release = "poetry_scripts:release"
+test_ci = "poetry_scripts:test_ci"
+
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
-
-[tool.poetry.scripts]
-test = "ci:test"
