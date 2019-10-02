@@ -1,2 +1,3 @@
 ### run unit tests
-python -m unittest discover -p *Test.py
+*  poetry: `poetry run pytest`
+*  plain: `python -m unittest discover -p *Test.py`
