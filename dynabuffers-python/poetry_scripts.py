@@ -1,9 +1,10 @@
 from subprocess import check_call
 import sys
 import re
+import os
 
 def test_ci():
-    check_call(["poetry", "run", "pytest", '--junit-xml=$TEST_RESULTS_PATH/TEST-@filename@-junit.xml'])
+    check_call(["poetry", "run", "pytest", '--junit-xml=$TEST_RESULTS_PATH/TEST-dynabuffers-python-junit.xml'])
 
 def release():
     tag = sys.argv[1]
@@ -12,7 +13,7 @@ def release():
     check_call(["poetry", "run", "test_ci"])
     check_call(["poetry", "build"])
     check_call(["poetry", "version", version])
-    check_call(["poetry", "publish", "-u", "$PYPI_USERNAME", "-p", "$PYPI_PASSWORD"])
+    check_call(["poetry", "publish", "-u", "$PYPI_USERNAME", "-p", "$PYPI_PASSWORD"], env=os.environ)
 
 def _version_from_tag(tag):
     """
