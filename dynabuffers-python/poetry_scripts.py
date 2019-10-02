@@ -13,7 +13,9 @@ def release():
     check_call(["poetry", "run", "test_ci"])
     check_call(["poetry", "build"])
     check_call(["poetry", "version", version])
-    check_call(["poetry", "publish", "-u", "$PYPI_USERNAME", "-p", "$PYPI_PASSWORD"], env=os.environ)
+    username = os.environ.get("PYPI_USERNAME")
+    password = os.environ.get("PYPI_PASSWORD")
+    check_call(["poetry", "publish", "-u", username, "-p", password])
 
 def _version_from_tag(tag):
     """
