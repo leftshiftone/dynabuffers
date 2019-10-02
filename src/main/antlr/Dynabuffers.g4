@@ -4,10 +4,6 @@
 
 grammar Dynabuffers;
 
-@header {
-package dynabuffers.antlr;
-}
-
 IDENTIFIER : Letter LetterOrDigit*;
 STRING     : '"' StringCharacter* '"';
 NUMBER     : Digit+;

@@ -5,8 +5,6 @@ if __name__ is not None and "." in __name__:
 else:
     from DynabuffersParser import DynabuffersParser
 
-
-
 # This class defines a complete listener for a parse tree produced by DynabuffersParser.
 class DynabuffersListener(ParseTreeListener):
 

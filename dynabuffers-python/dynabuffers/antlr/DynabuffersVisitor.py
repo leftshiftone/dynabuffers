@@ -5,8 +5,6 @@ if __name__ is not None and "." in __name__:
 else:
     from DynabuffersParser import DynabuffersParser
 
-
-
 # This class defines a complete generic visitor for a parse tree produced by DynabuffersParser.
 
 class DynabuffersVisitor(ParseTreeVisitor):

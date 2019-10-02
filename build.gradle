@@ -44,7 +44,7 @@ release {
 
 generateGrammarSource {
     outputDirectory = new File(project.rootDir, "dynabuffers-java/build/generated-src/antlr/dynabuffers/antlr")
-    arguments += ["-visitor"]
+    arguments += ["-visitor", "-package", "dynabuffers.antlr"]
 }
 
 task generateGrammarSourcePython() << {
