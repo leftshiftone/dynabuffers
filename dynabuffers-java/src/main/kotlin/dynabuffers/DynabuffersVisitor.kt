@@ -18,29 +18,44 @@ package dynabuffers
 
 import dynabuffers.antlr.DynabuffersBaseVisitor
 import dynabuffers.antlr.DynabuffersParser
-import dynabuffers.ast.*
+import dynabuffers.api.ISerializable
+import dynabuffers.api.IType
+import dynabuffers.ast.ClassType
+import dynabuffers.ast.EnumType
 import dynabuffers.ast.EnumType.EnumTypeOptions
+import dynabuffers.ast.FieldType
+import dynabuffers.ast.UnionType
 import dynabuffers.ast.datatype.*
+import dynabuffers.ast.structural.Annotation
+import dynabuffers.ast.structural.ClassOptions
+import dynabuffers.ast.structural.FieldOptions
+import dynabuffers.ast.structural.Value
 import org.antlr.v4.runtime.ParserRuleContext
 import java.nio.charset.Charset
+import java.util.*
 
-class DynabuffersVisitor(private val charset: Charset) : DynabuffersBaseVisitor<List<AbstractAST>>() {
+class DynabuffersVisitor(private val charset: Charset) : DynabuffersBaseVisitor<List<IType>>() {
 
-    override fun visitEnumType(ctx: DynabuffersParser.EnumTypeContext): List<AbstractAST> {
+    override fun visitEnumType(ctx: DynabuffersParser.EnumTypeContext): List<IType> {
         return listOf(EnumType(EnumTypeOptions(ctx.textAt(1), ctx.textAt(3, 2), charset)))
     }
 
-    override fun visitUnionType(ctx: DynabuffersParser.UnionTypeContext): List<AbstractAST> {
+    override fun visitUnionType(ctx: DynabuffersParser.UnionTypeContext): List<IType> {
         return listOf(UnionType(UnionType.UnionTypeOptions(ctx.textAt(1), ctx.textAt(3, 2))))
     }
 
-    override fun visitFieldType(ctx: DynabuffersParser.FieldTypeContext): List<AbstractAST> {
-        val deprecated = ctx.options(3).contains("deprecated")
-        val defaultVal = ctx.text.substringAfter("=")
-        return listOf(FieldType(FieldType.FieldTypeOptions(ctx.textAt(0), super.visitFieldType(ctx)[0], deprecated, defaultVal)))
+    override fun visitFieldType(ctx: DynabuffersParser.FieldTypeContext): List<IType> {
+        val list = super.visitFieldType(ctx)
+
+        val annotations = list.filter { it is Annotation }.map { it as Annotation }
+        val name = ctx.textAt(annotations.size)
+        val datatype = list[annotations.size] as ISerializable
+        val options = list.firstOrNull { it is FieldOptions } ?: FieldOptions(FieldOptions.FieldOptionsOptions(false))
+        val defaultVal = list.filter { it is Value }.map { (it as Value).options.value }.firstOrNull()
+        return listOf(FieldType(FieldType.FieldTypeOptions(name, annotations, datatype, options as FieldOptions, defaultVal)))
     }
 
-    override fun visitDataType(ctx: DynabuffersParser.DataTypeContext): List<AbstractAST> {
+    override fun visitDataType(ctx: DynabuffersParser.DataTypeContext): List<IType> {
         return when (ctx.text) {
             "string" -> listOf(StringType(StringType.StringTypeOptions(charset)))
             "float" -> listOf(FloatType())
@@ -53,25 +68,41 @@ class DynabuffersVisitor(private val charset: Charset) : DynabuffersBaseVisitor<
         }
     }
 
-    override fun visitArrayType(ctx: DynabuffersParser.ArrayTypeContext): List<AbstractAST> {
-        return listOf(ArrayType(ArrayType.ArrayTypeOptions(super.visitArrayType(ctx)[0])))
+    override fun visitArrayType(ctx: DynabuffersParser.ArrayTypeContext): List<IType> {
+        val datatype = super.visitArrayType(ctx)[0] as ISerializable
+        return listOf(ArrayType(ArrayType.ArrayTypeOptions(datatype)))
     }
 
-    override fun visitClassType(ctx: DynabuffersParser.ClassTypeContext): List<AbstractAST> {
-        val primary = ctx.options(2).contains("primary")
-        val deprecated = ctx.options(2).contains("deprecated")
+    override fun visitClassType(ctx: DynabuffersParser.ClassTypeContext): List<IType> {
+        val list = super.visitClassType(ctx)
+        val classOptions = list.firstOrNull { it is ClassOptions } ?: ClassOptions(ClassOptions.ClassOptionsOptions(false, false))
 
-        val fields = super.visitClassType(ctx).map { it as FieldType }
-        val options = ClassType.ClassTypeOptions(ctx.textAt(1), fields, primary, deprecated)
+        val fields = list.filter { it is FieldType }.map { it as FieldType }
+        val options = ClassType.ClassTypeOptions(ctx.textAt(1), fields, classOptions as ClassOptions)
 
         return listOf(ClassType(options))
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    override fun aggregateResult(aggregate: List<AbstractAST>?, nextResult: List<AbstractAST>?): List<AbstractAST> {
-        val list = ArrayList<AbstractAST>()
+    override fun visitAnnotation(ctx: DynabuffersParser.AnnotationContext): List<IType> {
+        val name = ctx.textAt(1)
+        val values = super.visitAnnotation(ctx).map { it as Value }
+        return listOf(Annotation(Annotation.AnnotationTypeOptions(name, values)))
+    }
+
+    override fun visitValue(ctx: DynabuffersParser.ValueContext): List<IType> {
+        return listOf(Value(Value.ValueTypeOptions(ctx.text)))
+    }
+
+    override fun visitClassOptions(ctx: DynabuffersParser.ClassOptionsContext): List<IType> {
+        return listOf(ClassOptions(ClassOptions.ClassOptionsOptions(ctx.text.contains("primary"), ctx.text.contains("deprecated"))))
+    }
+
+    override fun visitFieldOptions(ctx: DynabuffersParser.FieldOptionsContext): List<IType> {
+        return listOf(FieldOptions(FieldOptions.FieldOptionsOptions(ctx.text.contains("deprecated"))))
+    }
+
+    override fun aggregateResult(aggregate: List<IType>?, nextResult: List<IType>?): List<IType> {
+        val list = ArrayList<IType>()
         if (aggregate != null) list.addAll(aggregate)
         if (nextResult != null) list.addAll(nextResult)
         return list
@@ -79,19 +110,5 @@ class DynabuffersVisitor(private val charset: Charset) : DynabuffersBaseVisitor<
 
     private fun ParserRuleContext.textAt(index: Int) = this.getChild(index).text
     private fun ParserRuleContext.textAt(left: Int, right: Int) = (left..this.childCount - right).map { this.textAt(it) }
-    private fun ParserRuleContext.textAt(range: IntRange) = range.map { this.textAt(it) }
-    private fun ParserRuleContext.options(index: Int): List<String> {
-        val list = ArrayList<String>()
-        if (index < this.childCount && this.textAt(index) == "(") {
-            for (i in index + 1..this.childCount) {
-                if (this.textAt(i) != ")") {
-                    list.add(this.textAt(i))
-                } else {
-                    break
-                }
-            }
-        }
-        return list
-    }
 
 }

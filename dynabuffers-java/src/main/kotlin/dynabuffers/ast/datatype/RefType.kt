@@ -1,9 +1,11 @@
 package dynabuffers.ast.datatype
 
-import dynabuffers.ast.AbstractAST
+import dynabuffers.api.IRegistry
+import dynabuffers.api.ISerializable
+import dynabuffers.api.IType
 import java.nio.ByteBuffer
 
-class RefType(private val options: RefTypeOptions) : AbstractAST() {
+class RefType(private val options: RefTypeOptions) : IType, ISerializable {
 
     override fun size(value: Any, registry: IRegistry) = registry.resolve(options.name).size(value, registry)
 
@@ -15,6 +17,6 @@ class RefType(private val options: RefTypeOptions) : AbstractAST() {
         return registry.resolve(options.name).deserialize(buffer, registry)
     }
 
-    data class RefTypeOptions(val name:String)
+    data class RefTypeOptions(val name: String)
 
 }

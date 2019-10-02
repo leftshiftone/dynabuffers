@@ -63,4 +63,22 @@ class Product { name:string price:float }
         assertMap(mapOf("name" to "red"), result)
     }
 
+    @Test
+    fun parseAnnotatedField() {
+        val engine = Dynabuffers.parse("""
+class Product {
+   @NotBlank
+   @MinLength(3)
+   @MaxLength(10)
+   name:string
+   @GreaterThan(0)
+   price:float
+}
+            """.trimIndent())
+        engine.addListener(System.out::println)
+
+        val result = engine.deserialize(engine.serialize(mapOf("name" to "Fernseher", "price" to 1000f)))
+        assertMap(mapOf("name" to "Fernseher", "price" to 1000f), result)
+    }
+
 }

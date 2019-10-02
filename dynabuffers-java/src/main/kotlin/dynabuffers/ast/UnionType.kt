@@ -1,8 +1,11 @@
 package dynabuffers.ast
 
+import dynabuffers.api.IRegistry
+import dynabuffers.api.ISerializable
+import dynabuffers.api.IType
 import java.nio.ByteBuffer
 
-data class UnionType(val options: UnionTypeOptions) : AbstractAST() {
+data class UnionType(val options: UnionTypeOptions) : IType, ISerializable {
 
     override fun size(value: Any, registry: IRegistry): Int {
         val clazz = resolve(value, registry)

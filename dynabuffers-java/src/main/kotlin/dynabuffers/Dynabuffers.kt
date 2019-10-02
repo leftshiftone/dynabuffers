@@ -2,7 +2,7 @@ package dynabuffers
 
 import dynabuffers.antlr.DynabuffersLexer
 import dynabuffers.antlr.DynabuffersParser
-import dynabuffers.ast.AbstractAST
+import dynabuffers.api.ISerializable
 import dynabuffers.exception.DynabuffersException
 import dynabuffers.exception.DynabuffersExceptionListener
 import org.antlr.v4.runtime.CharStream
@@ -34,7 +34,7 @@ class Dynabuffers {
         @JvmOverloads
         fun parse(channel: ReadableByteChannel, charset: Charset = UTF_8) = DynabuffersEngine(parse(CharStreams.fromChannel(channel), charset))
 
-        private fun parse(stream: CharStream, charset: Charset): List<AbstractAST> {
+        private fun parse(stream: CharStream, charset: Charset): List<ISerializable> {
             val lexer = DynabuffersLexer(stream)
             val commonTokenStream = CommonTokenStream(lexer)
             val parser = DynabuffersParser(commonTokenStream)
@@ -48,7 +48,7 @@ class Dynabuffers {
             if (errorListener.get() != null) {
                 throw DynabuffersException(errorListener.get())
             }
-            return astList
+            return astList.map {it as ISerializable}
         }
     }
 

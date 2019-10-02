@@ -1,9 +1,13 @@
 package dynabuffers.ast
 
+import dynabuffers.api.IRegistry
+import dynabuffers.api.ISerializable
+import dynabuffers.api.IType
+import dynabuffers.ast.structural.ClassOptions
 import dynabuffers.exception.DynabuffersException
 import java.nio.ByteBuffer
 
-data class ClassType(val options: ClassTypeOptions) : AbstractAST() {
+data class ClassType(val options: ClassTypeOptions) : IType, ISerializable {
 
     override fun size(value: Any, registry: IRegistry): Int {
         val map = value as Map<*, *>
@@ -46,11 +50,11 @@ data class ClassType(val options: ClassTypeOptions) : AbstractAST() {
     }
 
     private fun validate(registry: IRegistry) {
-        if (options.deprecated) {
+        if (options.options.isDeprecated()) {
             registry.addNotification("deprecated class ${options.name} used.")
         }
     }
 
-    data class ClassTypeOptions(val name: String, val fields: List<FieldType>, val primary: Boolean, val deprecated: Boolean)
+    data class ClassTypeOptions(val name: String, val fields: List<FieldType>, val options: ClassOptions)
 
 }

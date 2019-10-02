@@ -1,10 +1,12 @@
 package dynabuffers.ast.datatype
 
-import dynabuffers.ast.AbstractAST
+import dynabuffers.api.IRegistry
+import dynabuffers.api.ISerializable
+import dynabuffers.api.IType
 import java.nio.ByteBuffer
 import java.nio.charset.Charset
 
-class StringType(private val options: StringTypeOptions) : AbstractAST() {
+class StringType(private val options: StringTypeOptions) : IType, ISerializable {
 
     override fun size(value: Any, registry: IRegistry) = 2 + str(value).toByteArray(options.charset).size
 

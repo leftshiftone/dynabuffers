@@ -1,11 +1,14 @@
 package dynabuffers.ast
 
+import dynabuffers.api.IRegistry
+import dynabuffers.api.ISerializable
+import dynabuffers.api.IType
 import dynabuffers.exception.DynabuffersException
 import java.nio.ByteBuffer
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
 
-class EnumType(val options: EnumTypeOptions) : AbstractAST() {
+class EnumType(val options: EnumTypeOptions) : IType, ISerializable {
 
     override fun size(value: Any, registry: IRegistry) = 1 + str(value).toByteArray(options.charset).size
 

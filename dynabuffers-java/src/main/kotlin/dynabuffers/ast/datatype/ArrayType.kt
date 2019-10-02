@@ -1,10 +1,12 @@
 package dynabuffers.ast.datatype
 
-import dynabuffers.ast.AbstractAST
+import dynabuffers.api.IRegistry
+import dynabuffers.api.ISerializable
+import dynabuffers.api.IType
 import dynabuffers.exception.DynabuffersException
 import java.nio.ByteBuffer
 
-class ArrayType(private val options: ArrayTypeOptions) : AbstractAST() {
+class ArrayType(private val options: ArrayTypeOptions) : IType, ISerializable {
 
     override fun size(value: Any, registry: IRegistry): Int {
         return 2 + (size(value) * options.datatype.size(value, registry))
@@ -54,6 +56,6 @@ class ArrayType(private val options: ArrayTypeOptions) : AbstractAST() {
         else -> throw DynabuffersException("cannot handle value $obj")
     }
 
-    data class ArrayTypeOptions(val datatype: AbstractAST)
+    data class ArrayTypeOptions(val datatype: ISerializable)
 
 }

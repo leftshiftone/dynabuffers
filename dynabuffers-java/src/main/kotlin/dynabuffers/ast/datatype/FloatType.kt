@@ -1,9 +1,11 @@
 package dynabuffers.ast.datatype
 
-import dynabuffers.ast.AbstractAST
+import dynabuffers.api.IRegistry
+import dynabuffers.api.ISerializable
+import dynabuffers.api.IType
 import java.nio.ByteBuffer
 
-class FloatType : AbstractAST() {
+class FloatType : IType, ISerializable {
 
     override fun size(value: Any, registry: IRegistry) = 4
 
