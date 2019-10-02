@@ -125,3 +125,8 @@ engine = Dynabuffers.parse("class Color { name:string }")
 bytes = engine.serialize({"name" : "red"})
 map = engine.deserialize(bytes)
 ````
+
+##Release
+
+A release must be triggered locally by running `./gradlew final -x bintrayUpload -Prelease.scope=(minor|major)`.
+This will recrate the necessary tag and circleci will take care of the rest.
