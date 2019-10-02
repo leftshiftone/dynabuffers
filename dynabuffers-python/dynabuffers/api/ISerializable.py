@@ -2,7 +2,7 @@ import struct
 from abc import ABC, abstractmethod
 
 
-class AbstractAST(ABC):
+class ISerializable(ABC):
 
     @abstractmethod
     def size(self, value, registry):

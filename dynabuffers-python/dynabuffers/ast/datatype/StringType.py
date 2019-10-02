@@ -1,4 +1,4 @@
-from dynabuffers.ast.AbstractAST import AbstractAST
+from dynabuffers.api.ISerializable import ISerializable
 
 
 class StringTypeOptions:
@@ -6,7 +6,7 @@ class StringTypeOptions:
         self.charset = charset
 
 
-class StringType(AbstractAST):
+class StringType(ISerializable):
     def __init__(self, options: StringTypeOptions):
         self.options = options
 

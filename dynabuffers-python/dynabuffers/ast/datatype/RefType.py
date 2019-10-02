@@ -1,4 +1,4 @@
-from dynabuffers.ast.AbstractAST import AbstractAST
+from dynabuffers.api.ISerializable import ISerializable
 
 
 class RefTypeOptions:
@@ -6,7 +6,7 @@ class RefTypeOptions:
         self.name = name
 
 
-class RefType(AbstractAST):
+class RefType(ISerializable):
     def __init__(self, options: RefTypeOptions):
         self.options = options
 

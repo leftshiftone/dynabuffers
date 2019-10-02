@@ -112,6 +112,31 @@ class Request {
 }
 ````
 
+## Validation
+By using annotations it is possible to declare validation rules for class fields.
+Dynabuffers has the following built-in annotations:
+
+| name          | description                                                     | attributes | datatype    |
+|---------------|-----------------------------------------------------------------|------------|-------------|        
+| GreaterThan   | Target value must be greater than the configured value          | size:int   | int & float |
+| LowerThan     | Target value must be lower than the configured value            | size:int   | int & float |
+| GreaterEquals | Target value must be greater equals the configured value        | size:int   | int & float |
+| LowerEquals   | Target value must be lower equals the configured value          | size:int   | int & float |
+| MaxLength     | Target value length must be lower equals the configured value   | size:int   | string      |
+| MinLength     | Target value length must be greater equals the configured value | size:int   | string      |
+| NotBlank      | Target must not be blank                                        | none       | string      |
+
+````
+class Product {
+   @NotBlank
+   @MinLength(3)
+   @MaxLength(10)
+   name:string
+   @GreaterThan(0)
+   price:float
+}  
+````
+
 ## Usage Kotlin
 ````
 val engine = Dynabuffers.parse("class Color { name:string }")

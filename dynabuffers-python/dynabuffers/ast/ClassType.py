@@ -1,16 +1,16 @@
+from dynabuffers.api.ISerializable import ISerializable, ByteBuffer
 from dynabuffers.ast import FieldType
-from dynabuffers.ast.AbstractAST import AbstractAST, ByteBuffer
+from dynabuffers.ast.structural import ClassOptions
 
 
 class ClassTypeOptions:
-    def __init__(self, name, fields:[FieldType], primary, deprecated):
+    def __init__(self, name, fields:[FieldType], options:ClassOptions):
         self.name = name
         self.fields = fields
-        self.primary = primary
-        self.deprecated = deprecated
+        self.options = options
 
 
-class ClassType(AbstractAST):
+class ClassType(ISerializable):
 
     def __init__(self, options: ClassTypeOptions):
         self.options = options
@@ -22,7 +22,7 @@ class ClassType(AbstractAST):
         return sum(map(mapper, filter(byName, self.options.fields)))
 
     def serialize(self, value, buffer: ByteBuffer, registry):
-        if self.options.deprecated:
+        if self.options.options.isDeprecated():
             registry.addNotification("deprecated class " + self.options.name + " used")
 
         for field in self.options.fields:

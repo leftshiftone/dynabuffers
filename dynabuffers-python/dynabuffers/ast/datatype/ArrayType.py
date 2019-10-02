@@ -1,12 +1,12 @@
-from dynabuffers.ast.AbstractAST import AbstractAST
+from dynabuffers.api.ISerializable import ISerializable
 from dynabuffers.ast.datatype.ByteType import ByteType
 
 
 class ArrayTypeOptions:
-    def __init__(self, datatype:AbstractAST):
+    def __init__(self, datatype:ISerializable):
         self.datatype = datatype
 
-class ArrayType(AbstractAST):
+class ArrayType(ISerializable):
 
     def __init__(self, options):
         self.options = options

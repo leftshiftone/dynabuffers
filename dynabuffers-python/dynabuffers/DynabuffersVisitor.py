@@ -13,6 +13,10 @@ from dynabuffers.ast.datatype.LongType import LongType
 from dynabuffers.ast.datatype.RefType import RefType, RefTypeOptions
 from dynabuffers.ast.datatype.ShortType import ShortType
 from dynabuffers.ast.datatype.StringType import StringType, StringTypeOptions
+from dynabuffers.ast.structural.Annotation import AnnotationOptions, Annotation
+from dynabuffers.ast.structural.ClassOptions import ClassOptions, ClassOptionsOptions
+from dynabuffers.ast.structural.FieldOptions import FieldOptions, FieldOptionsOptions
+from dynabuffers.ast.structural.Value import Value, ValueOptions
 
 
 class DynabuffersVisitor(DynabuffersBaseVisitor):
@@ -26,14 +30,13 @@ class DynabuffersVisitor(DynabuffersBaseVisitor):
         return EnumType(EnumTypeOptions(name, values))
 
     def visitClassType(self, ctx: DynabuffersParser.ClassTypeContext):
-        substring = ctx.getText()[0:ctx.getText().find("{")]
-        primary = "primary" in substring
-        deprecated = "deprecated" in substring
+        values = super().visitClassType(ctx)
+        classOptions = next(filter(lambda x: isinstance(x, ClassOptions), values), ClassOptions(ClassOptionsOptions(False, False)))
 
-        name = str(ctx.getChild(1))
-        fields = super().visitClassType(ctx)
+        fields = list(filter(lambda x: isinstance(x, FieldType), values))
+        return ClassType(ClassTypeOptions(ctx.getChild(1).getText(), fields, classOptions))
 
-        return ClassType(ClassTypeOptions(name, fields, primary, deprecated))
+
 
     def visitUnionType(self, ctx: DynabuffersParser.UnionTypeContext):
         values = []
@@ -43,15 +46,14 @@ class DynabuffersVisitor(DynabuffersBaseVisitor):
         return UnionType(UnionTypeOptions(str(ctx.getChild(1)), values))
 
     def visitFieldType(self, ctx: DynabuffersParser.FieldTypeContext):
-        name = str(ctx.getChild(0))
-        datatype = super().visitFieldType(ctx)[0]
-        deprecated = "(deprecated)" in ctx.getText()
+        values = super().visitFieldType(ctx)
+        annotations = list(filter(lambda x: isinstance(x, Annotation), values))
+        name = ctx.getChild(len(annotations)).getText()
+        datatype = values[len(annotations)]
+        options = next(filter(lambda x: isinstance(x, FieldOptions), values), FieldOptions(FieldOptionsOptions(False)))
+        defaultVal = next(map(lambda x: x.options.value, filter(lambda x: isinstance(x, Value), values)), None)
 
-        index = str(ctx.getText()).find("=")
-        if index > 0:
-            return FieldType(FieldTypeOptions(name, datatype, deprecated, ctx.getText()[index + 1:]))
-
-        return FieldType(FieldTypeOptions(name, datatype, deprecated, None))
+        return FieldType(FieldTypeOptions(name, datatype, options, annotations, defaultVal))
 
     def visitDataType(self, ctx: DynabuffersParser.DataTypeContext):
         if ctx.getText() == "string":
@@ -74,6 +76,19 @@ class DynabuffersVisitor(DynabuffersBaseVisitor):
     def visitArrayType(self, ctx: DynabuffersParser.ArrayTypeContext):
         datatype = super().visitArrayType(ctx)[0]
         return ArrayType(ArrayTypeOptions(datatype))
+
+    def visitClassOptions(self, ctx: DynabuffersParser.ClassOptionsContext):
+        return ClassOptions(ClassOptionsOptions("primary" in ctx.getText(), "deprecated" in ctx.getText()))
+
+    def visitFieldOptions(self, ctx: DynabuffersParser.FieldOptionsContext):
+        return FieldOptions(FieldOptionsOptions("deprecated" in ctx.getText()))
+
+    def visitAnnotation(self, ctx: DynabuffersParser.AnnotationContext):
+        values = super().visitAnnotation(ctx)
+        return Annotation(AnnotationOptions(ctx.getChild(1).getText(), values))
+
+    def visitValue(self, ctx: DynabuffersParser.ValueContext):
+        return Value(ValueOptions(ctx.getText()))
 
     def aggregateResult(self, aggregate, nextResult):
         array = []

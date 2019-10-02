@@ -64,6 +64,21 @@ class Order(primary) { product:Product amount:int }
 
         self.assertEqual(map, {"name": "red"})
 
+    def test_annotated_field(self):
+        engine = Dynabuffers.parse(InputStream("""
+class Product {
+   @NotBlank
+   @MinLength(3)
+   @MaxLength(10)
+   name:string
+   @GreaterThan(0)
+   price:float
+}        
+        """))
+        map = engine.deserialize(engine.serialize({"name":"Fernseher", "price":1000}))
+
+        self.assertEqual(map, {"name": "Fernseher", "price":1000})
+
 
 if __name__ == "__main__":
     unittest.main()

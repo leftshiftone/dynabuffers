@@ -1,4 +1,4 @@
-from dynabuffers.ast.AbstractAST import AbstractAST, ByteBuffer
+from dynabuffers.api.ISerializable import ISerializable, ByteBuffer
 
 
 class EnumTypeOptions():
@@ -7,7 +7,7 @@ class EnumTypeOptions():
         self.values = values
 
 
-class EnumType(AbstractAST):
+class EnumType(ISerializable):
 
     def __init__(self, options):
         self.options = options

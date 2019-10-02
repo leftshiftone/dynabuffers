@@ -1,4 +1,4 @@
-from dynabuffers.ast.AbstractAST import AbstractAST, ByteBuffer
+from dynabuffers.api.ISerializable import ISerializable, ByteBuffer
 from dynabuffers.ast.ClassType import ClassType
 
 
@@ -8,7 +8,7 @@ class UnionTypeOptions():
         self.values = values
 
 
-class UnionType(AbstractAST):
+class UnionType(ISerializable):
 
     def __init__(self, options):
         self.options = options

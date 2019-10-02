@@ -1,7 +1,7 @@
-from dynabuffers.ast.AbstractAST import AbstractAST
+from dynabuffers.api.ISerializable import ISerializable
 
 
-class IntType(AbstractAST):
+class IntType(ISerializable):
 
     def size(self, value, registry):
         return 4

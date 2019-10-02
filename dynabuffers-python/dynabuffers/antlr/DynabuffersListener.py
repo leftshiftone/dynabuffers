@@ -73,3 +73,39 @@ class DynabuffersListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by DynabuffersParser#classOptions.
+    def enterClassOptions(self, ctx:DynabuffersParser.ClassOptionsContext):
+        pass
+
+    # Exit a parse tree produced by DynabuffersParser#classOptions.
+    def exitClassOptions(self, ctx:DynabuffersParser.ClassOptionsContext):
+        pass
+
+
+    # Enter a parse tree produced by DynabuffersParser#fieldOptions.
+    def enterFieldOptions(self, ctx:DynabuffersParser.FieldOptionsContext):
+        pass
+
+    # Exit a parse tree produced by DynabuffersParser#fieldOptions.
+    def exitFieldOptions(self, ctx:DynabuffersParser.FieldOptionsContext):
+        pass
+
+
+    # Enter a parse tree produced by DynabuffersParser#annotation.
+    def enterAnnotation(self, ctx:DynabuffersParser.AnnotationContext):
+        pass
+
+    # Exit a parse tree produced by DynabuffersParser#annotation.
+    def exitAnnotation(self, ctx:DynabuffersParser.AnnotationContext):
+        pass
+
+
+    # Enter a parse tree produced by DynabuffersParser#value.
+    def enterValue(self, ctx:DynabuffersParser.ValueContext):
+        pass
+
+    # Exit a parse tree produced by DynabuffersParser#value.
+    def exitValue(self, ctx:DynabuffersParser.ValueContext):
+        pass
+
+

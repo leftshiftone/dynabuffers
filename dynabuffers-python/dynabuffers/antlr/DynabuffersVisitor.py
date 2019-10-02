@@ -46,5 +46,25 @@ class DynabuffersVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by DynabuffersParser#classOptions.
+    def visitClassOptions(self, ctx:DynabuffersParser.ClassOptionsContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by DynabuffersParser#fieldOptions.
+    def visitFieldOptions(self, ctx:DynabuffersParser.FieldOptionsContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by DynabuffersParser#annotation.
+    def visitAnnotation(self, ctx:DynabuffersParser.AnnotationContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by DynabuffersParser#value.
+    def visitValue(self, ctx:DynabuffersParser.ValueContext):
+        return self.visitChildren(ctx)
+
+
 
 del DynabuffersParser

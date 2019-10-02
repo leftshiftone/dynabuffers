@@ -1,15 +1,17 @@
-from dynabuffers.ast.AbstractAST import ByteBuffer, AbstractAST
+from dynabuffers.api.ISerializable import ISerializable, ByteBuffer
+from dynabuffers.ast.structural import FieldOptions
 
 
 class FieldTypeOptions():
-    def __init__(self, name: str, datatype: AbstractAST, deprecated: bool, defaultVal):
+    def __init__(self, name: str, datatype: ISerializable, options: FieldOptions, annotations, defaultVal):
         self.name = name
         self.datatype = datatype
-        self.deprecated = deprecated
+        self.options = options
+        self.annotations = annotations
         self.defaultVal = defaultVal
 
 
-class FieldType(AbstractAST):
+class FieldType(ISerializable):
 
     def __init__(self, options: FieldTypeOptions):
         self.options = options
@@ -18,8 +20,11 @@ class FieldType(AbstractAST):
         return 1 + len(str(value).encode("utf-8"))
 
     def serialize(self, value, buffer: ByteBuffer, registry):
-        if self.options.deprecated:
+        if self.options.options:
             registry.addNotification("deprecated field " + self.options.name + " used")
+
+        for annotation in list(map(lambda x: registry.resolveAnnotation(x.options.name, x.options.values), self.options.annotations)):
+            annotation.validate(self.options.name, value)
 
         self.options.datatype.serialize(value, buffer, registry)
 
