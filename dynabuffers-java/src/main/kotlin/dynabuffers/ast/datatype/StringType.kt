@@ -11,8 +11,9 @@ class StringType(private val options: StringTypeOptions) : IType, ISerializable 
     override fun size(value: Any, registry: IRegistry) = 2 + str(value).toByteArray(options.charset).size
 
     override fun serialize(value: Any, buffer: ByteBuffer, registry: IRegistry) {
-        buffer.putShort(str(value).length.toShort())
-        buffer.put(str(value).toByteArray(options.charset))
+        val encoded = str(value).toByteArray(options.charset)
+        buffer.putShort(encoded.size.toShort())
+        buffer.put(encoded)
     }
 
     override fun deserialize(buffer: ByteBuffer, registry: IRegistry): Any {
