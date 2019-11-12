@@ -1,0 +1,30 @@
+class Message(primary) {
+  m1: TypeA
+  m2: TypeB
+}
+
+union TypeA {
+  First
+  Second
+}
+
+union TypeB {
+  Third
+  Fourth
+}
+
+class First {
+  f: string
+}
+
+class Second {
+  s: string
+}
+
+class Third {
+  t: string
+}
+
+class Fourth {
+  fo: string
+}

@@ -20,8 +20,8 @@ data class UnionType(val options: UnionTypeOptions) : IType, ISerializable {
 
     override fun deserialize(buffer: ByteBuffer, registry: IRegistry): Any {
         val index = buffer.get().toInt()
-        val clazz = registry.resolve(options.values.get(index))
-        return clazz.deserialize(buffer, registry)
+        val clazz = registry.resolve(options.values[index]) as ClassType
+        return (mapOf(":type" to index)).plus(clazz.deserialize(buffer, registry) as Map<*, *>)
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -34,7 +34,7 @@ data class UnionType(val options: UnionTypeOptions) : IType, ISerializable {
 
             fields1.containsAll(fields2)
         }
-        require(clazz != null, { "union type $value cannot be resolved" })
+        require(clazz != null) { "union type $value cannot be resolved" }
         return clazz
     }
 

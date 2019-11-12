@@ -1,0 +1,29 @@
+class Message {
+    message: MessageType
+}
+
+union MessageType {
+    Request
+    Response
+}
+
+class Request {
+  wasteType: string
+  point: Point
+}
+
+class Response {
+    wastesites: [WasteSite]
+}
+
+class WasteSite {
+    id: string
+    label: string
+    point: Point
+    address: string
+}
+
+class Point {
+    lat: float
+    lng: float
+}
