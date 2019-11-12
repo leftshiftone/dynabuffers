@@ -32,11 +32,6 @@ class ArrayType(private val options: ArrayTypeOptions) : IType, ISerializable {
         }
     }
 
-    private fun calculateSize(value: Collection<*>, registry: IRegistry) = calculateSize(value.toTypedArray(), registry)
-    private fun calculateSize(value: Array<*>, registry: IRegistry) = 2 + value.fold(0, { acc, it ->
-        acc + options.datatype.size(it!!, registry)
-    })
-
     private fun list(obj: Any) = when (obj) {
         is Collection<*> -> obj
         is Array<*> -> obj.toList()

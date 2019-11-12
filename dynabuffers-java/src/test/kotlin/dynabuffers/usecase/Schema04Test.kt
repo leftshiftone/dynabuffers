@@ -11,7 +11,7 @@ class Schema04Test : AbstractDynabuffersTest() {
         val engine = Dynabuffers.parse(Schema04Test::class.java.getResourceAsStream("/schema04.dbs"))
         val output = mapOf("m1" to mapOf("s" to "test", ":type" to 1), "m2" to mapOf("t" to "hello world!", ":type" to 0))
 
-        assertResultMap(engine, mapOf("m1" to mapOf("s" to "test"), "m2" to mapOf("t" to "hello world!")), output)
+        assertMap(engine, mapOf("m1" to mapOf("s" to "test"), "m2" to mapOf("t" to "hello world!")), output)
     }
 
 }

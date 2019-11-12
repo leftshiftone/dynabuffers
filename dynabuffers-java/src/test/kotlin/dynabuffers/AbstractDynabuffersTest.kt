@@ -9,7 +9,7 @@ abstract class AbstractDynabuffersTest {
         assertMap(map, result)
     }
 
-    protected fun assertResultMap(engine: DynabuffersEngine, input: Map<String, Any>, expectedMap: Map<String,Any>) {
+    protected fun assertMap(engine: DynabuffersEngine, input: Map<String, Any>, expectedMap: Map<String,Any>) {
         val result = engine.deserialize(engine.serialize(input))
         assertMap(expectedMap, result)
     }
