@@ -20,8 +20,8 @@ data class UnionType(val options: UnionTypeOptions) : IType, ISerializable {
 
     override fun deserialize(buffer: ByteBuffer, registry: IRegistry): Any {
         val index = buffer.get().toInt()
-        val clazz = registry.resolve(options.values.get(index))
-        return clazz.deserialize(buffer, registry)
+        val clazz = registry.resolve(options.values.get(index)) as ClassType
+        return (mapOf("_type" to index) as Map<String,Any>).plus(clazz.deserialize(buffer, registry) as Map<String, Any>)
     }
 
     @Suppress("UNCHECKED_CAST")

@@ -1,0 +1,7 @@
+class Test(primary) {
+   results: [Result]
+}
+
+class Result {
+   text: string
+}

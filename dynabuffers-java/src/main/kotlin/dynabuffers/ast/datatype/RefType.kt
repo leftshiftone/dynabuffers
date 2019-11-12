@@ -5,7 +5,7 @@ import dynabuffers.api.ISerializable
 import dynabuffers.api.IType
 import java.nio.ByteBuffer
 
-class RefType(private val options: RefTypeOptions) : IType, ISerializable {
+class RefType(val options: RefTypeOptions) : IType, ISerializable {
 
     override fun size(value: Any, registry: IRegistry) = registry.resolve(options.name).size(value, registry)
 
