@@ -9,11 +9,7 @@ import java.nio.ByteBuffer
 class ArrayType(private val options: ArrayTypeOptions) : IType, ISerializable {
 
     override fun size(value: Any, registry: IRegistry): Int {
-        return when (value) {
-            is Array<*> -> calculateSize(value, registry)
-            is Collection<*> -> calculateSize(value, registry)
-            else -> 2 + (size(value) * options.datatype.size(value, registry))
-        }
+        return 2 + (size(value) * list(value).map { options.datatype.size(it!!, registry) }.sum())
     }
 
     override fun serialize(value: Any, buffer: ByteBuffer, registry: IRegistry) {

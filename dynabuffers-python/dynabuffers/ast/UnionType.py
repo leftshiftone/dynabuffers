@@ -27,7 +27,9 @@ class UnionType(ISerializable):
         index = buffer.get()
         clazz = registry.resolve(self.options.values[index])
 
-        return clazz.deserialize(buffer, registry)
+        map = clazz.deserialize(buffer, registry)
+        map[":type"] = index
+        return map
 
     def resolve(self, value, registry) -> ClassType:
         classes = list(map(lambda x: registry.resolve(x), self.options.values))

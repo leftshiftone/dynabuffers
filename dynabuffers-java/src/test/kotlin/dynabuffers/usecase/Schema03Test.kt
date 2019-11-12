@@ -4,10 +4,6 @@ import dynabuffers.AbstractDynabuffersTest
 import dynabuffers.Dynabuffers
 import org.junit.jupiter.api.Test
 
-/**
- * @author benjamin.krenn@leftshift.one - 10/25/19.
- * @since 0.1.0
- */
 class Schema03Test : AbstractDynabuffersTest() {
 
     @Test
