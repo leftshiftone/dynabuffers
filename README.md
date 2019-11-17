@@ -1,5 +1,5 @@
-[![CircleCI branch](https://img.shields.io/circleci/project/github/leftshiftone/dynabuffers/master.svg?style=flat-square)](https://circleci.com/gh/leftshiftone/canon)
-[![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/leftshiftone/dynabuffers.svg?style=flat-square)](https://github.com/leftshiftone/canon/tags)
+[![CircleCI branch](https://img.shields.io/circleci/project/github/leftshiftone/dynabuffers/master.svg?style=flat-square)](https://circleci.com/gh/leftshiftone/dynabuffers)
+[![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/leftshiftone/dynabuffers.svg?style=flat-square)](https://github.com/leftshiftone/dynabuffers/tags)
 
 # DynaBuffers
 
