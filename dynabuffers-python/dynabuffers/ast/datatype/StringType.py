@@ -14,7 +14,8 @@ class StringType(ISerializable):
         return 2 + len(str(value).encode(self.options.charset))
 
     def serialize(self, value, buffer, registry):
-        buffer.putShort(len(value))
+        encoded = value.encode(self.options.charset)
+        buffer.putShort(len(encoded))
         buffer.put(value.encode(self.options.charset))
 
     def deserialize(self, buffer, registry):
