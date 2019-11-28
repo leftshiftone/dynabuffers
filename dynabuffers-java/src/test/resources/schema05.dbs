@@ -1,0 +1,3 @@
+class Test(primary) {
+    strings: [string]
+}

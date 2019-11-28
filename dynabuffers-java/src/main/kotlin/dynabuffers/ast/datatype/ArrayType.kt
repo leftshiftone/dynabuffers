@@ -27,6 +27,7 @@ class ArrayType(private val options: ArrayTypeOptions) : IType, ISerializable {
             is LongType -> LongArray(length) { options.datatype.deserialize(buffer, registry) }
             is FloatType -> FloatArray(length) { options.datatype.deserialize(buffer, registry) }
             is BooleanType -> BooleanArray(length) { options.datatype.deserialize(buffer, registry) }
+            is StringType -> Array(length) { options.datatype.deserialize(buffer, registry) as String }
             is RefType -> Array(length) { options.datatype.deserialize(buffer, registry) }
             else -> throw DynabuffersException("cannot handle datatype ${options.datatype}")
         }
