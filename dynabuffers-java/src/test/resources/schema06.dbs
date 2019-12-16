@@ -1,0 +1,10 @@
+enum SomeEnum {
+    YES
+    NO
+}
+
+class Something(primary) {
+    works: SomeEnum
+}
+
+
