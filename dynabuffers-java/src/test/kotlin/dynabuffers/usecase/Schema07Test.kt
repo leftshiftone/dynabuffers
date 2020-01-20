@@ -9,7 +9,7 @@ class Schema07Test : AbstractDynabuffersTest() {
 
     @Test
     fun testParse() {
-        val imageBytes = Schema07Test::class.java.getResourceAsStream("/_data/1.jpg").readAllBytes()
+        val imageBytes = Schema07Test::class.java.getResourceAsStream("/_data/1.jpg").readBytes()
         val engine = Dynabuffers.parse(Schema07Test::class.java.getResourceAsStream("/schema07.dbs"))
         val output = mapOf("image" to imageBytes)
         val result = engine.serialize(output)
