@@ -10,19 +10,19 @@ class ArrayType(private val options: ArrayTypeOptions) : IType, ISerializable {
 
     override fun size(value: Any, registry: IRegistry): Int {
         if (value is ByteArray) {
-            return 2 + value.size
+            return 4 + value.size
         }
-        return 2 + (size(value) * list(value).map { options.datatype.size(it!!, registry) }.sum())
+        return 4 + (size(value) * list(value).map { options.datatype.size(it!!, registry) }.sum())
     }
 
     override fun serialize(value: Any, buffer: ByteBuffer, registry: IRegistry) {
         val list = list(value)
-        buffer.putShort(list.size.toShort())
+        buffer.putInt(list.size)
         list.forEach { options.datatype.serialize(it!!, buffer, registry) }
     }
 
     override fun deserialize(buffer: ByteBuffer, registry: IRegistry): Any {
-        val length = buffer.short.toInt()
+        val length = buffer.int
         return when (options.datatype) {
             is ByteType -> ByteArray(length) { options.datatype.deserialize(buffer, registry) }
             is ShortType -> ShortArray(length) { options.datatype.deserialize(buffer, registry) }

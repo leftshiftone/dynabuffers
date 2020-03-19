@@ -11,15 +11,15 @@ class StringType(ISerializable):
         self.options = options
 
     def size(self, value, registry):
-        return 2 + len(str(value).encode(self.options.charset))
+        return 4 + len(str(value).encode(self.options.charset))
 
     def serialize(self, value, buffer, registry):
         encoded = value.encode(self.options.charset)
-        buffer.putShort(len(encoded))
-        buffer.put(value.encode(self.options.charset))
+        buffer.putInt(len(encoded))
+        buffer.put(encoded)
 
     def deserialize(self, buffer, registry):
-        length = buffer.getShort()
+        length = buffer.getInt()
         array = buffer.get(length)
 
         return array.decode(self.options.charset)

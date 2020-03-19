@@ -10,7 +10,7 @@ class CompatibilityTest {
     @Test
     fun simpleClass() {
         val engine = Dynabuffers.parse("class Color { name:string }")
-        Assertions.assertEquals(engine.serialize(mapOf("name" to "red")).base64(), "AANyZWQ=")
+        Assertions.assertEquals("AAAAA3JlZA==", engine.serialize(mapOf("name" to "red")).base64())
     }
 
     @Test
@@ -19,13 +19,13 @@ class CompatibilityTest {
 enum Color { RED GREEN BLUE }
 class Product { name:string color:Color }
         """.trimIndent())
-        Assertions.assertEquals(engine.serialize(mapOf("name" to "TV", "color" to "RED")).base64(), "AAJUVgNSRUQ=")
+        Assertions.assertEquals("AAAAAlRWA1JFRA==", engine.serialize(mapOf("name" to "TV", "color" to "RED")).base64())
     }
 
     @Test
     fun classWithMultipleFields() {
         val engine = Dynabuffers.parse("class Product { name:string price:float }".trimIndent())
-        Assertions.assertEquals(engine.serialize(mapOf("name" to "TV", "price" to 1000)).base64(), "AAJUVkR6AAA=")
+        Assertions.assertEquals("AAAAAlRWRHoAAA==", engine.serialize(mapOf("name" to "TV", "price" to 1000)).base64())
     }
 
     @Test
@@ -34,13 +34,13 @@ class Product { name:string color:Color }
 class Product { name:string price:float }
 class Order(primary) { product:Product amount:int }
         """.trimIndent())
-        Assertions.assertEquals(engine.serialize(mapOf("product" to mapOf("name" to "TV", "price" to 1000), "amount" to 2)).base64(), "AAJUVkR6AAAAAAAC")
+        Assertions.assertEquals("AAAAAlRWRHoAAAAAAAI=", engine.serialize(mapOf("product" to mapOf("name" to "TV", "price" to 1000), "amount" to 2)).base64())
     }
 
     @Test
     fun optionalField() {
         val engine = Dynabuffers.parse("class Color { name:string=red }".trimIndent())
-        Assertions.assertEquals(engine.serialize(mapOf()).base64(), "AANyZWQ=")
+        Assertions.assertEquals("AAAAA3JlZA==", engine.serialize(mapOf()).base64())
     }
 
     private fun ByteArray.base64(): String {
