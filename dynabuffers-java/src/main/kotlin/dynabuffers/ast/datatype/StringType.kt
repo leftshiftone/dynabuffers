@@ -8,17 +8,17 @@ import java.nio.charset.Charset
 
 class StringType(private val options: StringTypeOptions) : IType, ISerializable {
 
-    override fun size(value: Any, registry: IRegistry) = 2 + str(value).toByteArray(options.charset).size
+    override fun size(value: Any, registry: IRegistry) = 4 + str(value).toByteArray(options.charset).size
 
     override fun serialize(value: Any, buffer: ByteBuffer, registry: IRegistry) {
         val encoded = str(value).toByteArray(options.charset)
-        buffer.putShort(encoded.size.toShort())
+        buffer.putInt(encoded.size)
         buffer.put(encoded)
     }
 
     override fun deserialize(buffer: ByteBuffer, registry: IRegistry): Any {
-        val length = buffer.short
-        val array = ByteArray(length.toInt())
+        val length = buffer.int
+        val array = ByteArray(length)
         buffer.get(array)
 
         return String(array)

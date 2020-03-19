@@ -12,15 +12,15 @@ class ArrayType(ISerializable):
         self.options = options
 
     def size(self, value, registry):
-        return 2 + (len(value) * self.options.datatype.size(value, registry))
+        return 4 + (len(value) * self.options.datatype.size(value, registry))
 
     def serialize(self, value, buffer, registry):
-        buffer.putShort(len(value))
+        buffer.putInt(len(value))
         for entry in value:
             self.options.datatype.serialize(entry, buffer, registry)
 
     def deserialize(self, buffer, registry):
-        length = buffer.getShort()
+        length = buffer.getInt()
         array = []
 
         for i in range(length):
