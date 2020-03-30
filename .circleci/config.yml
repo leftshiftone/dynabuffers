@@ -101,6 +101,30 @@ jobs:
           key: cache-gradle-{{ checksum "build.gradle" }}
       - run:
           <<: *webhook-failed
+  code-analytics:
+    docker:
+      - image: circleci/python:3.7.3
+    environment:
+      TZ: "/usr/share/zoneinfo/Europe/Vienna"
+      TEST_RESULTS_PATH: build/circleci/test-results
+    steps:
+      - run:
+          <<: *webhook-created
+      - checkout
+      - run: mkdir -p $TEST_RESULTS_PATH
+      - run: pip install poetry==0.12.17
+      - run: cd ~/project/dynabuffers-python && poetry install
+      - run: cd ~/project/dynabuffers-python && poetry run test_ci
+      - run: cd ~/project/dynabuffers-python && poetry build
+      - run: |
+          curl https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.2.0.1873-linux.zip -o sonar-scanner.zip
+          unzip sonar-scanner.zip
+          sonarqube=$(unzip -l sonar-scanner.zip | awk '{print $4}' | grep "^\([a-z0-9.-]*\/\)$")/bin/sonar-scanner
+          ./$sonarqube -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_LOGIN -Dsonar.projectKey=one.leftshift.dynabuffers -Dsonar.projectName=dynabuffers
+      - store_test_results:
+          path: build/circleci/test-results
+      - run:
+          <<: *webhook-failed
 
 workflows:
   version: 2
@@ -148,3 +172,17 @@ workflows:
               only: /^v\d+\.\d+\.\d+$/
           requires:
             - release-java
+  code-analytics:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - code-analytics:
+          context: leftshiftone-sonar
+      - webhook-completed:
+          requires:
+            - code-analytics
