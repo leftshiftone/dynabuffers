@@ -1,4 +1,5 @@
 import struct
+from struct import unpack
 from abc import ABC, abstractmethod
 
 
@@ -30,16 +31,16 @@ class ByteBuffer():
         self.buffer = self.buffer + obj
 
     def putShort(self, obj:int):
-        self.buffer = self.buffer + obj.to_bytes(2, byteorder="big")
+        self.buffer = self.buffer + struct.pack('>h', obj)
 
     def putInt(self, obj:int):
-        self.buffer = self.buffer + obj.to_bytes(4, byteorder="big")
+        self.buffer = self.buffer + struct.pack('>i', obj)
 
     def putFloat(self, obj:float):
         self.buffer = self.buffer + struct.pack('>f', obj)
 
     def putLong(self, obj:int):
-        self.buffer = self.buffer + obj.to_bytes(8, byteorder="big")
+        self.buffer = self.buffer + struct.pack('>q', obj)
 
     def get(self, length=None):
         if length is None:
@@ -50,14 +51,15 @@ class ByteBuffer():
             return bytes
 
     def getShort(self):
-        bytes = self.buffer[:2]
+        buffer = self.buffer[:2]
         self.buffer = self.buffer[2:]
-        return int.from_bytes(bytes, byteorder='big')
+        # https://stackoverflow.com/questions/45187101/converting-bytearray-to-short-int-in-python
+        return unpack('>h', buffer)[0]
 
     def getInt(self):
-        bytes = self.buffer[:4]
+        buffer = self.buffer[:4]
         self.buffer = self.buffer[4:]
-        return int.from_bytes(bytes, byteorder='big')
+        return unpack('>i', buffer)[0]
 
     def getFloat(self):
         bytes = self.buffer[:4]
@@ -67,7 +69,7 @@ class ByteBuffer():
     def getLong(self):
         bytes = self.buffer[:8]
         self.buffer = self.buffer[8:]
-        return int.from_bytes(bytes, byteorder='big')
+        return struct.unpack('>q', bytes)[0]
 
     def toBytes(self):
         return self.buffer
