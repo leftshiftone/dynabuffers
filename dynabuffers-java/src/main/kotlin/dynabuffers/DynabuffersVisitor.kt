@@ -65,6 +65,7 @@ class DynabuffersVisitor(private val charset: Charset) : DynabuffersBaseVisitor<
             "byte" -> listOf(ByteType())
             "short" -> listOf(ShortType())
             "map" -> listOf(MapType(MapType.MapTypeOptions(charset)))
+            "bytearray" -> listOf(BytearrayType())
             else -> listOf(RefType(RefType.RefTypeOptions(ctx.text)))
         }
     }

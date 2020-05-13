@@ -30,7 +30,7 @@ enumType     : 'enum' IDENTIFIER '{' IDENTIFIER+ '}';
 classType    : 'class' IDENTIFIER classOptions? '{' fieldType+ '}';
 unionType    : 'union' IDENTIFIER '{' IDENTIFIER+ '}';
 fieldType    : annotation* IDENTIFIER ':' (dataType | arrayType) fieldOptions? ('=' value)?;
-dataType     : ('string' | 'short' | 'boolean' | 'byte' | 'float' | 'long' | 'int' | 'map' | IDENTIFIER);
+dataType     : ('string' | 'short' | 'boolean' | 'byte' | 'float' | 'long' | 'int' | 'map' | 'bytearray' | IDENTIFIER);
 arrayType    : '[' dataType ']';
 
 // structural
