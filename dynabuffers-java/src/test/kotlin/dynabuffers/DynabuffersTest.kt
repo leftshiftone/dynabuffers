@@ -81,4 +81,18 @@ class Product {
         assertMap(mapOf("name" to "Fernseher", "price" to 1000f), result)
     }
 
+    @Test
+    fun parseMap() {
+        val engine = Dynabuffers.parse("class Data { type:string data:map }")
+        engine.addListener(System.out::println)
+        assertMap(engine, mapOf("type" to "abc", "data" to mapOf("a" to "b", "c" to 1)))
+    }
+
+    @Test
+    fun parseDeepMap() {
+        val engine = Dynabuffers.parse("class Data { type:string data:map }")
+        engine.addListener(System.out::println)
+        assertMap(engine, mapOf("type" to "abc", "data" to mapOf("a" to "b", "c" to mapOf("d" to mapOf("e" to 1)))))
+    }
+
 }
