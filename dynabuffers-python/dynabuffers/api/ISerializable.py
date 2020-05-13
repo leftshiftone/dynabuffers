@@ -1,6 +1,6 @@
 import struct
-from struct import unpack
 from abc import ABC, abstractmethod
+from struct import unpack
 
 
 class ISerializable(ABC):
@@ -10,11 +10,11 @@ class ISerializable(ABC):
         pass
 
     @abstractmethod
-    def serialize(self, value, buffer, registry):
+    def serialize(self, value, buffer: 'ByteBuffer', registry):
         pass
 
     @abstractmethod
-    def deserialize(self, buffer, registry):
+    def deserialize(self, buffer: 'ByteBuffer', registry):
         pass
 
     def byte(self, obj):
@@ -26,6 +26,10 @@ class ByteBuffer():
     def __init__(self, length:int, buffer:bytearray = bytearray()):
         self.length = length
         self.buffer = buffer
+
+    @staticmethod
+    def wrap(buffer: bytearray) -> 'ByteBuffer':
+        return ByteBuffer(len(buffer), buffer)
 
     def put(self, obj: bytes):
         self.buffer = self.buffer + obj
@@ -41,6 +45,9 @@ class ByteBuffer():
 
     def putLong(self, obj:int):
         self.buffer = self.buffer + struct.pack('>q', obj)
+
+    def has_remaining(self):
+        return len(self.buffer) > 0
 
     def get(self, length=None):
         if length is None:

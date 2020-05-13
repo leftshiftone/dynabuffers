@@ -79,6 +79,20 @@ class Product {
 
         self.assertEqual(map, {"name": "Fernseher", "price":1000})
 
+    def test_parse_map(self):
+        engine = Dynabuffers.parse("class Data { type:string data:map }")
+        map = {"type":"abc", "data":{"a":"b", "c":1}}
+        result = engine.deserialize(engine.serialize(map))
+
+        self.assertEqual(map, result)
+
+    def test_parse_deep_map(self):
+        engine = Dynabuffers.parse("class Data { type:string data:map }")
+        map = {"type":"abc", "data":{"a":"b", "c":{"d":{"e":1}}}}
+        result = engine.deserialize(engine.serialize(map))
+
+        self.assertEqual(map, result)
+
 
 if __name__ == "__main__":
     unittest.main()

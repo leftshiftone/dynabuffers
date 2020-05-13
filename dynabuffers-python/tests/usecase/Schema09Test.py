@@ -8,7 +8,7 @@ from dynabuffers.Dynabuffers import Dynabuffers
 
 class Schema09Test(unittest.TestCase):
     root_dir = os.path.dirname(os.path.realpath(__file__))
-    error = "'i' format requires -2147483648 <= number <= 2147483647"
+    error = ["'i' format requires -2147483648 <= number <= 2147483647", "argument out of range"]
 
     def setUp(self):
         self.engine = Dynabuffers.parse(FileStream(f"{self.root_dir}/schema09.dbs"))
@@ -27,13 +27,13 @@ class Schema09Test(unittest.TestCase):
         with self.assertRaises(Exception) as ctx:
             self.engine.deserialize(self.engine.serialize({"val": 2147483648}))
 
-        self.assertEqual(self.error, str(ctx.exception))
+        self.assertTrue(str(ctx.exception) in self.error)
 
     def test_int_overflow_negative(self):
         with self.assertRaises(Exception) as ctx:
             self.engine.deserialize(self.engine.serialize({"val": -2147483649}))
 
-        self.assertEqual(self.error, str(ctx.exception))
+        self.assertTrue(str(ctx.exception) in self.error)
 
 
 if __name__ == "__main__":

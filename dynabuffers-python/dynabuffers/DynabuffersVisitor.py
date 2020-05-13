@@ -10,6 +10,7 @@ from dynabuffers.ast.datatype.ByteType import ByteType
 from dynabuffers.ast.datatype.FloatType import FloatType
 from dynabuffers.ast.datatype.IntType import IntType
 from dynabuffers.ast.datatype.LongType import LongType
+from dynabuffers.ast.datatype.MapType import MapType, MapTypeOptions
 from dynabuffers.ast.datatype.RefType import RefType, RefTypeOptions
 from dynabuffers.ast.datatype.ShortType import ShortType
 from dynabuffers.ast.datatype.StringType import StringType, StringTypeOptions
@@ -70,6 +71,8 @@ class DynabuffersVisitor(DynabuffersBaseVisitor):
             return ByteType()
         if ctx.getText() == "short":
             return ShortType()
+        if ctx.getText() == "map":
+            return MapType(MapTypeOptions("utf-8"))
         else:
             return RefType(RefTypeOptions(ctx.getText()))
 
