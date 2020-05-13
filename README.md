@@ -39,6 +39,7 @@ can have options. DynaBuffers supports the following datatypes:
 * boolean
 * array
 * map
+* bytearray
 * enums
 * unions
 * other classes 
