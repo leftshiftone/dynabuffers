@@ -1,6 +1,7 @@
 from typing import Dict, Any
 
 from dynabuffers.api.ISerializable import ISerializable, ByteBuffer
+from dynabuffers.ast.datatype.ArrayType import ArrayType, ArrayTypeOptions
 from dynabuffers.ast.datatype.BooleanType import BooleanType
 from dynabuffers.ast.datatype.ByteType import ByteType
 from dynabuffers.ast.datatype.FloatType import FloatType
@@ -84,6 +85,8 @@ class MapType(ISerializable):
             return IntType()
         if isinstance(obj, bytes):
             return ByteType()
+        if isinstance(obj, list):
+            return ArrayType(ArrayTypeOptions(self._get_val_type(obj[0])))
         raise NameError("cannot handle value " + str(obj))
 
     def _get_key_type(self, obj) -> ISerializable:
@@ -108,6 +111,8 @@ class MapType(ISerializable):
             return 60
         if isinstance(obj, dict):
             return 70
+        if isinstance(obj, list):
+            return 80 + self._type_to_ordinal(obj[0])
 
         raise NameError("cannot handle value " + str(obj))
 
@@ -128,6 +133,22 @@ class MapType(ISerializable):
             return ShortType()
         if obj == 70:
             return self
+        if obj == 80:
+            return ArrayType(ArrayTypeOptions(StringType(StringTypeOptions(self.options.charset))))
+        if obj == 81:
+            return ArrayType(ArrayTypeOptions(BooleanType()))
+        if obj == 82:
+            return ArrayType(ArrayTypeOptions(ByteType()))
+        if obj == 83:
+            return ArrayType(ArrayTypeOptions(FloatType()))
+        if obj == 84:
+            return ArrayType(ArrayTypeOptions(IntType()))
+        if obj == 85:
+            return ArrayType(ArrayTypeOptions(LongType()))
+        if obj == 86:
+            return ArrayType(ArrayTypeOptions(ShortType()))
+        if obj == 87:
+            return ArrayType(ArrayTypeOptions(self))
 
         raise NameError("cannot handle value " + str(obj))
 

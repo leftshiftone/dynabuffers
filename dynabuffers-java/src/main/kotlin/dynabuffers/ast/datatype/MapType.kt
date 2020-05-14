@@ -3,11 +3,12 @@ package dynabuffers.ast.datatype
 import dynabuffers.api.IRegistry
 import dynabuffers.api.ISerializable
 import dynabuffers.api.IType
+import dynabuffers.ast.datatype.ArrayType.ArrayTypeOptions
 import dynabuffers.ast.datatype.StringType.StringTypeOptions
 import java.nio.ByteBuffer
 import java.nio.charset.Charset
 
-class MapType(options: MapTypeOptions) : IType, ISerializable {
+class MapType(val options: MapTypeOptions) : IType, ISerializable {
 
     private val stringType = StringType(StringTypeOptions(options.charset))
     private val booleanType = BooleanType()
@@ -83,6 +84,8 @@ class MapType(options: MapTypeOptions) : IType, ISerializable {
         is Int -> intType
         is Long -> longType
         is Short -> shortType
+        is Array<*> -> ArrayType(ArrayTypeOptions(getValType(obj.first() ?: "")))
+        is Collection<*> -> ArrayType(ArrayTypeOptions(getValType(obj.first() ?: "")))
         else -> throw IllegalArgumentException("cannot handle value $obj")
     }
 
@@ -100,6 +103,8 @@ class MapType(options: MapTypeOptions) : IType, ISerializable {
         is Long -> 50
         is Short -> 60
         is Map<*, *> -> 70
+        is Array<*> -> (80 + typeToOrdinal(obj.first() ?: "") / 10).toByte()
+        is Collection<*> -> (80 + typeToOrdinal(obj.first() ?: "") / 10).toByte()
         else -> throw IllegalArgumentException("cannot handle value $obj")
     }
 
@@ -112,6 +117,14 @@ class MapType(options: MapTypeOptions) : IType, ISerializable {
         50 -> longType
         60 -> shortType
         70 -> this
+        80 -> ArrayType(ArrayTypeOptions(StringType(StringTypeOptions(options.charset))))
+        81 -> ArrayType(ArrayTypeOptions(BooleanType()))
+        82 -> ArrayType(ArrayTypeOptions(ByteType()))
+        83 -> ArrayType(ArrayTypeOptions(FloatType()))
+        84 -> ArrayType(ArrayTypeOptions(IntType()))
+        85 -> ArrayType(ArrayTypeOptions(LongType()))
+        86 -> ArrayType(ArrayTypeOptions(ShortType()))
+        87 -> ArrayType(ArrayTypeOptions(this))
         else -> throw IllegalArgumentException("cannot handle ordinal $ordinal")
     }
 

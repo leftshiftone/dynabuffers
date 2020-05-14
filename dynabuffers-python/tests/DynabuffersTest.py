@@ -94,7 +94,7 @@ class Product {
         self.assertEqual(map, result)
 
     def test_bytearray(self):
-        engine = Dynabuffers.parse("class Data { type:string data:bytearray }")
+        engine = Dynabuffers.parse("class Data { type:string data:[byte] }")
         map = {"type": "abc", "data": bytearray(b"abcdefghijklmnopqrstuvwxyz")}
         result = engine.deserialize(engine.serialize(map))
 

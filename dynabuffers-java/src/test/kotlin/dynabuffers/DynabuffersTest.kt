@@ -97,7 +97,7 @@ class Product {
 
     @Test
     fun parseBytearray() {
-        val engine = Dynabuffers.parse("class Data { type:string data:bytearray }")
+        val engine = Dynabuffers.parse("class Data { type:string data:[byte] }")
         assertMap(engine, mapOf("type" to "abc", "data" to "abcdefghijklmnopqrstuvwxyz".toByteArray()))
     }
 

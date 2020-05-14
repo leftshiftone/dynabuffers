@@ -16,6 +16,5 @@ class Schema01Test(unittest.TestCase):
 
         self.assertEqual(map, {"message": {"text": "abcd", "type": ["DEP", "NER"], ":type":0}})
 
-
 if __name__ == "__main__":
     unittest.main()

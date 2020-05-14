@@ -7,7 +7,6 @@ from dynabuffers.ast.UnionType import UnionType, UnionTypeOptions
 from dynabuffers.ast.datatype.ArrayType import ArrayType, ArrayTypeOptions
 from dynabuffers.ast.datatype.BooleanType import BooleanType
 from dynabuffers.ast.datatype.ByteType import ByteType
-from dynabuffers.ast.datatype.BytearrayType import BytearrayType
 from dynabuffers.ast.datatype.FloatType import FloatType
 from dynabuffers.ast.datatype.IntType import IntType
 from dynabuffers.ast.datatype.LongType import LongType
@@ -74,8 +73,6 @@ class DynabuffersVisitor(DynabuffersBaseVisitor):
             return ShortType()
         if ctx.getText() == "map":
             return MapType(MapTypeOptions("utf-8"))
-        if ctx.getText() == "bytearray":
-            return BytearrayType()
         else:
             return RefType(RefTypeOptions(ctx.getText()))
 
