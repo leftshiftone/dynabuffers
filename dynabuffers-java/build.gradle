@@ -48,15 +48,15 @@ test {
     useJUnitPlatform()
 }
 
+archivesBaseName = rootProject.name
 artifacts {
     archives sourceJar
     archives javadocJar
 }
-archivesBaseName = "dynabuffers"
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifactId "dynabuffers"
+            artifactId rootProject.name
             from components.java
             artifact sourceJar
             artifact javadocJar
@@ -95,7 +95,7 @@ bintray {
     publish = true
     pkg {
         repo = "dynabuffers"
-        name = "${project.group}.${project.name}"
+        name = "${project.group}.${rootProject.name}"
         userOrg = "leftshiftone"
         licenses = ["Apache-2.0"]
         vcsUrl = "https://github.com/leftshiftone/dynabuffers.git"
