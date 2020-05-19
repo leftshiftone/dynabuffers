@@ -104,7 +104,6 @@ jobs:
       - run: ./gradlew dependencies installDependencies
       - run: ./gradlew build --stacktrace
       - run: ./gradlew final publish -Prelease.useLastTag=true --stacktrace
-      - run: git push --tags
       - run:
           <<: *webhook-failed
 
