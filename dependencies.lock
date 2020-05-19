@@ -1,0 +1,432 @@
+{
+    "antlr": {
+        "com.ibm.icu:icu4j": {
+            "locked": "61.1",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.abego.treelayout:org.abego.treelayout.core": {
+            "locked": "1.0.3",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.antlr:ST4": {
+            "locked": "4.1",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.antlr:antlr-runtime": {
+            "locked": "3.5.2",
+            "transitive": [
+                "org.antlr:ST4",
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.antlr:antlr4": {
+            "locked": "4.7.2",
+            "requested": "4.7.2"
+        },
+        "org.antlr:antlr4-runtime": {
+            "locked": "4.7.2",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.glassfish:javax.json": {
+            "locked": "1.0.4",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        }
+    },
+    "compile": {
+        "com.ibm.icu:icu4j": {
+            "locked": "61.1",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.abego.treelayout:org.abego.treelayout.core": {
+            "locked": "1.0.3",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.antlr:ST4": {
+            "locked": "4.1",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.antlr:antlr-runtime": {
+            "locked": "3.5.2",
+            "transitive": [
+                "org.antlr:ST4",
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.antlr:antlr4": {
+            "locked": "4.7.2",
+            "requested": "4.7.2"
+        },
+        "org.antlr:antlr4-runtime": {
+            "locked": "4.7.2",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.glassfish:javax.json": {
+            "locked": "1.0.4",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        }
+    },
+    "compileClasspath": {
+        "com.ibm.icu:icu4j": {
+            "locked": "61.1",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.abego.treelayout:org.abego.treelayout.core": {
+            "locked": "1.0.3",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.antlr:ST4": {
+            "locked": "4.1",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.antlr:antlr-runtime": {
+            "locked": "3.5.2",
+            "transitive": [
+                "org.antlr:ST4",
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.antlr:antlr4": {
+            "locked": "4.7.2",
+            "requested": "4.7.2"
+        },
+        "org.antlr:antlr4-runtime": {
+            "locked": "4.7.2",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.glassfish:javax.json": {
+            "locked": "1.0.4",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        }
+    },
+    "default": {
+        "com.ibm.icu:icu4j": {
+            "locked": "61.1",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.abego.treelayout:org.abego.treelayout.core": {
+            "locked": "1.0.3",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.antlr:ST4": {
+            "locked": "4.1",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.antlr:antlr-runtime": {
+            "locked": "3.5.2",
+            "transitive": [
+                "org.antlr:ST4",
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.antlr:antlr4": {
+            "locked": "4.7.2",
+            "requested": "4.7.2"
+        },
+        "org.antlr:antlr4-runtime": {
+            "locked": "4.7.2",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.glassfish:javax.json": {
+            "locked": "1.0.4",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        }
+    },
+    "runtime": {
+        "com.ibm.icu:icu4j": {
+            "locked": "61.1",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.abego.treelayout:org.abego.treelayout.core": {
+            "locked": "1.0.3",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.antlr:ST4": {
+            "locked": "4.1",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.antlr:antlr-runtime": {
+            "locked": "3.5.2",
+            "transitive": [
+                "org.antlr:ST4",
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.antlr:antlr4": {
+            "locked": "4.7.2",
+            "requested": "4.7.2"
+        },
+        "org.antlr:antlr4-runtime": {
+            "locked": "4.7.2",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.glassfish:javax.json": {
+            "locked": "1.0.4",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        }
+    },
+    "runtimeClasspath": {
+        "com.ibm.icu:icu4j": {
+            "locked": "61.1",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.abego.treelayout:org.abego.treelayout.core": {
+            "locked": "1.0.3",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.antlr:ST4": {
+            "locked": "4.1",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.antlr:antlr-runtime": {
+            "locked": "3.5.2",
+            "transitive": [
+                "org.antlr:ST4",
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.antlr:antlr4": {
+            "locked": "4.7.2",
+            "requested": "4.7.2"
+        },
+        "org.antlr:antlr4-runtime": {
+            "locked": "4.7.2",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.glassfish:javax.json": {
+            "locked": "1.0.4",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        }
+    },
+    "testCompile": {
+        "com.ibm.icu:icu4j": {
+            "locked": "61.1",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.abego.treelayout:org.abego.treelayout.core": {
+            "locked": "1.0.3",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.antlr:ST4": {
+            "locked": "4.1",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.antlr:antlr-runtime": {
+            "locked": "3.5.2",
+            "transitive": [
+                "org.antlr:ST4",
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.antlr:antlr4": {
+            "locked": "4.7.2",
+            "requested": "4.7.2"
+        },
+        "org.antlr:antlr4-runtime": {
+            "locked": "4.7.2",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.glassfish:javax.json": {
+            "locked": "1.0.4",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        }
+    },
+    "testCompileClasspath": {
+        "com.ibm.icu:icu4j": {
+            "locked": "61.1",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.abego.treelayout:org.abego.treelayout.core": {
+            "locked": "1.0.3",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.antlr:ST4": {
+            "locked": "4.1",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.antlr:antlr-runtime": {
+            "locked": "3.5.2",
+            "transitive": [
+                "org.antlr:ST4",
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.antlr:antlr4": {
+            "locked": "4.7.2",
+            "requested": "4.7.2"
+        },
+        "org.antlr:antlr4-runtime": {
+            "locked": "4.7.2",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.glassfish:javax.json": {
+            "locked": "1.0.4",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        }
+    },
+    "testRuntime": {
+        "com.ibm.icu:icu4j": {
+            "locked": "61.1",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.abego.treelayout:org.abego.treelayout.core": {
+            "locked": "1.0.3",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.antlr:ST4": {
+            "locked": "4.1",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.antlr:antlr-runtime": {
+            "locked": "3.5.2",
+            "transitive": [
+                "org.antlr:ST4",
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.antlr:antlr4": {
+            "locked": "4.7.2",
+            "requested": "4.7.2"
+        },
+        "org.antlr:antlr4-runtime": {
+            "locked": "4.7.2",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.glassfish:javax.json": {
+            "locked": "1.0.4",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        }
+    },
+    "testRuntimeClasspath": {
+        "com.ibm.icu:icu4j": {
+            "locked": "61.1",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.abego.treelayout:org.abego.treelayout.core": {
+            "locked": "1.0.3",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.antlr:ST4": {
+            "locked": "4.1",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.antlr:antlr-runtime": {
+            "locked": "3.5.2",
+            "transitive": [
+                "org.antlr:ST4",
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.antlr:antlr4": {
+            "locked": "4.7.2",
+            "requested": "4.7.2"
+        },
+        "org.antlr:antlr4-runtime": {
+            "locked": "4.7.2",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        },
+        "org.glassfish:javax.json": {
+            "locked": "1.0.4",
+            "transitive": [
+                "org.antlr:antlr4"
+            ]
+        }
+    }
+}
