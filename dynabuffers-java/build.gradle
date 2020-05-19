@@ -52,11 +52,11 @@ artifacts {
     archives sourceJar
     archives javadocJar
 }
-
+archivesBaseName = "dynabuffers"
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifactId = "dynabuffers"
+            artifactId "dynabuffers"
             from components.java
             artifact sourceJar
             artifact javadocJar
