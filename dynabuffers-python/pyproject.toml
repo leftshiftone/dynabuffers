@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "dynabuffers"
-version = "0.1.0"
-description = ""
-authors = ["leftshift one open source group <devs@leftshift.one>"]
+version = "0.9.0"
+description = "Dynamic cross platform serialization library."
+authors = ["Leftshift One <contact@leftshift.one>"]
 
 [tool.poetry.dependencies]
 python = "^3.7"
@@ -10,10 +10,16 @@ antlr4-python3-runtime = "^4.7.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^3.0"
+pytest-cov = "^2.8.1"
+pytest-timeout = "^1.3"
+toml = "^0.10.0"
 
 [tool.poetry.scripts]
-release = "poetry_scripts:release"
-test_ci = "poetry_scripts:test_ci"
+clean = "poetry_scripts:clean"
+install = "poetry_scripts:install"
+test = "poetry_scripts:test"
+build = "poetry_scripts:build"
+publish = "poetry_scripts:publish"
 
 [build-system]
 requires = ["poetry>=0.12"]

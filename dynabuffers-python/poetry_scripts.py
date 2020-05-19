@@ -1,29 +1,38 @@
-from subprocess import check_call
-import sys
-import re
 import os
+import shutil
+from subprocess import check_call
 
-def test_ci():
-    check_call(["poetry", "run", "pytest", '--junit-xml=$TEST_RESULTS_PATH/TEST-dynabuffers-python-junit.xml'])
+POETRY_PROJECT_FILE = "pyproject.toml"
 
-def release():
-    tag = sys.argv[1]
-    print("Releasing version", tag)
-    version = _version_from_tag(tag)
-    check_call(["poetry", "run", "test_ci"])
-    check_call(["poetry", "version", version])
-    check_call(["poetry", "build"])
-    username = os.environ.get("PYPI_USERNAME")
-    password = os.environ.get("PYPI_PASSWORD")
-    check_call(["poetry", "publish", "-u", username, "-p", password])
 
-def _version_from_tag(tag):
-    """
-    Extracts the semver from the given tag (e.g: v0.1.0 -> 0.1.0)
-    :param tag:
-    :return:
-    """
-    pattern = re.compile('v\d+.\d+.\d+')
-    if not pattern.match(tag):
-        raise Exception(f"{tag} is not valid semver")
-    return tag[1:]
+def clean():
+    shutil.rmtree("dist", ignore_errors=True)
+    shutil.rmtree("build", ignore_errors=True)
+    shutil.rmtree("dynabuffers.egg-info", ignore_errors=True)
+    shutil.rmtree(".pytest_cache", ignore_errors=True)
+
+
+def install():
+    _execute(["poetry", "install"])
+
+
+def test():
+    _execute(["poetry", "run", "pytest", "--junit-xml=build/test/TEST-junit.xml", "--cov=dynabuffers",
+              "--cov-report=xml:build/coverage/coverage.xml", "--cov-report=term", "-s"])
+
+
+def build():
+    _execute(["poetry", "build"])
+
+
+def publish():
+    _execute(["poetry", "publish"])
+
+
+def _execute(command, exec_dir=None):
+    cmd = command.copy()
+    print(f"Executing: {' '.join(cmd)}")
+    for e in cmd:
+        if e.startswith("$"):
+            cmd[cmd.index(e)] = os.getenv(cmd[cmd.index(e)].replace("$", ""))
+    check_call(cmd, cwd=exec_dir, env=os.environ)

@@ -1,0 +1,45 @@
+task clean() {
+    doLast {
+        execute(["poetry", "run", "clean"])
+    }
+}
+
+task installDependencies() {
+    doLast {
+        execute(["poetry", "install"])
+    }
+}
+
+task test() {
+    doLast {
+        execute(["poetry", "run", "test"])
+    }
+}
+test.dependsOn rootProject.tasks.generateGrammarSourcePython
+
+task assemble() {
+    doLast {
+        execute(["poetry", "build"])
+    }
+}
+assemble.dependsOn rootProject.tasks.generateGrammarSourcePython
+
+task build() {
+    dependsOn test, assemble
+}
+
+task publish() {
+    doLast {
+        execute(["poetry", "publish", "--username", System.getenv("PYPI_USERNAME"), "--password", System.getenv("PYPI_PASSWORD")])
+    }
+}
+publish.mustRunAfter assemble
+
+private void execute(List<String> command) {
+    logger.debug("Executing command '${command.join(" ")}'")
+    def process = new ProcessBuilder(command).directory(projectDir).start()
+    process.consumeProcessOutput(System.out, System.err)
+    process.waitFor()
+    if (process.exitValue() != 0) throw new RuntimeException("Command failed with code ${process.exitValue()}")
+    logger.debug("Executed command '${command.join(" ")}'")
+}

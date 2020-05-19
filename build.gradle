@@ -1,4 +1,5 @@
-import nebula.plugin.release.NetflixOssStrategies
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 /*
  * Copyright (c) 2016-2019, Leftshift One
@@ -17,43 +18,171 @@ import nebula.plugin.release.NetflixOssStrategies
  */
 
 buildscript {
+    ext {
+        kotlinVersion = "1.3.41"
+    }
     repositories {
         jcenter()
-        mavenCentral()
     }
     dependencies {
-        classpath "com.netflix.nebula:nebula-release-plugin:8.0.3"
+        classpath "one.leftshift.asteria:asteria-code-analytics:latest.release"
+        classpath "one.leftshift.asteria:asteria-dependency:latest.release"
+        classpath "one.leftshift.asteria:asteria-docs:latest.release"
+        classpath "one.leftshift.asteria:asteria-email:latest.release"
+        classpath "one.leftshift.asteria:asteria-publish:latest.release"
+        classpath "one.leftshift.asteria:asteria-report:latest.release"
+        classpath "one.leftshift.asteria:asteria-version:latest.release"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+        classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlinVersion"
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:0.9.17"
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4"
     }
 }
 
 apply plugin: "antlr"
-apply plugin: "nebula.nebula-release"
+apply plugin: "one.leftshift.asteria-email"
+apply plugin: "one.leftshift.asteria-report"
+apply plugin: "one.leftshift.asteria-dependency"
+apply plugin: "one.leftshift.asteria-version"
+
+asteriaEmail {
+    smtpHost = System.getenv("ASTERIA_EMAIL_SMTP_HOST")
+    smptUser = System.getenv("ASTERIA_EMAIL_SMTP_USER")
+    smptPassword = System.getenv("ASTERIA_EMAIL_SMTP_PASSWORD")
+    sender = System.getenv("ASTERIA_EMAIL_SENDER")
+}
+
+asteriaReport {
+    reportingUrl = System.getenv("ASTERIA_REPORT_URL")
+    depsJsonResult = file("${rootProject.buildDir}/dependencyUpdates/report.json")
+    junitXmlResults = fileTree(rootProject.projectDir) {
+        include("**/test-results/*/TEST-*.xml")
+    }
+    junitBinaryResults = files(["test"].collect {
+        "${project.buildDir}/test-results/${it}/binary"
+    })
+}
+
+allprojects {
+    apply plugin: "one.leftshift.asteria-dependency"
+    apply plugin: "one.leftshift.asteria-version"
+
+    repositories {
+        jcenter()
+    }
+
+    asteriaDependency {
+        enableBranchSnapshotRepositories = true
+    }
+    dependencyManagement {
+        imports {
+            mavenBom("org.springframework.boot:spring-boot-dependencies:2.1.13.RELEASE") {
+                bomProperty("kotlin.version", kotlinVersion)
+            }
+        }
+    }
+
+    if (System.getenv("CI")) {
+        afterEvaluate { rootProject.tasks.postRelease.finalizedBy rootProject.tasks.sendReleaseEmail }
+        if (tasks.findByName("publish")) {
+            afterEvaluate { rootProject.tasks.postRelease.dependsOn tasks.publish }
+        }
+    }
+}
+
+subprojects {
+    apply plugin: "one.leftshift.asteria-code-analytics"
+
+    asteriaCodeAnalytics {
+        sonarUrl = System.getenv("SONAR_HOST_URL")
+        sonarLoginToken = System.getenv("SONAR_LOGIN")
+        xmlCoverageReportEnabled = true
+        sonarProperties = [
+                "sonar.test.inclusions"           : "**/*Test.*,**/*.test.ts,**/tests/test_*.py",
+                //"sonar.javascript.lcov.reportPaths": "${project(":dynabuffers-javascript").projectDir}/coverage/lcov.info",
+                //"sonar.typescript.lcov.reportPaths": "${project(":dynabuffers-javascript").projectDir}/coverage/lcov.info",
+                "sonar.python.coverage.reportPath": "${project(":dynabuffers-python").projectDir}/build/coverage/coverage.xml",
+        ]
+        coverageExcludes = ["**/*Kt.class"]
+    }
+}
 
 dependencies {
     antlr "org.antlr:antlr4:4.7.2" // use ANTLR version 4
 }
 
-repositories {
-    jcenter()
-    mavenCentral()
-}
-
-release {
-    defaultVersionStrategy = NetflixOssStrategies.SNAPSHOT
-}
-
-generateGrammarSource {
-    outputDirectory = new File(project.rootDir, "dynabuffers-java/build/generated-src/antlr/dynabuffers/antlr")
+task generateGrammarSourceJava(type: AntlrTask) {
+    source = project.sourceSets.main.antlr
+    outputDirectory = file("${project(":dynabuffers-java").buildDir}/generated-src/antlr/dynabuffers/antlr")
     arguments += ["-visitor", "-package", "dynabuffers.antlr"]
 }
+task generateGrammarSourcePython(type: AntlrTask) {
+    source = project.sourceSets.main.antlr
+    outputDirectory = file("${project(":dynabuffers-python").projectDir}/dynabuffers/antlr")
+    arguments += ["-visitor", "-Dlanguage=Python3"]
+}
+generateGrammarSource.dependsOn generateGrammarSourceJava
+generateGrammarSource.dependsOn generateGrammarSourcePython
 
-task generateGrammarSourcePython() << {
-    project.generateGrammarSource {
-        outputDirectory = new File(project.rootDir, "dynabuffers-python/dynabuffers/antlr")
-        arguments += ["-visitor", "-Dlanguage=Python3"]
-        doLast {
-            File file = new File(project.rootDir, "dynabuffers-python/dynabuffers/antlr/__init__.py")
-            file.write ""
+task setVersionPython() {
+    doLast {
+        String pyprojectTomlPath = project(":dynabuffers-python").projectDir.toString() + "/pyproject.toml"
+        File pyprojectTomlFile = file(pyprojectTomlPath)
+        String pyprojectTomlContent = pyprojectTomlFile.text
+
+        Pattern regex = Pattern.compile("^version\\s?=\\s?[\"'].*[\"']\\s?\$", Pattern.MULTILINE)
+        Matcher matcher = regex.matcher(pyprojectTomlContent)
+        List<String> matches = []
+        while (matcher.find()) {
+            matches.add(matcher.group(0))
         }
-    }.execute()
+        if (matches.size() > 1)
+            throw new RuntimeException("More than one version found in ${pyprojectTomlPath}")
+        if (matches.isEmpty() || matches.first().trim().isEmpty())
+            throw new RuntimeException("No version found in ${pyprojectTomlPath}")
+        pyprojectTomlFile.text = pyprojectTomlContent.replaceAll(matches.first(), "version = \"${version.toString()}\"")
+        logger.quiet("Updated version in ${pyprojectTomlPath} to ${version.toString()}")
+    }
+}
+task commitVersions() {
+    doLast {
+        // python
+        String pyprojectTomlPath = "${project(":dynabuffers-python").projectDir}/pyproject.toml"
+        executeAssertExitCode(["git", "add", pyprojectTomlPath])
+
+        String commitMessage = "set version to ${version.toString()}"
+        executeWarnExitCode(["git", "commit", "-m", "'$commitMessage'".toString()])
+    }
+}
+commitVersions.dependsOn setVersionPython
+
+task pushVersions() {
+    doLast {
+        executeAssertExitCode(["git", "push"])
+    }
+}
+pushVersions.dependsOn commitVersions
+if (System.getenv("CI") == null || System.getenv("CI") != "true") {
+    afterEvaluate { rootProject.tasks.release.dependsOn rootProject.tasks.pushVersions }
+}
+
+private void executeAssertExitCode(List<String> command) {
+    int exitCode = execute(command)
+    if (exitCode != 0) throw new RuntimeException("Command '${command.join(" ")}' failed with code ${exitCode}")
+    logger.debug("Executed command '${command.join(" ")}'")
+}
+
+private void executeWarnExitCode(List<String> command) {
+    int exitCode = execute(command)
+    if (exitCode != 0) logger.warn("Command failed with code ${exitCode}")
+    logger.debug("Executed command '${command.join(" ")}'")
+}
+
+private int execute(List<String> command) {
+    logger.debug("Executing command '${command.join(" ")}'")
+    def process = new ProcessBuilder(command).directory(projectDir).start()
+    process.consumeProcessOutput(System.out, System.err)
+    process.waitFor()
+    logger.debug("Executed command '${command.join(" ")}'")
+    return process.exitValue()
 }

@@ -1,6 +1,3 @@
-import groovy.util.Node
-import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.api.tasks.bundling.Jar
 /*
  * Copyright (c) 2016-2019, Leftshift One
  * __________________
@@ -17,54 +14,29 @@ import org.gradle.api.tasks.bundling.Jar
  * from Leftshift One.
  */
 
-buildscript {
-    ext {
-        kotlinVersion = "1.3.41"
-    }
-    repositories {
-        jcenter()
-        mavenCentral()
-    }
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-        classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlinVersion"
-        classpath "org.jetbrains.dokka:dokka-gradle-plugin:0.9.17"
-        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4"
-        classpath "com.netflix.nebula:nebula-release-plugin:8.0.3"
-    }
-}
-
 apply plugin: "kotlin"
 apply plugin: "org.jetbrains.dokka"
-apply plugin: "maven-publish"
 apply plugin: "com.jfrog.bintray"
-
-
-repositories {
-    jcenter()
-    mavenCentral()
-}
+apply plugin: "one.leftshift.asteria-dependency"
+apply plugin: "one.leftshift.asteria-publish"
+apply plugin: "one.leftshift.asteria-version"
 
 dependencies {
     compile "org.antlr:antlr4-runtime:4.7.2"
-    
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
-    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
-    
-    testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.5.1'
-    testCompile "org.assertj:assertj-core:3.11.1"
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation "org.jetbrains.kotlin:kotlin-reflect"
+
+    testCompile "org.junit.jupiter:junit-jupiter-engine"
+    testCompile "org.assertj:assertj-core"
 }
 
 sourceSets.main.java.srcDirs += new File(buildDir, "generated-src/antlr")
+classes.dependsOn rootProject.tasks.generateGrammarSourceJava
 
 task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
     outputFormat = "javadoc"
     outputDirectory = "${buildDir}/dokkaJavadoc"
-}
-
-task sourceJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
 }
 
 task javadocJar(type: Jar) {
@@ -84,21 +56,21 @@ artifacts {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifactId = project.name
+            artifactId = "dynabuffers"
             from components.java
             artifact sourceJar
             artifact javadocJar
             pom.withXml {
                 Node root = asNode()
-                root.appendNode("name", "dynabuffers")
-                root.appendNode("description", "dynabuffers")
+                root.appendNode("name", "Dynabuffers")
+                root.appendNode("description", "Dynamic cross platform serialization library")
                 root.appendNode("url", "https://github.com/leftshiftone/dynabuffers")
-                
+
                 Node licenses = root.appendNode("licenses")
                 Node license = licenses.appendNode("license")
                 license.appendNode("name", "The Apache License, Version 2.0")
                 license.appendNode("url", "http://www.apache.org/licenses/LICENSE-2.0.txt")
-                
+
                 Node developers = root.appendNode("developers")
                 Node developer = developers.appendNode("developer")
                 developer.appendNode("id", "leftshiftone")
@@ -106,7 +78,7 @@ publishing {
                 developer.appendNode("email", "contact@leftshift.one")
                 developer.appendNode("organization", "Leftshift One Software GmbH")
                 developer.appendNode("organizationUrl", "https://www.leftshift.one")
-                
+
                 Node scm = root.appendNode("scm")
                 scm.appendNode("connection", "scm:git:git://github.com/leftshiftone/dynabuffers.git")
                 scm.appendNode("developerConnection", "scm:git:ssh://github.com:leftshiftone/dynabuffers.git")
