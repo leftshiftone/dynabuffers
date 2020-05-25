@@ -38,6 +38,8 @@ class UnionType(ISerializable):
             fields1 = list(map(lambda x: x.options.name, clazz.options.fields))
             fields2 = list(value.keys())
 
+            if value[":type"] == classes.index(clazz):
+                return clazz
             if fields1 == fields2:
                 return clazz
 

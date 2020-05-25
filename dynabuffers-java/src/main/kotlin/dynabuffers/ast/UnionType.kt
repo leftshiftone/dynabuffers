@@ -29,8 +29,13 @@ data class UnionType(val options: UnionTypeOptions) : IType, ISerializable {
         val classes = options.values.map(registry::resolve).filter { it is ClassType }.map { it as ClassType }
 
         val clazz = classes.find {
+            val attributes = value as Map<String, *>
+
+            if (attributes.getOrDefault(":type", -1) == classes.indexOf(it))
+                return@find true
+
             val fields1 = it.options.fields.map { field -> field.options.name }.sorted()
-            val fields2 = (value as Map<String, *>).keys.toList().sorted()
+            val fields2 = attributes.keys.toList().sorted()
 
             fields1.containsAll(fields2)
         }

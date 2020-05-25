@@ -1,0 +1,15 @@
+class Request(primary) {
+   message: Message
+}
+class OnCreate {
+    type: string
+    data: [byte]
+}
+class OnUpdate {
+    type: string
+    data: [byte]
+}
+union Message {
+   OnCreate
+   OnUpdate
+}
