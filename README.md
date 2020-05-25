@@ -1,6 +1,10 @@
 [![CircleCI branch](https://img.shields.io/circleci/project/github/leftshiftone/dynabuffers/master.svg?style=flat-square)](https://circleci.com/gh/leftshiftone/dynabuffers)
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/leftshiftone/dynabuffers.svg?style=flat-square)](https://github.com/leftshiftone/dynabuffers/tags)
 
+
+[![Bintray](https://img.shields.io/badge/dynamic/json.svg?label=bintray&query=name&style=flat-square&url=https%3A%2F%2Fapi.bintray.com%2Fpackages%2Fleftshiftone%2Fdynabuffers%2Fone.leftshift.dynabuffers.dynabuffers%2Fversions%2F_latest)](https://bintray.com/leftshiftone/dynabuffers/one.leftshift.dynabuffers.dynabuffers/_latestVersion)
+[![PyPI](https://img.shields.io/pypi/v/dynabuffers?style=flat-square)](https://pypi.org/project/dynabuffers/)
+
 # DynaBuffers
 
 DynaBuffers is a cross platform serialization library architected for dynamic serialization while taking maximum memory efficiency into account. 
@@ -39,7 +43,6 @@ can have options. DynaBuffers supports the following datatypes:
 * boolean
 * array
 * map
-* bytearray
 * enums
 * unions
 * other classes 
@@ -159,7 +162,18 @@ bytes = engine.serialize({"name" : "red"})
 map = engine.deserialize(bytes)
 ````
 
-## Release
+## Development
 
-A release must be triggered locally by running `./gradlew final -x bintrayUpload -Prelease.scope=(minor|major)`.
-This will recrate the necessary tag and circleci will take care of the rest.
+### Release
+Releases are triggered locally. Just a tag will be pushed and CI takes care of the rest.
+
+#### Major
+Run `./gradlew final -x bintrayUpload -Prelease.scope=major` locally.
+
+#### Minor
+Run `./gradlew final -x bintrayUpload -Prelease.scope=minor` locally.
+
+#### Patch
+Must be released from branch (e.g. `release/1.0.x`)
+
+Run `./gradlew final -x bintrayUpload -Prelease.scope=patch` locally.

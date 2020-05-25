@@ -7,182 +7,209 @@ webhook-failed: &webhook-failed
   when: on_fail
   command: |
     curl $BUILD_STATUS_URL\?flow\=circleci-completed\&status\=FAILED -d '{"repository":"'"$CIRCLE_PROJECT_REPONAME"'","branch":"'"$CIRCLE_BRANCH"'","build_number":"'"$CIRCLE_BUILD_NUM"'","build_url":"'"$CIRCLE_BUILD_URL"'"}' -H "Content-Type: application/json" -X POST -i || true
+prepare-image: &prepare-image
+  name: Prepare image
+  command: apt-get update && apt-get install -y openjdk-8-jdk && pip install --no-cache-dir "poetry==1.0.0" && curl -fsSLO --compressed "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz" && tar -xJf "node-v$NODE_VERSION-linux-x64.tar.xz" -C /usr/local --strip-components=1 --no-same-owner && rm -f "node-v$NODE_VERSION-linux-x64.tar.xz" && ln -s /usr/local/bin/node /usr/local/bin/nodejs && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" && mkdir -p /opt && tar -xzf yarn-v$YARN_VERSION.tar.gz -C /opt/ && ln -s /opt/yarn-v$YARN_VERSION/bin/yarn /usr/local/bin/yarn && ln -s /opt/yarn-v$YARN_VERSION/bin/yarnpkg /usr/local/bin/yarnpkg && rm -f yarn-v$YARN_VERSION.tar.gz
+
 version: 2.1
 jobs:
   webhook-completed:
     docker:
-      - image: circleci/openjdk:8-jdk-browsers
+      - image: curlimages/curl:7.70.0
     steps:
       - run:
           name: Webhook completed
           command: |
             curl $BUILD_STATUS_URL\?flow\=circleci-completed -d '{"repository":"'"$CIRCLE_PROJECT_REPONAME"'","branch":"'"$CIRCLE_BRANCH"'","build_number":"'"$CIRCLE_PREVIOUS_BUILD_NUM"'","build_url":"'"$CIRCLE_BUILD_URL"'"}' -H "Content-Type: application/json" -X POST -i || true
-  build-python:
+  build:
     docker:
-      - image: circleci/python:3.7.3
+      - image: python:3.7-stretch
     environment:
-      TZ: "/usr/share/zoneinfo/Europe/Vienna"
+      GRADLE_OPTS: '-Xmx128m -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-Xmx1024m"'
+      NODE_VERSION: '10.20.1'
+      YARN_VERSION: '1.22.4'
       TEST_RESULTS_PATH: build/circleci/test-results
     steps:
       - run:
           <<: *webhook-created
+      - run:
+          <<: *prepare-image
       - checkout
       - run: mkdir -p $TEST_RESULTS_PATH
-      - run: pip install poetry==0.12.17
-      - run: cd ~/project/dynabuffers-python && poetry install
-      - run: cd ~/project/dynabuffers-python && poetry run test_ci
-      - run: cd ~/project/dynabuffers-python && poetry build
-      - store_test_results:
-          path: build/circleci/test-results
-      - run:
-          <<: *webhook-failed
-  build-java:
-    docker:
-      - image: circleci/openjdk:8-jdk-browsers
-    environment:
-      TZ: "/usr/share/zoneinfo/Europe/Vienna"
-      GRADLE_OPTS: '-Xmx128m -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"'
-      TEST_RESULTS_PATH: build/circleci/test-results
-    steps:
-      - run:
-          <<: *webhook-created
-      - checkout
-      - run: chmod a+x gradlew
       - restore_cache:
-          key: cache-gradle-{{ checksum "build.gradle" }}
-      - run: ./gradlew dependencies
-      - run: mkdir -p $TEST_RESULTS_PATH
-      - run: ./gradlew generateGrammarSource
-      - run: ./gradlew test --stacktrace
-      - run: find . -type f -regex ".*/build/test-results/test/.*xml" -exec cp {} $TEST_RESULTS_PATH \;
-      - run: ./gradlew assemble --stacktrace
+          key: gradle-{{ checksum "build.gradle" }}-{{ checksum "dynabuffers-java/build.gradle" }}
+      #- restore_cache:
+      #    key: node-{{ checksum "dynabuffers-javascript/yarn.lock" }}
+      - restore_cache:
+          key: pip-{{ checksum "dynabuffers-python/poetry.lock" }}
+      - run:
+          name: Generate grammar source
+          command: ./gradlew generateGrammarSource
+      - run:
+          name: Install dependencies for all projects
+          command: ./gradlew dependencies installDependencies
+      - run:
+          name: Build all projects
+          command: ./gradlew assemble --stacktrace
+      - run:
+          name: Test all projects
+          command: ./gradlew test --stacktrace
+      - run:
+          name: Collect test results java
+          command: find . -type f -regex ".*/build/test-results/test/.*xml" -exec cp {} $TEST_RESULTS_PATH \;
+          when: always
+      #- run:
+      #    name: Collect test results javascript
+      #    command: find . -type f -regex ".*/dynabuffers-javascript/build/test/.*xml" -exec cp {} $TEST_RESULTS_PATH \;
+      #    when: always
+      - run:
+          name: Collect test results python
+          command: find . -type f -regex ".*/dynabuffers-python/build/test/.*xml" -exec cp {} $TEST_RESULTS_PATH \;
+          when: always
       - save_cache:
           paths:
             - ~/.gradle
-          key: cache-gradle-{{ checksum "build.gradle" }}
-      - store_test_results:
-          path: build/circleci/test-results
-      - run:
-          <<: *webhook-failed
-  release-python:
-    docker:
-      - image: circleci/python:3.7.3
-    environment:
-      TZ: "/usr/share/zoneinfo/Europe/Vienna"
-      TEST_RESULTS_PATH: build/circleci/test-results
-    steps:
-      - run:
-          <<: *webhook-created
-      - checkout
-      - run: mkdir -p $TEST_RESULTS_PATH
-      - run: pip install poetry==0.12.17
-      - run: cd ~/project/dynabuffers-python && poetry install
-      - run: cd ~/project/dynabuffers-python && poetry run release $CIRCLE_TAG
-      - store_test_results:
-          path: build/circleci/test-results
-      - run:
-          <<: *webhook-failed
-  release-java:
-    docker:
-      - image: circleci/openjdk:8-jdk-browsers
-    environment:
-      TZ: "/usr/share/zoneinfo/Europe/Vienna"
-      GRADLE_OPTS: '-Xmx128m -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"'
-    steps:
-      - run:
-          <<: *webhook-created
-      - checkout
-      - restore_cache:
-          key: cache-gradle-{{ checksum "build.gradle" }}
-      - run: ./gradlew generateGrammarSource final bintrayUpload -Prelease.useLastTag=true --stacktrace
+          key: gradle-{{ checksum "build.gradle" }}-{{ checksum "dynabuffers-java/build.gradle" }}
+      #- save_cache:
+      #    paths:
+      #      - ./dynabuffers-javascript/node_modules
+      #    key: node-{{ checksum "dynabuffers-javascript/yarn.lock" }}
       - save_cache:
           paths:
-            - ~/.gradle
-          key: cache-gradle-{{ checksum "build.gradle" }}
-      - run:
-          <<: *webhook-failed
-  code-analytics:
-    docker:
-      - image: circleci/python:3.7.3
-    environment:
-      TZ: "/usr/share/zoneinfo/Europe/Vienna"
-      TEST_RESULTS_PATH: build/circleci/test-results
-    steps:
-      - run:
-          <<: *webhook-created
-      - checkout
-      - run: mkdir -p $TEST_RESULTS_PATH
-      - run: pip install poetry==0.12.17
-      - run: cd ~/project/dynabuffers-python && poetry install
-      - run: cd ~/project/dynabuffers-python && poetry run test_ci
-      - run: cd ~/project/dynabuffers-python && poetry build
-      - run: |
-          curl https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.2.0.1873-linux.zip -o sonar-scanner.zip
-          unzip sonar-scanner.zip
-          sonarqube=$(unzip -l sonar-scanner.zip | awk '{print $4}' | grep "^\([a-z0-9.-]*\/\)$")/bin/sonar-scanner
-          ./$sonarqube -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_LOGIN -Dsonar.projectKey=one.leftshift.dynabuffers -Dsonar.projectName=dynabuffers
+            - ~/.cache/pypoetry/virtualenvs
+          key: pip-{{ checksum "dynabuffers-python/poetry.lock" }}
       - store_test_results:
           path: build/circleci/test-results
       - run:
           <<: *webhook-failed
 
+  release:
+    docker:
+      - image: python:3.7-stretch
+    environment:
+      GRADLE_OPTS: '-Xmx128m -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-Xmx1024m"'
+      NODE_VERSION: '10.20.1'
+      YARN_VERSION: '1.22.4'
+      TEST_RESULTS_PATH: build/circleci/test-results
+    steps:
+      - run:
+          <<: *webhook-created
+      - run:
+          <<: *prepare-image
+      - add_ssh_keys:
+          fingerprints:
+            - "59:6b:14:54:aa:d7:5c:21:d4:55:ec:78:45:83:55:f5"
+      - checkout
+      - run: git config --local user.email "ci@leftshift.one" && git config --local user.name "Continuous Integration"
+      - run: ./gradlew dependencies installDependencies
+      - run: ./gradlew build --stacktrace
+      - run: ./gradlew final publish -Prelease.useLastTag=true --stacktrace
+      - run:
+          <<: *webhook-failed
+
+  code-analytics:
+    docker:
+      - image: python:3.7-stretch
+    environment:
+      GRADLE_OPTS: '-Xmx128m -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-Xmx1024m"'
+      NODE_VERSION: '10.20.1'
+      YARN_VERSION: '1.22.4'
+      TEST_RESULTS_PATH: build/circleci/test-results
+    steps:
+      - run:
+          <<: *webhook-created
+      - run:
+          <<: *prepare-image
+      - checkout
+      - restore_cache:
+          key: gradle-{{ checksum "build.gradle" }}-{{ checksum "dynabuffers-java/build.gradle" }}
+      #- restore_cache:
+      #    key: node-{{ checksum "dynabuffers-javascript/yarn.lock" }}
+      - restore_cache:
+          key: pip-{{ checksum "dynabuffers-python/poetry.lock" }}
+      - run:
+          name: Install dependencies for all projects
+          command: ./gradlew dependencies installDependencies
+      - run:
+          name: Test all projects
+          command: ./gradlew test --stacktrace
+      - run:
+          name: Collect test results java
+          command: find . -type f -regex ".*/build/test-results/test/.*xml" -exec cp {} $TEST_RESULTS_PATH \;
+          when: always
+      - run:
+          name: Collect test results javascript
+          command: find . -type f -regex ".*/dynabuffers-javascript/build/test/.*xml" -exec cp {} $TEST_RESULTS_PATH \;
+          when: always
+      - run:
+          name: Collect test results python
+          command: find . -type f -regex ".*/dynabuffers-python/build/test/.*xml" -exec cp {} $TEST_RESULTS_PATH \;
+          when: always
+      - run: ./gradlew sonarqube
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: gradle-{{ checksum "build.gradle" }}-{{ checksum "dynabuffers-java/build.gradle" }}
+      #- save_cache:
+      #    paths:
+      #      - ./dynabuffers-javascript/node_modules
+      #    key: node-{{ checksum "dynabuffers-javascript/yarn.lock" }}
+      - save_cache:
+          paths:
+            - ~/.cache/pypoetry/virtualenvs
+          key: pip-{{ checksum "dynabuffers-python/poetry.lock" }}
+      - store_test_results:
+          path: build/circleci/test-results
+      - run:
+          <<: *webhook-failed
+
+
 workflows:
   version: 2
   build:
     jobs:
-      - build-java:
-          context: bintray-jcenter
+      - build:
+          context: asteria
           filters:
             tags:
               ignore: /.*/
-      - build-python:
-          context: pypi
-          filters:
-            tags:
-              ignore: /.*/
-          requires:
-            - build-java
       - webhook-completed:
+          context: asteria
           filters:
             tags:
               ignore: /.*/
           requires:
-            - build-python
+            - build
   release:
     jobs:
-      - release-python:
-          context: pypi
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v\d+\.\d+\.\d+$/
-      - release-java:
-          context: bintray-jcenter
+      - release:
+          context: asteria
           filters:
             branches:
               ignore: /.*/
             tags:
               only: /^v\d+\.\d+\.\d+$/
       - webhook-completed:
+          context: asteria
           filters:
             branches:
               ignore: /.*/
             tags:
               only: /^v\d+\.\d+\.\d+$/
           requires:
-            - release-java
+            - release
   code-analytics:
     triggers:
       - schedule:
-          cron: "0 0 * * *"
+          cron: "0 2 * * *"
           filters:
             branches:
               only:
                 - master
     jobs:
       - code-analytics:
-          context: leftshiftone-sonar
+          context: asteria
       - webhook-completed:
+          context: asteria
           requires:
             - code-analytics
