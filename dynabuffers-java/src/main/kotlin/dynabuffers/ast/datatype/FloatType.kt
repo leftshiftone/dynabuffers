@@ -17,8 +17,4 @@ class FloatType : IType, ISerializable {
 
     private fun float(obj: Any) = obj.toString().toFloat()
 
-    override fun supports(value: Any): Boolean {
-        return value is Number && value.toDouble() <= Float.MAX_VALUE && value.toFloat() >= Float.MIN_VALUE
-    }
-
 }

@@ -43,10 +43,6 @@ data class UnionType(val options: UnionTypeOptions) : IType, ISerializable {
         return clazz
     }
 
-    override fun supports(value: Any): Boolean {
-        return value is Map<*, *>
-    }
-
     data class UnionTypeOptions(val name: String, val values: List<String>)
 
 }

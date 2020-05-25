@@ -26,10 +26,6 @@ class StringType(private val options: StringTypeOptions) : IType, ISerializable 
 
     private fun str(obj: Any) = obj.toString()
 
-    override fun supports(value: Any): Boolean {
-        return value is String
-    }
-
     data class StringTypeOptions(val charset: Charset)
 
 }

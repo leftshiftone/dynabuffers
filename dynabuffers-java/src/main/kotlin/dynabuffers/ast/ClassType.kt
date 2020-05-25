@@ -55,10 +55,6 @@ data class ClassType(val options: ClassTypeOptions) : IType, ISerializable {
         }
     }
 
-    override fun supports(value: Any): Boolean {
-        return value is Map<*, *>
-    }
-
     data class ClassTypeOptions(val name: String, val fields: List<FieldType>, val options: ClassOptions)
 
 }
