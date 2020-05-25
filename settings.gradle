@@ -1,4 +1,5 @@
 rootProject.name = rootProjectName
 
 include "dynabuffers-java"
+include "dynabuffers-javascript"
 include "dynabuffers-python"

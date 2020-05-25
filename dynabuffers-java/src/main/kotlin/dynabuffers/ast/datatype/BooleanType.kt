@@ -15,6 +15,8 @@ class BooleanType : IType, ISerializable {
 
     override fun deserialize(buffer: ByteBuffer, registry: IRegistry) = buffer.get() == 1.toByte()
 
+    override fun supports(value: Any) = value.toString().toLowerCase() in listOf("true", "false")
+
     private fun boolean(obj: Any) = obj.toString().equals("true", true)
 
 }

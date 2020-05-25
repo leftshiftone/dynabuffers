@@ -17,4 +17,8 @@ class ByteType : IType, ISerializable {
 
     private fun byte(obj: Any) = obj.toString().toByte()
 
+    override fun supports(value: Any): Boolean {
+        return value is Number && value.toDouble() <= Byte.MAX_VALUE && value.toDouble() >= Byte.MIN_VALUE
+    }
+
 }

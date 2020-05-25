@@ -33,6 +33,10 @@ class EnumType(val options: EnumTypeOptions) : IType, ISerializable {
 
     private fun str(obj: Any) = obj.toString()
 
+    override fun supports(value: Any): Boolean {
+        return value is String
+    }
+
     data class EnumTypeOptions(val name: String, val values: List<String>, val charset: Charset)
 
 }

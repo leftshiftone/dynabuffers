@@ -1,0 +1,9 @@
+class OnData {
+   name: string
+   data: ByteData | map
+}
+
+class ByteData {
+   mime: string
+   data: [byte]
+}

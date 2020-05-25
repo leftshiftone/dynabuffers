@@ -15,4 +15,8 @@ class LongType : IType, ISerializable {
 
     override fun deserialize(buffer: ByteBuffer, registry: IRegistry) = buffer.long
 
+    override fun supports(value: Any): Boolean {
+        return value is Number && value.toDouble() <= Long.MAX_VALUE && value.toFloat() >= Long.MIN_VALUE
+    }
+
 }

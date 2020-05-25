@@ -60,6 +60,20 @@ class ArrayType(private val options: ArrayTypeOptions) : IType, ISerializable {
         else -> throw DynabuffersException("cannot handle value $obj")
     }
 
+    override fun supports(value: Any): Boolean {
+        return when (value) {
+            is Collection<*> -> true
+            is Array<*> -> true
+            is ByteArray -> true
+            is IntArray -> true
+            is ShortArray -> true
+            is LongArray -> true
+            is FloatArray -> true
+            is DoubleArray -> true
+            else -> false
+        }
+    }
+
     data class ArrayTypeOptions(val datatype: ISerializable)
 
 }

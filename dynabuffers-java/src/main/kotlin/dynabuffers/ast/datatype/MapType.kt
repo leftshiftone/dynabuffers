@@ -142,6 +142,10 @@ class MapType(val options: MapTypeOptions) : IType, ISerializable {
         return Pair(aBack, bBack)
     }
 
+    override fun supports(value: Any): Boolean {
+        return value is Map<*, *>
+    }
+
     data class MapTypeOptions(val charset: Charset)
 
 }

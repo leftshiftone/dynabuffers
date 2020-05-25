@@ -17,4 +17,8 @@ class IntType : IType, ISerializable {
 
     private fun int(obj: Any) = obj.toString().toInt()
 
+    override fun supports(value: Any): Boolean {
+        return value is Number && value.toDouble() <= Int.MAX_VALUE && value.toFloat() >= Int.MIN_VALUE
+    }
+
 }

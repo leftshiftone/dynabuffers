@@ -1,0 +1,21 @@
+{
+    "defaultSeverity": "error",
+    "extends": "tslint-config-airbnb",
+    "jsRules": {},
+    "rules": {
+        "variable-name": false,
+        "comment-format": false,
+        "number-literal-format": false,
+        "no-trailing-whitespace": false,
+        "no-irregular-whitespace": false,
+        "no-consecutive-blank-lines": false,
+        "ter-indent": false,
+        "max-line-length": false,
+        "no-default-export": false,
+        "object-curly-spacing": false,
+        "trailing-comma":false,
+        "eofline":false,
+        "prefer-template":false,
+        "prefer-array-literal":false
+    }
+}

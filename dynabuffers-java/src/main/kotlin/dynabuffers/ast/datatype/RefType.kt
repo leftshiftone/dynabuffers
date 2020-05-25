@@ -17,6 +17,10 @@ class RefType(val options: RefTypeOptions) : IType, ISerializable {
         return registry.resolve(options.name).deserialize(buffer, registry)
     }
 
+    override fun supports(value: Any): Boolean {
+        return value is Map<*, *>
+    }
+
     data class RefTypeOptions(val name: String)
 
 }

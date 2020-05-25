@@ -27,6 +27,10 @@ data class FieldType(val options: FieldTypeOptions) : IType, ISerializable {
         return options.dataType.deserialize(buffer, registry)
     }
 
+    override fun supports(value: Any): Boolean {
+        return true
+    }
+
     data class FieldTypeOptions(val name: String, val annotations: List<Annotation>, val dataType: ISerializable, val options: FieldOptions, val defaultVal: Any?)
 
 }
