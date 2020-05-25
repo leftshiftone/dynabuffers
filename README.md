@@ -117,6 +117,9 @@ class Request {
 }
 ````
 
+By using the field *:type* as a type hint it is possible to define which union class type to use.
+The *:type* field refers to the union class position e.g. 0 for the first element and so on.
+
 ## Validation
 By using annotations it is possible to declare validation rules for class fields.
 Dynabuffers has the following built-in annotations:
