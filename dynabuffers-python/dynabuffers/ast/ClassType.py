@@ -16,6 +16,12 @@ class ClassType(ISerializable):
         self.options = options
 
     def size(self, value, registry):
+        for field in self.options.fields:
+            if field.options.defaultVal is None and field.options.name not in value:
+                raise ValueError("field '" + str(field.options.name) + "' is missing")
+            if field.options.defaultVal is None and value[field.options.name] is None:
+                raise ValueError("field '" + str(field.options.name) + "' is missing")
+
         byName = lambda x: (x.options.name in value) or x.options.defaultVal is not None
         mapper = lambda x: x.size(value[x.options.name] if x.options.name in value else x.options.defaultVal, registry)
 
@@ -26,8 +32,10 @@ class ClassType(ISerializable):
             registry.addNotification("deprecated class " + self.options.name + " used")
 
         for field in self.options.fields:
-            if (field.options.name not in value) and field.options.defaultVal is None:
-                raise ValueError("field " + str(field.options.name) + " is missing")
+            if field.options.defaultVal is None and field.options.name not in value:
+                raise ValueError("field '" + str(field.options.name) + "' is missing")
+            if field.options.defaultVal is None and value[field.options.name] is None:
+                raise ValueError("field '" + str(field.options.name) + "' is missing")
 
         for element in list(filter(lambda x: (x.options.name in value) or x.options.defaultVal is not None, self.options.fields)):
             element.serialize(value[element.options.name] if element.options.name in value else element.options.defaultVal, buffer, registry)

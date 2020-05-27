@@ -1,5 +1,7 @@
 package dynabuffers
 
+import dynabuffers.exception.DynabuffersException
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 class DynabuffersTest : AbstractDynabuffersTest() {
@@ -99,6 +101,31 @@ class Product {
     fun parseBytearray() {
         val engine = Dynabuffers.parse("class Data { type:string data:[byte] }")
         assertMap(engine, mapOf("type" to "abc", "data" to "abcdefghijklmnopqrstuvwxyz".toByteArray()))
+    }
+
+    @Test
+    @Suppress("UNCHECKED_CAST")
+    fun handleNullField() {
+        try {
+            val engine = Dynabuffers.parse("class Data { type:string }")
+            engine.serialize(mapOf("type" to null) as Map<String, Any>)
+
+            Assertions.fail<String>("exception expected")
+        } catch (e: DynabuffersException) {
+            // do nothing
+        }
+    }
+
+    @Test
+    fun handleMissingField() {
+        try {
+            val engine = Dynabuffers.parse("class Data { type:string }")
+            engine.serialize(emptyMap())
+
+            Assertions.fail<String>("exception expected")
+        } catch (e: DynabuffersException) {
+            // do nothing
+        }
     }
 
 }

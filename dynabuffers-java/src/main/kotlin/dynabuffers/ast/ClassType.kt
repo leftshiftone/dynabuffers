@@ -11,6 +11,13 @@ data class ClassType(val options: ClassTypeOptions) : IType, ISerializable {
 
     override fun size(value: Any, registry: IRegistry): Int {
         val map = value as Map<*, *>
+
+        for (field in options.fields) {
+            if (map[field.options.name] == null && field.options.defaultVal == null) {
+                throw DynabuffersException("field '${field.options.name}' is missing")
+            }
+        }
+
         return options.fields
                 .filter { map.containsKey(it.options.name) || it.options.defaultVal != null }
                 .map {
@@ -26,7 +33,7 @@ data class ClassType(val options: ClassTypeOptions) : IType, ISerializable {
         val map = value as Map<*, *>
 
         for (field in options.fields) {
-            if (!map.containsKey(field.options.name) && field.options.defaultVal == null) {
+            if (map[field.options.name] == null && field.options.defaultVal == null) {
                 throw DynabuffersException("field '${field.options.name}' is missing")
             }
         }

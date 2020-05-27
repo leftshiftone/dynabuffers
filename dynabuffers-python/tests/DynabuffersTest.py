@@ -100,5 +100,19 @@ class Product {
 
         self.assertEqual(map, result)
 
+    def test_null_field(self):
+        with self.assertRaises(Exception) as ctx:
+            engine = Dynabuffers.parse("class Data { type:string }")
+            engine.deserialize(engine.serialize({"type": None}))
+
+        self.assertEqual(str(ctx.exception), "field 'type' is missing")
+
+    def test_missing_field(self):
+        with self.assertRaises(Exception) as ctx:
+            engine = Dynabuffers.parse("class Data { type:string }")
+            engine.deserialize(engine.serialize({}))
+
+        self.assertEqual(str(ctx.exception), "field 'type' is missing")
+
     if __name__ == "__main__":
         unittest.main()
