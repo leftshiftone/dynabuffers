@@ -71,6 +71,15 @@ class DynabuffersListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by DynabuffersParser#optionType.
+    def enterOptionType(self, ctx:DynabuffersParser.OptionTypeContext):
+        pass
+
+    # Exit a parse tree produced by DynabuffersParser#optionType.
+    def exitOptionType(self, ctx:DynabuffersParser.OptionTypeContext):
+        pass
+
+
     # Enter a parse tree produced by DynabuffersParser#classOptions.
     def enterClassOptions(self, ctx:DynabuffersParser.ClassOptionsContext):
         pass

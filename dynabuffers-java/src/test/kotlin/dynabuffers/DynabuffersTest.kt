@@ -3,6 +3,7 @@ package dynabuffers
 import dynabuffers.exception.DynabuffersException
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import java.util.*
 
 class DynabuffersTest : AbstractDynabuffersTest() {
 
@@ -126,6 +127,18 @@ class Product {
         } catch (e: DynabuffersException) {
             // do nothing
         }
+    }
+
+    @Test
+    fun testOptional() {
+        val engine = Dynabuffers.parse("class Data { type:string? }")
+        assertMap(engine, mapOf("type" to Optional.of("test")))
+    }
+
+    @Test
+    fun testEmptyOptional() {
+        val engine = Dynabuffers.parse("class Data { type:string? }")
+        assertMap(engine, mapOf("type" to Optional.empty<String>()))
     }
 
 }

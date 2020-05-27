@@ -42,6 +42,7 @@ can have options. DynaBuffers supports the following datatypes:
 * float
 * boolean
 * array
+* option
 * map
 * enums
 * unions
@@ -67,7 +68,7 @@ class Product(primary) {
 Classes and fields can be deprecated and/or optional.
 ````
 class Color(deprecated) { 
-   name:string = red
+   name:string = "red"
    rgb:string(deprecated) 
 }
 ````

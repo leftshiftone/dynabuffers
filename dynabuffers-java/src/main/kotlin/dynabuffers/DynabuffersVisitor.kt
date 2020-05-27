@@ -74,6 +74,11 @@ class DynabuffersVisitor(private val charset: Charset) : DynabuffersBaseVisitor<
         return listOf(ArrayType(ArrayType.ArrayTypeOptions(datatype)))
     }
 
+    override fun visitOptionType(ctx: DynabuffersParser.OptionTypeContext?): List<IType> {
+        val datatype = super.visitOptionType(ctx)[0] as ISerializable
+        return listOf(OptionType(OptionType.OptionTypeOptions(datatype)))
+    }
+
     override fun visitClassType(ctx: DynabuffersParser.ClassTypeContext): List<IType> {
         val list = super.visitClassType(ctx)
         val classOptions = list.firstOrNull { it is ClassOptions } ?: ClassOptions(ClassOptions.ClassOptionsOptions(false, false))

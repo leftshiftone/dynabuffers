@@ -29,9 +29,10 @@ compilation   : (enumType | classType | unionType)* ;
 enumType      : 'enum' IDENTIFIER '{' IDENTIFIER+ '}';
 classType     : 'class' IDENTIFIER classOptions? '{' fieldType+ '}';
 unionType     : 'union' IDENTIFIER '{' IDENTIFIER+ '}';
-fieldType     : annotation* IDENTIFIER ':' (dataType | arrayType) fieldOptions? ('=' value)?;
+fieldType     : annotation* IDENTIFIER ':' (dataType | arrayType | optionType) fieldOptions? ('=' value)?;
 dataType      : ('string' | 'short' | 'boolean' | 'byte' | 'float' | 'long' | 'int' | 'map' | IDENTIFIER);
 arrayType     : '[' dataType ']';
+optionType    : dataType '?';
 
 // structural
 classOptions : '(' ('primary' | 'deprecated')+ ')';

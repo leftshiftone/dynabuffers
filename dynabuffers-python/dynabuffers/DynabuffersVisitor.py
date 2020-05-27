@@ -11,6 +11,7 @@ from dynabuffers.ast.datatype.FloatType import FloatType
 from dynabuffers.ast.datatype.IntType import IntType
 from dynabuffers.ast.datatype.LongType import LongType
 from dynabuffers.ast.datatype.MapType import MapType, MapTypeOptions
+from dynabuffers.ast.datatype.OptionType import OptionType, OptionTypeOptions
 from dynabuffers.ast.datatype.RefType import RefType, RefTypeOptions
 from dynabuffers.ast.datatype.ShortType import ShortType
 from dynabuffers.ast.datatype.StringType import StringType, StringTypeOptions
@@ -79,6 +80,10 @@ class DynabuffersVisitor(DynabuffersBaseVisitor):
     def visitArrayType(self, ctx: DynabuffersParser.ArrayTypeContext):
         datatype = super().visitArrayType(ctx)[0]
         return ArrayType(ArrayTypeOptions(datatype))
+
+    def visitOptionType(self, ctx: DynabuffersParser.OptionTypeContext):
+        datatype = super().visitOptionType(ctx)[0]
+        return OptionType(OptionTypeOptions(datatype))
 
     def visitClassOptions(self, ctx: DynabuffersParser.ClassOptionsContext):
         return ClassOptions(ClassOptionsOptions("primary" in ctx.getText(), "deprecated" in ctx.getText()))
