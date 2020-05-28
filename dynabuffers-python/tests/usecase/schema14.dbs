@@ -1,0 +1,16 @@
+class Envelope {
+    uuid: string
+    payload: Impulse
+    replyTo: string
+    timeout: int
+}
+
+union Impulse {
+    OnData
+}
+
+class OnData {
+   identityId: string
+   eventName: string
+   eventData: map
+}
