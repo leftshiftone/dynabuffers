@@ -19,7 +19,7 @@ class MapType(val options: MapTypeOptions) : IType, ISerializable {
     private val shortType = ShortType()
 
     override fun size(value: Any, registry: IRegistry): Int {
-        var size = 0
+        var size = 2
         (value as Map<*, *>)
                 .filter { e -> e.key != null && e.value != null }
                 .forEach { k, v ->
@@ -34,7 +34,8 @@ class MapType(val options: MapTypeOptions) : IType, ISerializable {
     }
 
     override fun serialize(value: Any, buffer: ByteBuffer, registry: IRegistry) {
-        (value as Map<*, *>)
+        buffer.putShort((value as Map<*, *>).size.toShort())
+        value
                 .filter { e -> e.key != null && e.value != null }
                 .forEach { k, v ->
                     val keyType = getKeyType(k!!)
@@ -48,12 +49,11 @@ class MapType(val options: MapTypeOptions) : IType, ISerializable {
                     keyType.serialize(k, buffer, registry)
                     valType.serialize(v, buffer, registry)
                 }
-
     }
 
     override fun deserialize(buffer: ByteBuffer, registry: IRegistry): Any {
         val map = HashMap<String, Any>()
-        while (buffer.hasRemaining()) {
+        for (i in 0 until buffer.short) {
             val header = buffer.int
             val (type, length) = unmergeHeader(header)
 

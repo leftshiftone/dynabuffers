@@ -22,7 +22,7 @@ class MapType(ISerializable):
         self.options = options
 
     def size(self, value, registry):
-        size = 0
+        size = 2
         for key in value:
             if key is None or value[key] is None:
                 continue
@@ -37,6 +37,7 @@ class MapType(ISerializable):
         return size
 
     def serialize(self, value, buffer: ByteBuffer, registry):
+        buffer.putShort(len(value))
         for key in value:
             if key is None or value[key] is None:
                 continue
@@ -55,7 +56,9 @@ class MapType(ISerializable):
     def deserialize(self, buffer: ByteBuffer, registry):
         result:Dict[str, Any] = dict()
 
-        while buffer.has_remaining():
+        counter = 0
+        amount = buffer.getShort()
+        while counter < amount:
             header = buffer.getInt()
             (type, length) = self.unmerge_header(header)
 
@@ -69,6 +72,7 @@ class MapType(ISerializable):
             v = val_type.deserialize(entry, registry)
 
             result[k] = v
+            counter += 1
 
         return result
 
