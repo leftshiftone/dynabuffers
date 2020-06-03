@@ -96,6 +96,10 @@ class DynabuffersVisitor(DynabuffersBaseVisitor):
         return Annotation(AnnotationOptions(ctx.getChild(1).getText(), values))
 
     def visitValue(self, ctx: DynabuffersParser.ValueContext):
+        if ctx.getText() == "[]":
+            return Value(ValueOptions([]))
+        if ctx.getText() == "[:]":
+            return Value(ValueOptions({}))
         return Value(ValueOptions(ctx.getText()))
 
     def aggregateResult(self, aggregate, nextResult):

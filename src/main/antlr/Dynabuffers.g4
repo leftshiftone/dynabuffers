@@ -38,4 +38,4 @@ optionType    : dataType '?';
 classOptions : '(' ('primary' | 'deprecated')+ ')';
 fieldOptions : '(' 'deprecated' ')';
 annotation   : '@' IDENTIFIER ('(' value ')')?;
-value        : (STRING | NUMBER | BOOLEAN | IDENTIFIER);
+value        : (STRING | NUMBER | BOOLEAN | IDENTIFIER | '[]' | '[:]');

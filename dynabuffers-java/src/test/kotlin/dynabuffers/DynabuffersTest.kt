@@ -141,4 +141,19 @@ class Product {
         assertMap(engine, mapOf("type" to Optional.empty<String>()))
     }
 
+    @Test
+    fun testOptionalValue() {
+        val engine = Dynabuffers.parse("""
+            class Data {
+               type:string = "test"
+               list:[string] = []
+               attr:map = [:]
+            }
+        """.trimIndent())
+        val result = engine.deserialize(engine.serialize(emptyMap()))
+        Assertions.assertTrue(result.containsKey("type"))
+        Assertions.assertTrue(result.containsKey("list"))
+        Assertions.assertTrue(result.containsKey("attr"))
+    }
+
 }

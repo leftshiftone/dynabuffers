@@ -128,6 +128,18 @@ class Product {
 
         self.assertEqual(map, result)
 
+    def test_optional_value(self):
+        engine = Dynabuffers.parse("""
+            class Data {
+               type:string = "test"
+               list:[string] = []
+               attr:map = [:]
+            }
+        """)
+        result = engine.deserialize(engine.serialize({}))
+        self.assertTrue("type" in result)
+        self.assertTrue("list" in result)
+        self.assertTrue("attr" in result)
 
     if __name__ == "__main__":
         unittest.main()

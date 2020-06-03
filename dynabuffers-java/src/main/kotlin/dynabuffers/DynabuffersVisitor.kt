@@ -33,6 +33,7 @@ import dynabuffers.ast.structural.Value
 import org.antlr.v4.runtime.ParserRuleContext
 import java.nio.charset.Charset
 import java.util.*
+import kotlin.collections.ArrayList
 
 class DynabuffersVisitor(private val charset: Charset) : DynabuffersBaseVisitor<List<IType>>() {
 
@@ -96,7 +97,11 @@ class DynabuffersVisitor(private val charset: Charset) : DynabuffersBaseVisitor<
     }
 
     override fun visitValue(ctx: DynabuffersParser.ValueContext): List<IType> {
-        return listOf(Value(Value.ValueTypeOptions(ctx.text)))
+        return listOf(Value(Value.ValueTypeOptions(when(ctx.text) {
+            "[]" -> ArrayList<Any>()
+            "[:]" -> HashMap<String, Any>()
+            else -> ctx.text
+        })))
     }
 
     override fun visitClassOptions(ctx: DynabuffersParser.ClassOptionsContext): List<IType> {
