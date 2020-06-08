@@ -65,7 +65,7 @@ class Product(primary) {
 }
 ````
 
-Classes and fields can be deprecated and/or optional.
+Classes and fields can be deprecated and optional. Optional fields are defined by defining a default value.
 ````
 class Color(deprecated) { 
    name:string = "red"
