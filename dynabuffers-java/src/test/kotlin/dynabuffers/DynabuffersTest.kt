@@ -142,6 +142,14 @@ class Product {
     }
 
     @Test
+    fun testMissingOptional() {
+        val engine = Dynabuffers.parse("class Data { type:string? }")
+        val result = engine.deserialize(engine.serialize(emptyMap()))
+
+        Assertions.assertEquals(result["type"], Optional.empty<Any>())
+    }
+
+    @Test
     fun testOptionalValue() {
         val engine = Dynabuffers.parse("""
             class Data {

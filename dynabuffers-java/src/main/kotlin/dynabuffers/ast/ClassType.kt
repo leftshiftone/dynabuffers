@@ -3,18 +3,23 @@ package dynabuffers.ast
 import dynabuffers.api.IRegistry
 import dynabuffers.api.ISerializable
 import dynabuffers.api.IType
+import dynabuffers.ast.datatype.OptionType
 import dynabuffers.ast.structural.ClassOptions
 import dynabuffers.exception.DynabuffersException
 import java.nio.ByteBuffer
+import java.util.*
 
 data class ClassType(val options: ClassTypeOptions) : IType, ISerializable {
 
     override fun size(value: Any, registry: IRegistry): Int {
-        val map = value as Map<*, *>
+        val map = HashMap(value as Map<*, *>)
 
         for (field in options.fields) {
             if (map[field.options.name] == null && field.options.defaultVal == null) {
-                throw DynabuffersException("field '${field.options.name}' is missing")
+                if (field.options.dataType is OptionType)
+                    map[field.options.name] = Optional.empty<Any>()
+                else
+                    throw DynabuffersException("field '${field.options.name}' is missing")
             }
         }
 
@@ -30,11 +35,14 @@ data class ClassType(val options: ClassTypeOptions) : IType, ISerializable {
 
     override fun serialize(value: Any, buffer: ByteBuffer, registry: IRegistry) {
         validate(registry)
-        val map = value as Map<*, *>
+        val map = HashMap(value as Map<*, *>)
 
         for (field in options.fields) {
             if (map[field.options.name] == null && field.options.defaultVal == null) {
-                throw DynabuffersException("field '${field.options.name}' is missing")
+                if (field.options.dataType is OptionType)
+                    map[field.options.name] = Optional.empty<Any>()
+                else
+                    throw DynabuffersException("field '${field.options.name}' is missing")
             }
         }
 
