@@ -3,7 +3,6 @@ package dynabuffers
 import dynabuffers.exception.DynabuffersException
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.util.*
 
 class DynabuffersTest : AbstractDynabuffersTest() {
 
@@ -132,13 +131,7 @@ class Product {
     @Test
     fun testOptional() {
         val engine = Dynabuffers.parse("class Data { type:string? }")
-        assertMap(engine, mapOf("type" to Optional.of("test")))
-    }
-
-    @Test
-    fun testEmptyOptional() {
-        val engine = Dynabuffers.parse("class Data { type:string? }")
-        assertMap(engine, mapOf("type" to Optional.empty<String>()))
+        assertMap(engine, mapOf("type" to "test"))
     }
 
     @Test
@@ -146,7 +139,7 @@ class Product {
         val engine = Dynabuffers.parse("class Data { type:string? }")
         val result = engine.deserialize(engine.serialize(emptyMap()))
 
-        Assertions.assertEquals(result["type"], Optional.empty<Any>())
+        Assertions.assertEquals(result["type"], null)
     }
 
     @Test
@@ -162,6 +155,14 @@ class Product {
         Assertions.assertTrue(result.containsKey("type"))
         Assertions.assertTrue(result.containsKey("list"))
         Assertions.assertTrue(result.containsKey("attr"))
+    }
+
+    @Test
+    fun testMissingField() {
+        Assertions.assertThrows(DynabuffersException::class.java) {
+            val engine = Dynabuffers.parse("class Data { type:string }")
+            engine.deserialize(engine.serialize(mapOf("type" to null)))
+        }
     }
 
 }

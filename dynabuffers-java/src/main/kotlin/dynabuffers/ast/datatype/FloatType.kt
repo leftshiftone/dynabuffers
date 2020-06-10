@@ -7,14 +7,14 @@ import java.nio.ByteBuffer
 
 class FloatType : IType, ISerializable {
 
-    override fun size(value: Any, registry: IRegistry) = 4
+    override fun size(value: Any?, registry: IRegistry) = 4
 
-    override fun serialize(value: Any, buffer: ByteBuffer, registry: IRegistry) {
+    override fun serialize(value: Any?, buffer: ByteBuffer, registry: IRegistry) {
         buffer.putFloat(float(value))
     }
 
     override fun deserialize(buffer: ByteBuffer, registry: IRegistry) = buffer.float
 
-    private fun float(obj: Any) = obj.toString().toFloat()
+    private fun float(obj: Any?) = obj.toString().toFloat()
 
 }

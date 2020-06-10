@@ -17,7 +17,7 @@ class DynabuffersEngine(private val tree: List<ISerializable>) {
 
     fun addListener(consumer: (String) -> Unit) = listeners.add(consumer)
 
-    fun serialize(map: Map<String, Any>): ByteArray {
+    fun serialize(map: Map<String, Any?>): ByteArray {
         val clazz = getPrimaryClass()
         val buffer = ByteBuffer.allocate(clazz.size(map, this.registry()))
         clazz.serialize(map, buffer, this.registry())
@@ -26,7 +26,7 @@ class DynabuffersEngine(private val tree: List<ISerializable>) {
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun deserialize(bytes: ByteArray): Map<String, Any> {
+    fun deserialize(bytes: ByteArray): Map<String, Any?> {
         val clazz = getPrimaryClass()
         return clazz.deserialize(ByteBuffer.wrap(bytes), this.registry()) as Map<String, Any>
     }

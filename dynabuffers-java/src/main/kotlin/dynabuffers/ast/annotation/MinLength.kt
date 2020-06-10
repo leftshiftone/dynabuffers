@@ -11,7 +11,7 @@ class MinLength(private val args:List<Value>) : IAnnotation {
         require(args[0].isNumeric()) {"${args[0].options.value} is not a number"}
     }
 
-    override fun validate(fieldName:String, obj:Any) {
+    override fun validate(fieldName:String, obj:Any?) {
         if (obj.toString().length < args[0].asFloat()) {
             throw DynabuffersException("($fieldName:'$obj') length is lower than ${args[0].asFloat()}")
         }

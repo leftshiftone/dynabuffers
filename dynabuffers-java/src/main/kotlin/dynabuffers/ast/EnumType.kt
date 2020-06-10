@@ -10,9 +10,9 @@ import java.nio.charset.StandardCharsets
 
 class EnumType(val options: EnumTypeOptions) : IType, ISerializable {
 
-    override fun size(value: Any, registry: IRegistry) = 1 + str(value).toByteArray(options.charset).size
+    override fun size(value: Any?, registry: IRegistry) = 1 + str(value).toByteArray(options.charset).size
 
-    override fun serialize(value: Any, buffer: ByteBuffer, registry: IRegistry) {
+    override fun serialize(value: Any?, buffer: ByteBuffer, registry: IRegistry) {
         if (value !in options.values)
             throw DynabuffersException("value $value is not a valid enum value (${options.values})")
 
@@ -31,7 +31,7 @@ class EnumType(val options: EnumTypeOptions) : IType, ISerializable {
         return string
     }
 
-    private fun str(obj: Any) = obj.toString()
+    private fun str(obj: Any?) = obj.toString()
 
     data class EnumTypeOptions(val name: String, val values: List<String>, val charset: Charset)
 

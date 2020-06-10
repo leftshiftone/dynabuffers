@@ -8,9 +8,9 @@ import java.nio.charset.Charset
 
 class StringType(private val options: StringTypeOptions) : IType, ISerializable {
 
-    override fun size(value: Any, registry: IRegistry) = 4 + str(value).toByteArray(options.charset).size
+    override fun size(value: Any?, registry: IRegistry) = 4 + str(value).toByteArray(options.charset).size
 
-    override fun serialize(value: Any, buffer: ByteBuffer, registry: IRegistry) {
+    override fun serialize(value: Any?, buffer: ByteBuffer, registry: IRegistry) {
         val encoded = str(value).toByteArray(options.charset)
         buffer.putInt(encoded.size)
         buffer.put(encoded)
@@ -24,7 +24,7 @@ class StringType(private val options: StringTypeOptions) : IType, ISerializable 
         return String(array)
     }
 
-    private fun str(obj: Any) = obj.toString()
+    private fun str(obj: Any?) = obj.toString()
 
     data class StringTypeOptions(val charset: Charset)
 

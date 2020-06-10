@@ -8,14 +8,14 @@ import java.nio.ByteBuffer
 
 class ArrayType(private val options: ArrayTypeOptions) : IType, ISerializable {
 
-    override fun size(value: Any, registry: IRegistry): Int {
+    override fun size(value: Any?, registry: IRegistry): Int {
         if (value is ByteArray) {
             return 4 + value.size
         }
         return 4 + (size(value) * list(value).map { options.datatype.size(it!!, registry) }.sum())
     }
 
-    override fun serialize(value: Any, buffer: ByteBuffer, registry: IRegistry) {
+    override fun serialize(value: Any?, buffer: ByteBuffer, registry: IRegistry) {
         val list = list(value)
         buffer.putInt(list.size)
         list.forEach { options.datatype.serialize(it!!, buffer, registry) }
@@ -36,7 +36,7 @@ class ArrayType(private val options: ArrayTypeOptions) : IType, ISerializable {
         }
     }
 
-    private fun list(obj: Any) = when (obj) {
+    private fun list(obj: Any?) = when (obj) {
         is Collection<*> -> obj
         is Array<*> -> obj.toList()
         is ByteArray -> obj.toList()
@@ -48,7 +48,7 @@ class ArrayType(private val options: ArrayTypeOptions) : IType, ISerializable {
         else -> throw DynabuffersException("cannot handle value $obj")
     }
 
-    private fun size(obj: Any) = when (obj) {
+    private fun size(obj: Any?) = when (obj) {
         is Collection<*> -> obj.size
         is Array<*> -> obj.size
         is ByteArray -> obj.size

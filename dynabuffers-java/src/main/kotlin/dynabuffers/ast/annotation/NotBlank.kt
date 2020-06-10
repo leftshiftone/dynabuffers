@@ -10,7 +10,7 @@ class NotBlank(val args:List<Value>) : IAnnotation {
         require(args.isEmpty())
     }
 
-    override fun validate(fieldName:String, obj:Any) {
+    override fun validate(fieldName:String, obj:Any?) {
         if (obj.toString().isBlank()) {
             throw DynabuffersException("($fieldName:'$obj') value is blank")
         }
