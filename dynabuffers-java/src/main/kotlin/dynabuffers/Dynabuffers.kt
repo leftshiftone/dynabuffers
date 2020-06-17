@@ -7,6 +7,7 @@ import dynabuffers.exception.DynabuffersException
 import dynabuffers.exception.DynabuffersExceptionListener
 import org.antlr.v4.runtime.CharStream
 import org.antlr.v4.runtime.CharStreams
+import org.antlr.v4.runtime.CodePointCharStream
 import org.antlr.v4.runtime.CommonTokenStream
 import java.io.InputStream
 import java.io.Reader
@@ -81,6 +82,7 @@ class Dynabuffers {
             builder.append(string)
         }
 
+        @JvmOverloads
         fun append(stream: InputStream, charset: Charset = UTF_8) {
             builder.append(stream.reader(charset).readText())
         }
@@ -89,7 +91,7 @@ class Dynabuffers {
             builder.append(reader.readText())
         }
 
-        fun getCharStream() = CharStreams.fromString(builder.toString())
+        fun getCharStream(): CodePointCharStream = CharStreams.fromString(builder.toString())
 
     }
 
