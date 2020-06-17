@@ -1,10 +1,9 @@
 # Generated from Dynabuffers.g4 by ANTLR 4.7.2
 # encoding: utf-8
-import sys
-from io import StringIO
-
 from antlr4 import *
+from io import StringIO
 from typing.io import TextIO
+import sys
 
 
 def serializedATN():
@@ -61,21 +60,21 @@ class DynabuffersParser ( Parser ):
 
     sharedContextCache = PredictionContextCache()
 
-    literalNames = [ "<INVALID>", "'enum'", "'{'", "'}'", "'class'", "'union'",
-                     "':'", "'='", "'string'", "'short'", "'boolean'", "'byte'",
-                     "'float'", "'long'", "'int'", "'map'", "'['", "']'",
-                     "'?'", "'('", "'primary'", "'deprecated'", "')'", "'@'",
-                     "'[]'", "'[:]'", "<INVALID>", "<INVALID>", "<INVALID>",
+    literalNames = [ "<INVALID>", "'enum'", "'{'", "'}'", "'class'", "'union'", 
+                     "':'", "'='", "'string'", "'short'", "'boolean'", "'byte'", 
+                     "'float'", "'long'", "'int'", "'map'", "'['", "']'", 
+                     "'?'", "'('", "'primary'", "'deprecated'", "')'", "'@'", 
+                     "'[]'", "'[:]'", "<INVALID>", "<INVALID>", "<INVALID>", 
                      "<INVALID>", "<INVALID>", "<INVALID>", "';'" ]
 
-    symbolicNames = [ "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>",
-                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>",
-                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>",
-                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>",
-                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>",
-                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>",
-                      "<INVALID>", "<INVALID>", "IDENTIFIER", "STRING",
-                      "NUMBER", "BOOLEAN", "WHITESPACE", "LINE_COMMENT",
+    symbolicNames = [ "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
+                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
+                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
+                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
+                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
+                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
+                      "<INVALID>", "<INVALID>", "IDENTIFIER", "STRING", 
+                      "NUMBER", "BOOLEAN", "WHITESPACE", "LINE_COMMENT", 
                       "SEMICOLON" ]
 
     RULE_compilation = 0
@@ -91,8 +90,8 @@ class DynabuffersParser ( Parser ):
     RULE_annotation = 10
     RULE_value = 11
 
-    ruleNames =  [ "compilation", "enumType", "classType", "unionType",
-                   "fieldType", "dataType", "arrayType", "optionType", "classOptions",
+    ruleNames =  [ "compilation", "enumType", "classType", "unionType", 
+                   "fieldType", "dataType", "arrayType", "optionType", "classOptions", 
                    "fieldOptions", "annotation", "value" ]
 
     EOF = Token.EOF
@@ -272,13 +271,13 @@ class DynabuffersParser ( Parser ):
             self.match(DynabuffersParser.IDENTIFIER)
             self.state = 34
             self.match(DynabuffersParser.T__1)
-            self.state = 36
+            self.state = 36 
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while True:
                 self.state = 35
                 self.match(DynabuffersParser.IDENTIFIER)
-                self.state = 38
+                self.state = 38 
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
                 if not (_la==DynabuffersParser.IDENTIFIER):
@@ -356,13 +355,13 @@ class DynabuffersParser ( Parser ):
 
             self.state = 47
             self.match(DynabuffersParser.T__1)
-            self.state = 49
+            self.state = 49 
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while True:
                 self.state = 48
                 self.fieldType()
-                self.state = 51
+                self.state = 51 
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
                 if not (_la==DynabuffersParser.T__22 or _la==DynabuffersParser.IDENTIFIER):
@@ -424,13 +423,13 @@ class DynabuffersParser ( Parser ):
             self.match(DynabuffersParser.IDENTIFIER)
             self.state = 57
             self.match(DynabuffersParser.T__1)
-            self.state = 59
+            self.state = 59 
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while True:
                 self.state = 58
                 self.match(DynabuffersParser.IDENTIFIER)
-                self.state = 61
+                self.state = 61 
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
                 if not (_la==DynabuffersParser.IDENTIFIER):
@@ -777,7 +776,7 @@ class DynabuffersParser ( Parser ):
             self.enterOuterAlt(localctx, 1)
             self.state = 99
             self.match(DynabuffersParser.T__18)
-            self.state = 101
+            self.state = 101 
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while True:
@@ -788,7 +787,7 @@ class DynabuffersParser ( Parser ):
                 else:
                     self._errHandler.reportMatch(self)
                     self.consume()
-                self.state = 103
+                self.state = 103 
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
                 if not (_la==DynabuffersParser.T__19 or _la==DynabuffersParser.T__20):
