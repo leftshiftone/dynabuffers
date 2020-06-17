@@ -32,7 +32,7 @@ unionType     : 'union' IDENTIFIER '{' IDENTIFIER+ '}';
 fieldType     : annotation* IDENTIFIER ':' (dataType | arrayType | optionType) fieldOptions? ('=' value)?;
 dataType      : ('string' | 'short' | 'boolean' | 'byte' | 'float' | 'long' | 'int' | 'map' | IDENTIFIER);
 arrayType     : '[' dataType ']';
-optionType    : dataType '?';
+optionType    : (dataType '?') | (arrayType '?');
 
 // structural
 classOptions : '(' ('primary' | 'deprecated')+ ')';

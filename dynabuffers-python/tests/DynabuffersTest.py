@@ -121,6 +121,19 @@ class Product {
 
         self.assertEqual(map, result)
 
+    def test_missing_optional(self):
+        engine = Dynabuffers.parse("class Data { type:string? }")
+        result = engine.deserialize(engine.serialize({}))
+
+        self.assertEqual({"type":None}, result)
+
+    def test_missing_list_optional(self):
+        engine = Dynabuffers.parse("class Data { list:[string]? }")
+        result = engine.deserialize(engine.serialize({}))
+
+        self.assertEqual({"list":None}, result)
+
+
     def test_empty_optional(self):
         engine = Dynabuffers.parse("class Data { type:string? }")
         map = {"type": None}

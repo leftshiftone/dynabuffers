@@ -14,7 +14,7 @@ class DynabuffersExceptionListener : AtomicReference<String>(), ANTLRErrorListen
     /**
      * {@inheritDoc}
      */
-    override fun syntaxError(recognizer: Recognizer<*, *>, offendingSymbol: Any, line: Int, charPositionInLine: Int, msg: String, e: RecognitionException) {
+    override fun syntaxError(recognizer: Recognizer<*, *>, offendingSymbol: Any, line: Int, charPositionInLine: Int, msg: String, e: RecognitionException?) {
         set(msg)
     }
 
