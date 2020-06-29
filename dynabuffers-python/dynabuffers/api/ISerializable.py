@@ -23,7 +23,7 @@ class ISerializable(ABC):
 
 class ByteBuffer():
 
-    def __init__(self, length:int, buffer:bytearray = bytearray()):
+    def __init__(self, length: int, buffer: bytearray = bytearray()):
         self.length = length
         self.buffer = buffer
 
@@ -34,16 +34,16 @@ class ByteBuffer():
     def put(self, obj: bytes):
         self.buffer = self.buffer + obj
 
-    def putShort(self, obj:int):
+    def putShort(self, obj: int):
         self.buffer = self.buffer + struct.pack('>h', obj)
 
-    def putInt(self, obj:int):
+    def putInt(self, obj: int):
         self.buffer = self.buffer + struct.pack('>i', obj)
 
-    def putFloat(self, obj:float):
+    def putFloat(self, obj: float):
         self.buffer = self.buffer + struct.pack('>f', obj)
 
-    def putLong(self, obj:int):
+    def putLong(self, obj: int):
         self.buffer = self.buffer + struct.pack('>q', obj)
 
     def has_remaining(self):
