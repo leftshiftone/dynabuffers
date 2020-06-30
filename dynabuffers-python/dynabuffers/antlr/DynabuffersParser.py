@@ -1,53 +1,63 @@
-# Generated from Dynabuffers.g4 by ANTLR 4.7.2
+# Generated from Dynabuffers.g4 by ANTLR 4.8
 # encoding: utf-8
 import sys
 from io import StringIO
 
 from antlr4 import *
-from typing.io import TextIO
+
+if sys.version_info[1] > 5:
+	from typing import TextIO
+else:
+	from typing.io import TextIO
 
 
 def serializedATN():
     with StringIO() as buf:
-        buf.write("\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\"")
-        buf.write("|\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b")
-        buf.write("\t\b\4\t\t\t\4\n\t\n\4\13\t\13\4\f\t\f\4\r\t\r\3\2\3\2")
-        buf.write("\3\2\7\2\36\n\2\f\2\16\2!\13\2\3\3\3\3\3\3\3\3\6\3\'\n")
-        buf.write("\3\r\3\16\3(\3\3\3\3\3\4\3\4\3\4\5\4\60\n\4\3\4\3\4\6")
-        buf.write("\4\64\n\4\r\4\16\4\65\3\4\3\4\3\5\3\5\3\5\3\5\6\5>\n\5")
-        buf.write("\r\5\16\5?\3\5\3\5\3\6\7\6E\n\6\f\6\16\6H\13\6\3\6\3\6")
-        buf.write("\3\6\3\6\3\6\5\6O\n\6\3\6\5\6R\n\6\3\6\3\6\5\6V\n\6\3")
-        buf.write("\7\3\7\3\b\3\b\3\b\3\b\3\t\3\t\3\t\3\t\3\t\3\t\5\td\n")
-        buf.write("\t\3\n\3\n\6\nh\n\n\r\n\16\ni\3\n\3\n\3\13\3\13\3\13\3")
-        buf.write("\13\3\f\3\f\3\f\3\f\3\f\3\f\5\fx\n\f\3\r\3\r\3\r\2\2\16")
-        buf.write("\2\4\6\b\n\f\16\20\22\24\26\30\2\5\4\2\n\21\34\34\3\2")
-        buf.write("\26\27\3\2\32\37\2~\2\37\3\2\2\2\4\"\3\2\2\2\6,\3\2\2")
-        buf.write("\2\b9\3\2\2\2\nF\3\2\2\2\fW\3\2\2\2\16Y\3\2\2\2\20c\3")
-        buf.write("\2\2\2\22e\3\2\2\2\24m\3\2\2\2\26q\3\2\2\2\30y\3\2\2\2")
-        buf.write("\32\36\5\4\3\2\33\36\5\6\4\2\34\36\5\b\5\2\35\32\3\2\2")
-        buf.write("\2\35\33\3\2\2\2\35\34\3\2\2\2\36!\3\2\2\2\37\35\3\2\2")
-        buf.write("\2\37 \3\2\2\2 \3\3\2\2\2!\37\3\2\2\2\"#\7\3\2\2#$\7\34")
-        buf.write("\2\2$&\7\4\2\2%\'\7\34\2\2&%\3\2\2\2\'(\3\2\2\2(&\3\2")
-        buf.write("\2\2()\3\2\2\2)*\3\2\2\2*+\7\5\2\2+\5\3\2\2\2,-\7\6\2")
-        buf.write("\2-/\7\34\2\2.\60\5\22\n\2/.\3\2\2\2/\60\3\2\2\2\60\61")
-        buf.write("\3\2\2\2\61\63\7\4\2\2\62\64\5\n\6\2\63\62\3\2\2\2\64")
-        buf.write("\65\3\2\2\2\65\63\3\2\2\2\65\66\3\2\2\2\66\67\3\2\2\2")
-        buf.write("\678\7\5\2\28\7\3\2\2\29:\7\7\2\2:;\7\34\2\2;=\7\4\2\2")
-        buf.write("<>\7\34\2\2=<\3\2\2\2>?\3\2\2\2?=\3\2\2\2?@\3\2\2\2@A")
-        buf.write("\3\2\2\2AB\7\5\2\2B\t\3\2\2\2CE\5\26\f\2DC\3\2\2\2EH\3")
-        buf.write("\2\2\2FD\3\2\2\2FG\3\2\2\2GI\3\2\2\2HF\3\2\2\2IJ\7\34")
-        buf.write("\2\2JN\7\b\2\2KO\5\f\7\2LO\5\16\b\2MO\5\20\t\2NK\3\2\2")
-        buf.write("\2NL\3\2\2\2NM\3\2\2\2OQ\3\2\2\2PR\5\24\13\2QP\3\2\2\2")
-        buf.write("QR\3\2\2\2RU\3\2\2\2ST\7\t\2\2TV\5\30\r\2US\3\2\2\2UV")
-        buf.write("\3\2\2\2V\13\3\2\2\2WX\t\2\2\2X\r\3\2\2\2YZ\7\22\2\2Z")
-        buf.write("[\5\f\7\2[\\\7\23\2\2\\\17\3\2\2\2]^\5\f\7\2^_\7\24\2")
-        buf.write("\2_d\3\2\2\2`a\5\16\b\2ab\7\24\2\2bd\3\2\2\2c]\3\2\2\2")
-        buf.write("c`\3\2\2\2d\21\3\2\2\2eg\7\25\2\2fh\t\3\2\2gf\3\2\2\2")
-        buf.write("hi\3\2\2\2ig\3\2\2\2ij\3\2\2\2jk\3\2\2\2kl\7\30\2\2l\23")
-        buf.write("\3\2\2\2mn\7\25\2\2no\7\27\2\2op\7\30\2\2p\25\3\2\2\2")
-        buf.write("qr\7\31\2\2rw\7\34\2\2st\7\25\2\2tu\5\30\r\2uv\7\30\2")
-        buf.write("\2vx\3\2\2\2ws\3\2\2\2wx\3\2\2\2x\27\3\2\2\2yz\t\4\2\2")
-        buf.write("z\31\3\2\2\2\17\35\37(/\65?FNQUciw")
+        buf.write("\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3#")
+        buf.write("\u0089\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7")
+        buf.write("\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t\13\4\f\t\f\4\r\t\r\4\16")
+        buf.write("\t\16\3\2\3\2\3\2\7\2 \n\2\f\2\16\2#\13\2\3\3\3\3\3\3")
+        buf.write("\3\3\6\3)\n\3\r\3\16\3*\3\3\3\3\3\4\3\4\3\4\5\4\62\n\4")
+        buf.write("\3\4\3\4\6\4\66\n\4\r\4\16\4\67\3\4\3\4\3\5\3\5\3\5\5")
+        buf.write("\5?\n\5\3\5\3\5\6\5C\n\5\r\5\16\5D\3\5\3\5\3\6\7\6J\n")
+        buf.write("\6\f\6\16\6M\13\6\3\6\3\6\3\6\3\6\3\6\5\6T\n\6\3\6\5\6")
+        buf.write("W\n\6\3\6\3\6\5\6[\n\6\3\7\3\7\3\b\3\b\3\b\3\b\3\t\3\t")
+        buf.write("\3\t\3\t\3\t\3\t\5\ti\n\t\3\n\3\n\6\nm\n\n\r\n\16\nn\3")
+        buf.write("\n\3\n\3\13\3\13\6\13u\n\13\r\13\16\13v\3\13\3\13\3\f")
+        buf.write("\3\f\3\f\3\f\3\r\3\r\3\r\3\r\3\r\3\r\5\r\u0085\n\r\3\16")
+        buf.write("\3\16\3\16\2\2\17\2\4\6\b\n\f\16\20\22\24\26\30\32\2\6")
+        buf.write("\4\2\n\21\35\35\3\2\26\30\3\2\26\27\3\2\33 \2\u008c\2")
+        buf.write("!\3\2\2\2\4$\3\2\2\2\6.\3\2\2\2\b;\3\2\2\2\nK\3\2\2\2")
+        buf.write("\f\\\3\2\2\2\16^\3\2\2\2\20h\3\2\2\2\22j\3\2\2\2\24r\3")
+        buf.write("\2\2\2\26z\3\2\2\2\30~\3\2\2\2\32\u0086\3\2\2\2\34 \5")
+        buf.write("\4\3\2\35 \5\6\4\2\36 \5\b\5\2\37\34\3\2\2\2\37\35\3\2")
+        buf.write("\2\2\37\36\3\2\2\2 #\3\2\2\2!\37\3\2\2\2!\"\3\2\2\2\"")
+        buf.write("\3\3\2\2\2#!\3\2\2\2$%\7\3\2\2%&\7\35\2\2&(\7\4\2\2\'")
+        buf.write(")\7\35\2\2(\'\3\2\2\2)*\3\2\2\2*(\3\2\2\2*+\3\2\2\2+,")
+        buf.write("\3\2\2\2,-\7\5\2\2-\5\3\2\2\2./\7\6\2\2/\61\7\35\2\2\60")
+        buf.write("\62\5\22\n\2\61\60\3\2\2\2\61\62\3\2\2\2\62\63\3\2\2\2")
+        buf.write("\63\65\7\4\2\2\64\66\5\n\6\2\65\64\3\2\2\2\66\67\3\2\2")
+        buf.write("\2\67\65\3\2\2\2\678\3\2\2\289\3\2\2\29:\7\5\2\2:\7\3")
+        buf.write("\2\2\2;<\7\7\2\2<>\7\35\2\2=?\5\24\13\2>=\3\2\2\2>?\3")
+        buf.write("\2\2\2?@\3\2\2\2@B\7\4\2\2AC\7\35\2\2BA\3\2\2\2CD\3\2")
+        buf.write("\2\2DB\3\2\2\2DE\3\2\2\2EF\3\2\2\2FG\7\5\2\2G\t\3\2\2")
+        buf.write("\2HJ\5\30\r\2IH\3\2\2\2JM\3\2\2\2KI\3\2\2\2KL\3\2\2\2")
+        buf.write("LN\3\2\2\2MK\3\2\2\2NO\7\35\2\2OS\7\b\2\2PT\5\f\7\2QT")
+        buf.write("\5\16\b\2RT\5\20\t\2SP\3\2\2\2SQ\3\2\2\2SR\3\2\2\2TV\3")
+        buf.write("\2\2\2UW\5\26\f\2VU\3\2\2\2VW\3\2\2\2WZ\3\2\2\2XY\7\t")
+        buf.write("\2\2Y[\5\32\16\2ZX\3\2\2\2Z[\3\2\2\2[\13\3\2\2\2\\]\t")
+        buf.write("\2\2\2]\r\3\2\2\2^_\7\22\2\2_`\5\f\7\2`a\7\23\2\2a\17")
+        buf.write("\3\2\2\2bc\5\f\7\2cd\7\24\2\2di\3\2\2\2ef\5\16\b\2fg\7")
+        buf.write("\24\2\2gi\3\2\2\2hb\3\2\2\2he\3\2\2\2i\21\3\2\2\2jl\7")
+        buf.write("\25\2\2km\t\3\2\2lk\3\2\2\2mn\3\2\2\2nl\3\2\2\2no\3\2")
+        buf.write("\2\2op\3\2\2\2pq\7\31\2\2q\23\3\2\2\2rt\7\25\2\2su\t\4")
+        buf.write("\2\2ts\3\2\2\2uv\3\2\2\2vt\3\2\2\2vw\3\2\2\2wx\3\2\2\2")
+        buf.write("xy\7\31\2\2y\25\3\2\2\2z{\7\25\2\2{|\7\27\2\2|}\7\31\2")
+        buf.write("\2}\27\3\2\2\2~\177\7\32\2\2\177\u0084\7\35\2\2\u0080")
+        buf.write("\u0081\7\25\2\2\u0081\u0082\5\32\16\2\u0082\u0083\7\31")
+        buf.write("\2\2\u0083\u0085\3\2\2\2\u0084\u0080\3\2\2\2\u0084\u0085")
+        buf.write("\3\2\2\2\u0085\31\3\2\2\2\u0086\u0087\t\5\2\2\u0087\33")
+        buf.write("\3\2\2\2\21\37!*\61\67>DKSVZhnv\u0084")
         return buf.getvalue()
 
 
@@ -61,21 +71,22 @@ class DynabuffersParser ( Parser ):
 
     sharedContextCache = PredictionContextCache()
 
-    literalNames = [ "<INVALID>", "'enum'", "'{'", "'}'", "'class'", "'union'",
-                     "':'", "'='", "'string'", "'short'", "'boolean'", "'byte'",
-                     "'float'", "'long'", "'int'", "'map'", "'['", "']'",
-                     "'?'", "'('", "'primary'", "'deprecated'", "')'", "'@'",
-                     "'[]'", "'[:]'", "<INVALID>", "<INVALID>", "<INVALID>",
-                     "<INVALID>", "<INVALID>", "<INVALID>", "';'" ]
+    literalNames = [ "<INVALID>", "'enum'", "'{'", "'}'", "'class'", "'union'", 
+                     "':'", "'='", "'string'", "'short'", "'boolean'", "'byte'", 
+                     "'float'", "'long'", "'int'", "'map'", "'['", "']'", 
+                     "'?'", "'('", "'primary'", "'deprecated'", "'implicit'", 
+                     "')'", "'@'", "'[]'", "'[:]'", "<INVALID>", "<INVALID>", 
+                     "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
+                     "';'" ]
 
-    symbolicNames = [ "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>",
-                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>",
-                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>",
-                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>",
-                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>",
-                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>",
-                      "<INVALID>", "<INVALID>", "IDENTIFIER", "STRING",
-                      "NUMBER", "BOOLEAN", "WHITESPACE", "LINE_COMMENT",
+    symbolicNames = [ "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
+                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
+                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
+                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
+                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
+                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
+                      "<INVALID>", "<INVALID>", "<INVALID>", "IDENTIFIER", 
+                      "STRING", "NUMBER", "BOOLEAN", "WHITESPACE", "LINE_COMMENT", 
                       "SEMICOLON" ]
 
     RULE_compilation = 0
@@ -87,13 +98,14 @@ class DynabuffersParser ( Parser ):
     RULE_arrayType = 6
     RULE_optionType = 7
     RULE_classOptions = 8
-    RULE_fieldOptions = 9
-    RULE_annotation = 10
-    RULE_value = 11
+    RULE_unionOptions = 9
+    RULE_fieldOptions = 10
+    RULE_annotation = 11
+    RULE_value = 12
 
-    ruleNames =  [ "compilation", "enumType", "classType", "unionType",
-                   "fieldType", "dataType", "arrayType", "optionType", "classOptions",
-                   "fieldOptions", "annotation", "value" ]
+    ruleNames =  [ "compilation", "enumType", "classType", "unionType", 
+                   "fieldType", "dataType", "arrayType", "optionType", "classOptions", 
+                   "unionOptions", "fieldOptions", "annotation", "value" ]
 
     EOF = Token.EOF
     T__0=1
@@ -121,17 +133,18 @@ class DynabuffersParser ( Parser ):
     T__22=23
     T__23=24
     T__24=25
-    IDENTIFIER=26
-    STRING=27
-    NUMBER=28
-    BOOLEAN=29
-    WHITESPACE=30
-    LINE_COMMENT=31
-    SEMICOLON=32
+    T__25=26
+    IDENTIFIER=27
+    STRING=28
+    NUMBER=29
+    BOOLEAN=30
+    WHITESPACE=31
+    LINE_COMMENT=32
+    SEMICOLON=33
 
     def __init__(self, input:TokenStream, output:TextIO = sys.stdout):
         super().__init__(input, output)
-        self.checkVersion("4.7.2")
+        self.checkVersion("4.8")
         self._interp = ParserATNSimulator(self, self.atn, self.decisionsToDFA, self.sharedContextCache)
         self._predicates = None
 
@@ -192,29 +205,29 @@ class DynabuffersParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 29
+            self.state = 31
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while (((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << DynabuffersParser.T__0) | (1 << DynabuffersParser.T__3) | (1 << DynabuffersParser.T__4))) != 0):
-                self.state = 27
+                self.state = 29
                 self._errHandler.sync(self)
                 token = self._input.LA(1)
                 if token in [DynabuffersParser.T__0]:
-                    self.state = 24
+                    self.state = 26
                     self.enumType()
                     pass
                 elif token in [DynabuffersParser.T__3]:
-                    self.state = 25
+                    self.state = 27
                     self.classType()
                     pass
                 elif token in [DynabuffersParser.T__4]:
-                    self.state = 26
+                    self.state = 28
                     self.unionType()
                     pass
                 else:
                     raise NoViableAltException(self)
 
-                self.state = 31
+                self.state = 33
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
@@ -266,25 +279,25 @@ class DynabuffersParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 32
-            self.match(DynabuffersParser.T__0)
-            self.state = 33
-            self.match(DynabuffersParser.IDENTIFIER)
             self.state = 34
-            self.match(DynabuffersParser.T__1)
+            self.match(DynabuffersParser.T__0)
+            self.state = 35
+            self.match(DynabuffersParser.IDENTIFIER)
             self.state = 36
+            self.match(DynabuffersParser.T__1)
+            self.state = 38 
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while True:
-                self.state = 35
+                self.state = 37
                 self.match(DynabuffersParser.IDENTIFIER)
-                self.state = 38
+                self.state = 40 
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
                 if not (_la==DynabuffersParser.IDENTIFIER):
                     break
 
-            self.state = 40
+            self.state = 42
             self.match(DynabuffersParser.T__2)
         except RecognitionException as re:
             localctx.exception = re
@@ -342,33 +355,33 @@ class DynabuffersParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 42
+            self.state = 44
             self.match(DynabuffersParser.T__3)
-            self.state = 43
-            self.match(DynabuffersParser.IDENTIFIER)
             self.state = 45
+            self.match(DynabuffersParser.IDENTIFIER)
+            self.state = 47
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             if _la==DynabuffersParser.T__18:
-                self.state = 44
+                self.state = 46
                 self.classOptions()
 
 
-            self.state = 47
-            self.match(DynabuffersParser.T__1)
             self.state = 49
+            self.match(DynabuffersParser.T__1)
+            self.state = 51 
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while True:
-                self.state = 48
+                self.state = 50
                 self.fieldType()
-                self.state = 51
+                self.state = 53 
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                if not (_la==DynabuffersParser.T__22 or _la==DynabuffersParser.IDENTIFIER):
+                if not (_la==DynabuffersParser.T__23 or _la==DynabuffersParser.IDENTIFIER):
                     break
 
-            self.state = 53
+            self.state = 55
             self.match(DynabuffersParser.T__2)
         except RecognitionException as re:
             localctx.exception = re
@@ -390,6 +403,10 @@ class DynabuffersParser ( Parser ):
                 return self.getTokens(DynabuffersParser.IDENTIFIER)
             else:
                 return self.getToken(DynabuffersParser.IDENTIFIER, i)
+
+        def unionOptions(self):
+            return self.getTypedRuleContext(DynabuffersParser.UnionOptionsContext,0)
+
 
         def getRuleIndex(self):
             return DynabuffersParser.RULE_unionType
@@ -418,25 +435,33 @@ class DynabuffersParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 55
-            self.match(DynabuffersParser.T__4)
-            self.state = 56
-            self.match(DynabuffersParser.IDENTIFIER)
             self.state = 57
+            self.match(DynabuffersParser.T__4)
+            self.state = 58
+            self.match(DynabuffersParser.IDENTIFIER)
+            self.state = 60
+            self._errHandler.sync(self)
+            _la = self._input.LA(1)
+            if _la==DynabuffersParser.T__18:
+                self.state = 59
+                self.unionOptions()
+
+
+            self.state = 62
             self.match(DynabuffersParser.T__1)
-            self.state = 59
+            self.state = 64 
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while True:
-                self.state = 58
+                self.state = 63
                 self.match(DynabuffersParser.IDENTIFIER)
-                self.state = 61
+                self.state = 66 
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
                 if not (_la==DynabuffersParser.IDENTIFIER):
                     break
 
-            self.state = 63
+            self.state = 68
             self.match(DynabuffersParser.T__2)
         except RecognitionException as re:
             localctx.exception = re
@@ -510,54 +535,54 @@ class DynabuffersParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 68
+            self.state = 73
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while _la==DynabuffersParser.T__22:
-                self.state = 65
-                self.annotation()
+            while _la==DynabuffersParser.T__23:
                 self.state = 70
+                self.annotation()
+                self.state = 75
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
-            self.state = 71
-            self.match(DynabuffersParser.IDENTIFIER)
-            self.state = 72
-            self.match(DynabuffersParser.T__5)
             self.state = 76
+            self.match(DynabuffersParser.IDENTIFIER)
+            self.state = 77
+            self.match(DynabuffersParser.T__5)
+            self.state = 81
             self._errHandler.sync(self)
-            la_ = self._interp.adaptivePredict(self._input,7,self._ctx)
+            la_ = self._interp.adaptivePredict(self._input,8,self._ctx)
             if la_ == 1:
-                self.state = 73
+                self.state = 78
                 self.dataType()
                 pass
 
             elif la_ == 2:
-                self.state = 74
+                self.state = 79
                 self.arrayType()
                 pass
 
             elif la_ == 3:
-                self.state = 75
+                self.state = 80
                 self.optionType()
                 pass
 
 
-            self.state = 79
+            self.state = 84
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             if _la==DynabuffersParser.T__18:
-                self.state = 78
+                self.state = 83
                 self.fieldOptions()
 
 
-            self.state = 83
+            self.state = 88
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             if _la==DynabuffersParser.T__6:
-                self.state = 81
+                self.state = 86
                 self.match(DynabuffersParser.T__6)
-                self.state = 82
+                self.state = 87
                 self.value()
 
 
@@ -606,7 +631,7 @@ class DynabuffersParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 85
+            self.state = 90
             _la = self._input.LA(1)
             if not((((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << DynabuffersParser.T__7) | (1 << DynabuffersParser.T__8) | (1 << DynabuffersParser.T__9) | (1 << DynabuffersParser.T__10) | (1 << DynabuffersParser.T__11) | (1 << DynabuffersParser.T__12) | (1 << DynabuffersParser.T__13) | (1 << DynabuffersParser.T__14) | (1 << DynabuffersParser.IDENTIFIER))) != 0)):
                 self._errHandler.recoverInline(self)
@@ -658,11 +683,11 @@ class DynabuffersParser ( Parser ):
         self.enterRule(localctx, 12, self.RULE_arrayType)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 87
+            self.state = 92
             self.match(DynabuffersParser.T__15)
-            self.state = 88
+            self.state = 93
             self.dataType()
-            self.state = 89
+            self.state = 94
             self.match(DynabuffersParser.T__16)
         except RecognitionException as re:
             localctx.exception = re
@@ -712,21 +737,21 @@ class DynabuffersParser ( Parser ):
         localctx = DynabuffersParser.OptionTypeContext(self, self._ctx, self.state)
         self.enterRule(localctx, 14, self.RULE_optionType)
         try:
-            self.state = 97
+            self.state = 102
             self._errHandler.sync(self)
             token = self._input.LA(1)
             if token in [DynabuffersParser.T__7, DynabuffersParser.T__8, DynabuffersParser.T__9, DynabuffersParser.T__10, DynabuffersParser.T__11, DynabuffersParser.T__12, DynabuffersParser.T__13, DynabuffersParser.T__14, DynabuffersParser.IDENTIFIER]:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 91
+                self.state = 96
                 self.dataType()
-                self.state = 92
+                self.state = 97
                 self.match(DynabuffersParser.T__17)
                 pass
             elif token in [DynabuffersParser.T__15]:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 94
+                self.state = 99
                 self.arrayType()
-                self.state = 95
+                self.state = 100
                 self.match(DynabuffersParser.T__17)
                 pass
             else:
@@ -775,27 +800,91 @@ class DynabuffersParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 99
+            self.state = 104
             self.match(DynabuffersParser.T__18)
-            self.state = 101
+            self.state = 106 
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while True:
-                self.state = 100
+                self.state = 105
+                _la = self._input.LA(1)
+                if not((((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << DynabuffersParser.T__19) | (1 << DynabuffersParser.T__20) | (1 << DynabuffersParser.T__21))) != 0)):
+                    self._errHandler.recoverInline(self)
+                else:
+                    self._errHandler.reportMatch(self)
+                    self.consume()
+                self.state = 108 
+                self._errHandler.sync(self)
+                _la = self._input.LA(1)
+                if not ((((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << DynabuffersParser.T__19) | (1 << DynabuffersParser.T__20) | (1 << DynabuffersParser.T__21))) != 0)):
+                    break
+
+            self.state = 110
+            self.match(DynabuffersParser.T__22)
+        except RecognitionException as re:
+            localctx.exception = re
+            self._errHandler.reportError(self, re)
+            self._errHandler.recover(self, re)
+        finally:
+            self.exitRule()
+        return localctx
+
+
+    class UnionOptionsContext(ParserRuleContext):
+
+        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
+            super().__init__(parent, invokingState)
+            self.parser = parser
+
+
+        def getRuleIndex(self):
+            return DynabuffersParser.RULE_unionOptions
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterUnionOptions" ):
+                listener.enterUnionOptions(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitUnionOptions" ):
+                listener.exitUnionOptions(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitUnionOptions" ):
+                return visitor.visitUnionOptions(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+
+
+    def unionOptions(self):
+
+        localctx = DynabuffersParser.UnionOptionsContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 18, self.RULE_unionOptions)
+        self._la = 0 # Token type
+        try:
+            self.enterOuterAlt(localctx, 1)
+            self.state = 112
+            self.match(DynabuffersParser.T__18)
+            self.state = 114 
+            self._errHandler.sync(self)
+            _la = self._input.LA(1)
+            while True:
+                self.state = 113
                 _la = self._input.LA(1)
                 if not(_la==DynabuffersParser.T__19 or _la==DynabuffersParser.T__20):
                     self._errHandler.recoverInline(self)
                 else:
                     self._errHandler.reportMatch(self)
                     self.consume()
-                self.state = 103
+                self.state = 116 
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
                 if not (_la==DynabuffersParser.T__19 or _la==DynabuffersParser.T__20):
                     break
 
-            self.state = 105
-            self.match(DynabuffersParser.T__21)
+            self.state = 118
+            self.match(DynabuffersParser.T__22)
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
@@ -835,15 +924,15 @@ class DynabuffersParser ( Parser ):
     def fieldOptions(self):
 
         localctx = DynabuffersParser.FieldOptionsContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 18, self.RULE_fieldOptions)
+        self.enterRule(localctx, 20, self.RULE_fieldOptions)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 107
+            self.state = 120
             self.match(DynabuffersParser.T__18)
-            self.state = 108
+            self.state = 121
             self.match(DynabuffersParser.T__20)
-            self.state = 109
-            self.match(DynabuffersParser.T__21)
+            self.state = 122
+            self.match(DynabuffersParser.T__22)
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
@@ -889,24 +978,24 @@ class DynabuffersParser ( Parser ):
     def annotation(self):
 
         localctx = DynabuffersParser.AnnotationContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 20, self.RULE_annotation)
+        self.enterRule(localctx, 22, self.RULE_annotation)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 111
-            self.match(DynabuffersParser.T__22)
-            self.state = 112
+            self.state = 124
+            self.match(DynabuffersParser.T__23)
+            self.state = 125
             self.match(DynabuffersParser.IDENTIFIER)
-            self.state = 117
+            self.state = 130
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             if _la==DynabuffersParser.T__18:
-                self.state = 113
+                self.state = 126
                 self.match(DynabuffersParser.T__18)
-                self.state = 114
+                self.state = 127
                 self.value()
-                self.state = 115
-                self.match(DynabuffersParser.T__21)
+                self.state = 128
+                self.match(DynabuffersParser.T__22)
 
 
         except RecognitionException as re:
@@ -959,13 +1048,13 @@ class DynabuffersParser ( Parser ):
     def value(self):
 
         localctx = DynabuffersParser.ValueContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 22, self.RULE_value)
+        self.enterRule(localctx, 24, self.RULE_value)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 119
+            self.state = 132
             _la = self._input.LA(1)
-            if not((((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << DynabuffersParser.T__23) | (1 << DynabuffersParser.T__24) | (1 << DynabuffersParser.IDENTIFIER) | (1 << DynabuffersParser.STRING) | (1 << DynabuffersParser.NUMBER) | (1 << DynabuffersParser.BOOLEAN))) != 0)):
+            if not((((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << DynabuffersParser.T__24) | (1 << DynabuffersParser.T__25) | (1 << DynabuffersParser.IDENTIFIER) | (1 << DynabuffersParser.STRING) | (1 << DynabuffersParser.NUMBER) | (1 << DynabuffersParser.BOOLEAN))) != 0)):
                 self._errHandler.recoverInline(self)
             else:
                 self._errHandler.reportMatch(self)

@@ -28,14 +28,15 @@ SEMICOLON    : ';'              -> skip;
 compilation   : (enumType | classType | unionType)* ;
 enumType      : 'enum' IDENTIFIER '{' IDENTIFIER+ '}';
 classType     : 'class' IDENTIFIER classOptions? '{' fieldType+ '}';
-unionType     : 'union' IDENTIFIER '{' IDENTIFIER+ '}';
+unionType     : 'union' IDENTIFIER unionOptions? '{' IDENTIFIER+ '}';
 fieldType     : annotation* IDENTIFIER ':' (dataType | arrayType | optionType) fieldOptions? ('=' value)?;
 dataType      : ('string' | 'short' | 'boolean' | 'byte' | 'float' | 'long' | 'int' | 'map' | IDENTIFIER);
 arrayType     : '[' dataType ']';
 optionType    : (dataType '?') | (arrayType '?');
 
 // structural
-classOptions : '(' ('primary' | 'deprecated')+ ')';
+classOptions : '(' ('primary' | 'deprecated' | 'implicit')+ ')';
+unionOptions : '(' ('primary' | 'deprecated')+ ')';
 fieldOptions : '(' 'deprecated' ')';
 annotation   : '@' IDENTIFIER ('(' value ')')?;
 value        : (STRING | NUMBER | BOOLEAN | IDENTIFIER | '[]' | '[:]');

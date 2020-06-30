@@ -1,5 +1,6 @@
 package dynabuffers
 
+import dynabuffers.api.map.ImplicitDynabuffersMap
 import dynabuffers.exception.DynabuffersException
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -171,6 +172,19 @@ class Product {
             val engine = Dynabuffers.parse("class Data { type:string }")
             engine.deserialize(engine.serialize(mapOf("type" to null)))
         }
+    }
+
+    @Test
+    fun testImplicitClass() {
+        val engine = Dynabuffers.parse("""
+            class Data(implicit) {
+               result:[byte]
+            }
+        """.trimIndent())
+        val result = engine.deserialize(engine.serialize("test".toByteArray()))
+        Assertions.assertTrue(result.containsKey("result"))
+        Assertions.assertTrue(result is ImplicitDynabuffersMap)
+        Assertions.assertArrayEquals((result as ImplicitDynabuffersMap).getResult() as ByteArray, "test".toByteArray())
     }
 
 }

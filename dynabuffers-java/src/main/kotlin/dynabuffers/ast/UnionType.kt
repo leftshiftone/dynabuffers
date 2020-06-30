@@ -3,6 +3,7 @@ package dynabuffers.ast
 import dynabuffers.api.IRegistry
 import dynabuffers.api.ISerializable
 import dynabuffers.api.IType
+import dynabuffers.ast.structural.UnionOptions
 import java.nio.ByteBuffer
 
 data class UnionType(val options: UnionTypeOptions) : IType, ISerializable {
@@ -31,8 +32,14 @@ data class UnionType(val options: UnionTypeOptions) : IType, ISerializable {
         val clazz = classes.find {
             val attributes = value as Map<String, *>
 
-            if (attributes.getOrDefault(":type", -1) == classes.indexOf(it))
-                return@find true
+            val type = attributes[":type"]
+            if (type != null) {
+                return@find when (type) {
+                    is Number -> type == classes.indexOf(it)
+                    is String -> options.values.indexOf(type) == classes.indexOf(it)
+                    else -> false
+                }
+            }
 
             val fields1 = it.options.fields.map { field -> field.options.name }.sorted()
             val fields2 = attributes.keys.toList().sorted()
@@ -43,6 +50,6 @@ data class UnionType(val options: UnionTypeOptions) : IType, ISerializable {
         return clazz
     }
 
-    data class UnionTypeOptions(val name: String, val values: List<String>)
+    data class UnionTypeOptions(val name: String, val values: List<String>, val options: UnionOptions)
 
 }

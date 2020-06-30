@@ -3,6 +3,7 @@ package dynabuffers
 import dynabuffers.api.IAnnotation
 import dynabuffers.api.IRegistry
 import dynabuffers.api.ISerializable
+import dynabuffers.api.map.ImplicitDynabuffersMap
 import dynabuffers.ast.ClassType
 import dynabuffers.ast.EnumType
 import dynabuffers.ast.UnionType
@@ -25,10 +26,25 @@ class DynabuffersEngine(private val tree: List<ISerializable>) {
         return buffer.array()
     }
 
+    fun serialize(implicitKey:String = "result", result: String) = serialize(mapOf(implicitKey to result))
+    fun serialize(implicitKey:String = "result", result: ByteArray) = serialize(mapOf(implicitKey to result))
+    fun serialize(implicitKey:String = "result", result: Int) = serialize(mapOf(implicitKey to result))
+    fun serialize(implicitKey:String = "result", result: Long) = serialize(mapOf(implicitKey to result))
+    fun serialize(implicitKey:String = "result", result: Short) = serialize(mapOf(implicitKey to result))
+    fun serialize(implicitKey:String = "result", result: Byte) = serialize(mapOf(implicitKey to result))
+    fun serialize(implicitKey:String = "result", result: Float) = serialize(mapOf(implicitKey to result))
+    fun serialize(implicitKey:String = "result", result: Double) = serialize(mapOf(implicitKey to result))
+    fun serialize(implicitKey:String = "result", result: Boolean) = serialize(mapOf(implicitKey to result))
+
     @Suppress("UNCHECKED_CAST")
     fun deserialize(bytes: ByteArray): Map<String, Any?> {
         val clazz = getPrimaryClass()
-        return clazz.deserialize(ByteBuffer.wrap(bytes), this.registry()) as Map<String, Any>
+        val map = clazz.deserialize(ByteBuffer.wrap(bytes), this.registry()) as Map<String, Any>
+
+        if (clazz is ClassType) {
+            return if (clazz.options.options.isImplicit()) ImplicitDynabuffersMap(map) else map
+        }
+        return map
     }
 
     private fun registry(): IRegistry {
@@ -63,9 +79,15 @@ class DynabuffersEngine(private val tree: List<ISerializable>) {
         }
     }
 
-    private fun getPrimaryClass(): ClassType {
-        val classes = tree.filter { it is ClassType }.map { it as ClassType }
-        return classes.find { it.options.options.isPrimary() } ?: classes[0]
+    private fun getPrimaryClass(): ISerializable {
+        val classes = tree.filter { it is ClassType || it is UnionType }//.map { it as ClassType }
+        return classes.find {
+            when (it) {
+                is ClassType -> it.options.options.isPrimary()
+                is UnionType -> it.options.options.isPrimary()
+                else -> false
+            }
+        } ?: classes[0]
     }
 
 }

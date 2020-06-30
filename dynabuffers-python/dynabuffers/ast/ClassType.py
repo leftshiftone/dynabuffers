@@ -35,7 +35,7 @@ class ClassType(ISerializable):
         return sum(map(mapper, filter(byName, self.options.fields)))
 
     def serialize(self, value, buffer: ByteBuffer, registry):
-        if self.options.options.isDeprecated():
+        if self.options.options.is_deprecated():
             registry.addNotification("deprecated class " + self.options.name + " used")
 
         for field in self.options.fields:

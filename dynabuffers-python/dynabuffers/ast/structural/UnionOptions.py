@@ -1,12 +1,12 @@
-class ClassOptionsOptions:
-    def __init__(self, primary:bool, deprecated:bool):
+class UnionOptionsOptions:
+    def __init__(self, primary: bool, deprecated: bool):
         self.primary = primary
         self.deprecated = deprecated
 
 
-class ClassOptions:
+class UnionOptions:
 
-    def __init__(self, options: ClassOptionsOptions):
+    def __init__(self, options: UnionOptionsOptions):
         self.options = options
 
     def is_primary(self):

@@ -18,6 +18,7 @@ from dynabuffers.ast.datatype.StringType import StringType, StringTypeOptions
 from dynabuffers.ast.structural.Annotation import AnnotationOptions, Annotation
 from dynabuffers.ast.structural.ClassOptions import ClassOptions, ClassOptionsOptions
 from dynabuffers.ast.structural.FieldOptions import FieldOptions, FieldOptionsOptions
+from dynabuffers.ast.structural.UnionOptions import UnionOptions, UnionOptionsOptions
 from dynabuffers.ast.structural.Value import Value, ValueOptions
 
 
@@ -33,19 +34,21 @@ class DynabuffersVisitor(DynabuffersBaseVisitor):
 
     def visitClassType(self, ctx: DynabuffersParser.ClassTypeContext):
         values = super().visitClassType(ctx)
-        classOptions = next(filter(lambda x: isinstance(x, ClassOptions), values), ClassOptions(ClassOptionsOptions(False, False)))
+        options = next(filter(lambda x: isinstance(x, ClassOptions), values), ClassOptions(ClassOptionsOptions(False, False)))
 
         fields = list(filter(lambda x: isinstance(x, FieldType), values))
-        return ClassType(ClassTypeOptions(ctx.getChild(1).getText(), fields, classOptions))
-
-
+        return ClassType(ClassTypeOptions(ctx.getChild(1).getText(), fields, options))
 
     def visitUnionType(self, ctx: DynabuffersParser.UnionTypeContext):
         values = []
         for i in range(3, ctx.getChildCount() - 1):
-            values.append(str(ctx.getChild(i)))
+            # TODO: remove workaround
+            if str(ctx.getChild(i)) != "{":
+                values.append(str(ctx.getChild(i)))
 
-        return UnionType(UnionTypeOptions(str(ctx.getChild(1)), values))
+        options = next(filter(lambda x: isinstance(x, UnionOptions), values), UnionOptions(UnionOptionsOptions(False, False)))
+
+        return UnionType(UnionTypeOptions(str(ctx.getChild(1)), values, options))
 
     def visitFieldType(self, ctx: DynabuffersParser.FieldTypeContext):
         values = super().visitFieldType(ctx)
@@ -87,6 +90,9 @@ class DynabuffersVisitor(DynabuffersBaseVisitor):
 
     def visitClassOptions(self, ctx: DynabuffersParser.ClassOptionsContext):
         return ClassOptions(ClassOptionsOptions("primary" in ctx.getText(), "deprecated" in ctx.getText()))
+
+    def visitUnionOptions(self, ctx: DynabuffersParser.UnionOptionsContext):
+        return UnionOptions(UnionOptionsOptions("primary" in ctx.getText(), "deprecated" in ctx.getText()))
 
     def visitFieldOptions(self, ctx: DynabuffersParser.FieldOptionsContext):
         return FieldOptions(FieldOptionsOptions("deprecated" in ctx.getText()))

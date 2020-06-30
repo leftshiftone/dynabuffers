@@ -1,4 +1,4 @@
-# Generated from Dynabuffers.g4 by ANTLR 4.7.2
+# Generated from Dynabuffers.g4 by ANTLR 4.8
 from antlr4 import *
 if __name__ is not None and "." in __name__:
     from .DynabuffersParser import DynabuffersParser
@@ -51,6 +51,11 @@ class DynabuffersVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by DynabuffersParser#classOptions.
     def visitClassOptions(self, ctx:DynabuffersParser.ClassOptionsContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by DynabuffersParser#unionOptions.
+    def visitUnionOptions(self, ctx:DynabuffersParser.UnionOptionsContext):
         return self.visitChildren(ctx)
 
 

@@ -20,23 +20,23 @@ class DynabuffersEngine(object):
     def addListener(self, listener):
         self.listeners.append(listener)
 
-    def getPrimaryClass(self) -> ClassType:
-        classes = list(filter(lambda x: isinstance(x, ClassType), self.tree))
+    def get_primary_class(self) -> ClassType:
+        classes = list(filter(lambda x: isinstance(x, ClassType) or isinstance(x, UnionType), self.tree))
         for clazz in classes:
-            if clazz.options.options.isPrimary():
+            if clazz.options.options.is_primary():
                 return clazz
 
         return classes[0]
 
     def serialize(self, map: dict) -> bytearray:
-        clazz = self.getPrimaryClass()
+        clazz = self.get_primary_class()
         buffer = ByteBuffer(clazz.size(map, Registry(self.tree, self.listeners)))
         clazz.serialize(map, buffer, Registry(self.tree, self.listeners))
 
         return buffer.toBytes()
 
     def deserialize(self, bytes: bytearray) -> dict:
-        clazz = self.getPrimaryClass()
+        clazz = self.get_primary_class()
         return clazz.deserialize(ByteBuffer(len(bytes), bytes), Registry(self.tree, self.listeners))
 
 
