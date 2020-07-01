@@ -42,7 +42,7 @@ class DynabuffersVisitor(private val charset: Charset) : DynabuffersBaseVisitor<
     override fun visitUnionType(ctx: DynabuffersParser.UnionTypeContext): List<IType> {
         val list = super.visitUnionType(ctx)
         val unionOptions = (list.firstOrNull { it is UnionOptions }
-                ?: UnionOptions(UnionOptions.UnionOptionsOptions(false, false))) as UnionOptions
+                ?: UnionOptions(UnionOptions.UnionOptionsOptions(false, false, false))) as UnionOptions
 
         // TODO: remove workaround
         return listOf(UnionType(UnionType.UnionTypeOptions(ctx.textAt(1), ctx.textAt(3, 2)
@@ -119,7 +119,8 @@ class DynabuffersVisitor(private val charset: Charset) : DynabuffersBaseVisitor<
     override fun visitUnionOptions(ctx: DynabuffersParser.UnionOptionsContext): List<IType> {
         return listOf(UnionOptions(UnionOptions.UnionOptionsOptions(
                 ctx.text.contains("primary"),
-                ctx.text.contains("deprecated"))))
+                ctx.text.contains("deprecated"),
+                ctx.text.contains("implicit"))))
     }
 
     override fun visitFieldOptions(ctx: DynabuffersParser.FieldOptionsContext): List<IType> {

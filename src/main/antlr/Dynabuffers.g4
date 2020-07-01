@@ -36,7 +36,7 @@ optionType    : (dataType '?') | (arrayType '?');
 
 // structural
 classOptions : '(' ('primary' | 'deprecated' | 'implicit')+ ')';
-unionOptions : '(' ('primary' | 'deprecated')+ ')';
+unionOptions : '(' ('primary' | 'deprecated' | 'implicit')+ ')';
 fieldOptions : '(' 'deprecated' ')';
 annotation   : '@' IDENTIFIER ('(' value ')')?;
 value        : (STRING | NUMBER | BOOLEAN | IDENTIFIER | '[]' | '[:]');

@@ -34,7 +34,7 @@ class DynabuffersVisitor(DynabuffersBaseVisitor):
 
     def visitClassType(self, ctx: DynabuffersParser.ClassTypeContext):
         values = super().visitClassType(ctx)
-        options = next(filter(lambda x: isinstance(x, ClassOptions), values), ClassOptions(ClassOptionsOptions(False, False)))
+        options = next(filter(lambda x: isinstance(x, ClassOptions), values), ClassOptions(ClassOptionsOptions(False, False, False)))
 
         fields = list(filter(lambda x: isinstance(x, FieldType), values))
         return ClassType(ClassTypeOptions(ctx.getChild(1).getText(), fields, options))
@@ -46,7 +46,7 @@ class DynabuffersVisitor(DynabuffersBaseVisitor):
             if str(ctx.getChild(i)) != "{":
                 values.append(str(ctx.getChild(i)))
 
-        options = next(filter(lambda x: isinstance(x, UnionOptions), values), UnionOptions(UnionOptionsOptions(False, False)))
+        options = next(filter(lambda x: isinstance(x, UnionOptions), values), UnionOptions(UnionOptionsOptions(False, False, False)))
 
         return UnionType(UnionTypeOptions(str(ctx.getChild(1)), values, options))
 
@@ -89,10 +89,12 @@ class DynabuffersVisitor(DynabuffersBaseVisitor):
         return OptionType(OptionTypeOptions(datatype))
 
     def visitClassOptions(self, ctx: DynabuffersParser.ClassOptionsContext):
-        return ClassOptions(ClassOptionsOptions("primary" in ctx.getText(), "deprecated" in ctx.getText()))
+        implicit = "implicit" in ctx.getText()
+        return ClassOptions(ClassOptionsOptions("primary" in ctx.getText(), "deprecated" in ctx.getText(), implicit))
 
     def visitUnionOptions(self, ctx: DynabuffersParser.UnionOptionsContext):
-        return UnionOptions(UnionOptionsOptions("primary" in ctx.getText(), "deprecated" in ctx.getText()))
+        implicit = "implicit" in ctx.getText()
+        return UnionOptions(UnionOptionsOptions("primary" in ctx.getText(), "deprecated" in ctx.getText(), implicit))
 
     def visitFieldOptions(self, ctx: DynabuffersParser.FieldOptionsContext):
         return FieldOptions(FieldOptionsOptions("deprecated" in ctx.getText()))

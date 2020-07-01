@@ -178,13 +178,13 @@ class Product {
     fun testImplicitClass() {
         val engine = Dynabuffers.parse("""
             class Data(implicit) {
-               result:[byte]
+               value:[byte]
             }
         """.trimIndent())
         val result = engine.deserialize(engine.serialize("test".toByteArray()))
-        Assertions.assertTrue(result.containsKey("result"))
+        Assertions.assertTrue(result.containsKey("value"))
         Assertions.assertTrue(result is ImplicitDynabuffersMap)
-        Assertions.assertArrayEquals((result as ImplicitDynabuffersMap).getResult() as ByteArray, "test".toByteArray())
+        Assertions.assertArrayEquals((result as ImplicitDynabuffersMap).getValue() as ByteArray, "test".toByteArray())
     }
 
 }

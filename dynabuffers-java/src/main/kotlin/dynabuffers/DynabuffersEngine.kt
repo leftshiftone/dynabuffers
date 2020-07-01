@@ -3,6 +3,7 @@ package dynabuffers
 import dynabuffers.api.IAnnotation
 import dynabuffers.api.IRegistry
 import dynabuffers.api.ISerializable
+import dynabuffers.api.map.DynabuffersMap
 import dynabuffers.api.map.ImplicitDynabuffersMap
 import dynabuffers.ast.ClassType
 import dynabuffers.ast.EnumType
@@ -19,32 +20,35 @@ class DynabuffersEngine(private val tree: List<ISerializable>) {
     fun addListener(consumer: (String) -> Unit) = listeners.add(consumer)
 
     fun serialize(map: Map<String, Any?>): ByteArray {
-        val clazz = getPrimaryClass()
+        val clazz = getRootType()
         val buffer = ByteBuffer.allocate(clazz.size(map, this.registry()))
         clazz.serialize(map, buffer, this.registry())
 
         return buffer.array()
     }
 
-    fun serialize(implicitKey:String = "result", result: String) = serialize(mapOf(implicitKey to result))
-    fun serialize(implicitKey:String = "result", result: ByteArray) = serialize(mapOf(implicitKey to result))
-    fun serialize(implicitKey:String = "result", result: Int) = serialize(mapOf(implicitKey to result))
-    fun serialize(implicitKey:String = "result", result: Long) = serialize(mapOf(implicitKey to result))
-    fun serialize(implicitKey:String = "result", result: Short) = serialize(mapOf(implicitKey to result))
-    fun serialize(implicitKey:String = "result", result: Byte) = serialize(mapOf(implicitKey to result))
-    fun serialize(implicitKey:String = "result", result: Float) = serialize(mapOf(implicitKey to result))
-    fun serialize(implicitKey:String = "result", result: Double) = serialize(mapOf(implicitKey to result))
-    fun serialize(implicitKey:String = "result", result: Boolean) = serialize(mapOf(implicitKey to result))
+    fun serialize(result: String) = serialize(mapOf("value" to result))
+    fun serialize(result: ByteArray) = serialize(mapOf("value" to result))
+    fun serialize(result: Int) = serialize(mapOf("value" to result))
+    fun serialize(result: Long) = serialize(mapOf("value" to result))
+    fun serialize(result: Short) = serialize(mapOf("value" to result))
+    fun serialize(result: Byte) = serialize(mapOf("value" to result))
+    fun serialize(result: Float) = serialize(mapOf("value" to result))
+    fun serialize(result: Double) = serialize(mapOf("value" to result))
+    fun serialize(result: Boolean) = serialize(mapOf("value" to result))
 
     @Suppress("UNCHECKED_CAST")
-    fun deserialize(bytes: ByteArray): Map<String, Any?> {
-        val clazz = getPrimaryClass()
-        val map = clazz.deserialize(ByteBuffer.wrap(bytes), this.registry()) as Map<String, Any>
+    fun deserialize(bytes: ByteArray): DynabuffersMap {
+        val root = getRootType()
+        val map = root.deserialize(ByteBuffer.wrap(bytes), this.registry()) as Map<String, Any>
 
-        if (clazz is ClassType) {
-            return if (clazz.options.options.isImplicit()) ImplicitDynabuffersMap(map) else map
+        return when (root) {
+            is ClassType -> if (root.options.options.isImplicit())
+                ImplicitDynabuffersMap(map, tree, root) else DynabuffersMap(map, tree, root)
+            is UnionType -> if (root.options.options.isImplicit())
+                ImplicitDynabuffersMap(map, tree, root) else DynabuffersMap(map, tree, root)
+            else -> DynabuffersMap(map, tree, root)
         }
-        return map
     }
 
     private fun registry(): IRegistry {
@@ -79,8 +83,8 @@ class DynabuffersEngine(private val tree: List<ISerializable>) {
         }
     }
 
-    private fun getPrimaryClass(): ISerializable {
-        val classes = tree.filter { it is ClassType || it is UnionType }//.map { it as ClassType }
+    private fun getRootType(): ISerializable {
+        val classes = tree.filter { it is ClassType || it is UnionType }
         return classes.find {
             when (it) {
                 is ClassType -> it.options.options.isPrimary()

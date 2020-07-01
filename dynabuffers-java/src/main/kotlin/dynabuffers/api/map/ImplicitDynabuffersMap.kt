@@ -1,5 +1,9 @@
 package dynabuffers.api.map
 
-class ImplicitDynabuffersMap(map: Map<String, Any?>) : HashMap<String, Any?>(map) {
-    fun getResult() = get("result")
+import dynabuffers.api.ISerializable
+
+class ImplicitDynabuffersMap(map: Map<String, Any?>,
+                             tree: List<ISerializable>,
+                             root: ISerializable) : DynabuffersMap(map, tree, root) {
+    fun getValue() = get("value")
 }

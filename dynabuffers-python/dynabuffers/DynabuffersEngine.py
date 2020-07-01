@@ -1,4 +1,8 @@
+from typing import Union, Any
+
 from dynabuffers.api.ISerializable import ISerializable, ByteBuffer
+from dynabuffers.api.map.DynabuffersMap import DynabuffersMap
+from dynabuffers.api.map.ImplicitDynabuffersMap import ImplicitDynabuffersMap
 from dynabuffers.ast.ClassType import ClassType
 from dynabuffers.ast.EnumType import EnumType
 from dynabuffers.ast.UnionType import UnionType
@@ -17,10 +21,10 @@ class DynabuffersEngine(object):
         self.tree = tree
         self.listeners = []
 
-    def addListener(self, listener):
+    def add_listener(self, listener):
         self.listeners.append(listener)
 
-    def get_primary_class(self) -> ClassType:
+    def get_root_type(self) -> ClassType:
         classes = list(filter(lambda x: isinstance(x, ClassType) or isinstance(x, UnionType), self.tree))
         for clazz in classes:
             if clazz.options.options.is_primary():
@@ -28,16 +32,22 @@ class DynabuffersEngine(object):
 
         return classes[0]
 
-    def serialize(self, map: dict) -> bytearray:
-        clazz = self.get_primary_class()
-        buffer = ByteBuffer(clazz.size(map, Registry(self.tree, self.listeners)))
-        clazz.serialize(map, buffer, Registry(self.tree, self.listeners))
+    def serialize(self, value: Union[dict, Any]) -> bytearray:
+        if not isinstance(value, dict):
+            return self.serialize({"value": value})
+
+        clazz = self.get_root_type()
+        buffer = ByteBuffer(clazz.size(value, Registry(self.tree, self.listeners)))
+        clazz.serialize(value, buffer, Registry(self.tree, self.listeners))
 
         return buffer.toBytes()
 
-    def deserialize(self, bytes: bytearray) -> dict:
-        clazz = self.get_primary_class()
-        return clazz.deserialize(ByteBuffer(len(bytes), bytes), Registry(self.tree, self.listeners))
+    def deserialize(self, bytes: bytearray) -> DynabuffersMap:
+        root = self.get_root_type()
+        result = root.deserialize(ByteBuffer(len(bytes), bytes), Registry(self.tree, self.listeners))
+        if root.options.options.is_implicit:
+            return ImplicitDynabuffersMap(result, self.tree, root)
+        return DynabuffersMap(result, self.tree, root)
 
 
 class Registry(object):

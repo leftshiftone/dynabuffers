@@ -1,0 +1,20 @@
+union Data(primary) {
+   TypeA
+   TypeB
+}
+
+class TypeA {
+   stringVal: string
+   intVal: int
+   byteVal: byte
+   shortVal: short
+   longVal: long
+   floatVal: float
+   mapVal: map
+   byteArrayVal: [byte]
+   refVal: TypeB
+}
+
+class TypeB {
+   name: string
+}
