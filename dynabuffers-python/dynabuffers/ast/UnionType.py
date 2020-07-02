@@ -42,7 +42,8 @@ class UnionType(ISerializable):
 
             if ":type" in value and value[":type"] == classes.index(clazz):
                 return clazz
-            if ":type" in value and self.options.values.index(value[":type"]) == classes.index(clazz):
+            if ":type" in value and value[":type"] in self.options.values \
+                    and self.options.values.index(value[":type"]) == classes.index(clazz):
                 return clazz
             if fields1 == fields2:
                 return clazz
