@@ -88,6 +88,42 @@ class C {
 }
 ````
 
+Dynabuffers also supports scalar value serialization by using an implicit class.
+An Implicit class adds the map wrapper automatically around the scalar value.
+
+````
+class Data(implicit) {
+   value:[byte]
+}
+
+engine.serialize("text".getBytes())
+````
+
+As default, the deserialization method returns a DynabuffersMap instance which has 
+access to the schema and validates each access on the map.
+
+````
+class Data { 
+   strVal:string 
+   intVal:int
+}
+
+val map = engine.deserialize(engine.serialize({"strVal":"text", "intVal":0))
+
+map.get("strVal") // returns "text"
+map.get("intVal") // returns 0
+
+map.getString("strVal") // returns "text"
+map.getInt("intVal") // returns 0
+
+map.get("unknown") // throws an exception
+map.getInt("strVal") // throws an exception
+````
+
+In the case of an implicit class deserialization, the return value of the deserialize funciton
+is an ImplicitDynabuffersMap instance. This implementation extends DynabuffersMap and has
+an additional function getValue(), which returns the scalar value.
+
 ### Enum
 
 Enums are enumerations of static values.
@@ -123,6 +159,37 @@ class Request {
 
 By using the field *:type* as a type hint it is possible to define which union class type to use.
 The *:type* field refers to the union class position e.g. 0 for the first element and so on.
+Alternatively, the class name can also be used as an alias for the *:type* field. 
+
+````
+class MessageA { content:string }
+class MessageB { content:string }
+
+union Message { 
+   MessageA
+   MessageB
+}
+
+engine.serialize({"content":"text", ":type":0)
+engine.serialize({"content":"text", ":type":"MessageA")
+````
+
+Union types can also be declared as primary or implicit.
+
+### Namespace
+Namespaces can be used to group class/union/enum types to logical groups.
+
+````
+namespace request {
+   class Data { content: string }
+}
+namespace response {
+   class Data { content: string }
+}
+
+val bytes = engine.serialize("request", mapOf("content" to "text"))
+engine.deserialize("request", bytes)
+````
 
 ## Validation
 By using annotations it is possible to declare validation rules for class fields.
