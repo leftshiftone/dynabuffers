@@ -80,6 +80,15 @@ class DynabuffersListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by DynabuffersParser#namespaceType.
+    def enterNamespaceType(self, ctx:DynabuffersParser.NamespaceTypeContext):
+        pass
+
+    # Exit a parse tree produced by DynabuffersParser#namespaceType.
+    def exitNamespaceType(self, ctx:DynabuffersParser.NamespaceTypeContext):
+        pass
+
+
     # Enter a parse tree produced by DynabuffersParser#classOptions.
     def enterClassOptions(self, ctx:DynabuffersParser.ClassOptionsContext):
         pass

@@ -3,6 +3,7 @@ from dynabuffers.antlr.DynabuffersVisitor import DynabuffersVisitor as Dynabuffe
 from dynabuffers.ast.ClassType import ClassType, ClassTypeOptions
 from dynabuffers.ast.EnumType import EnumType, EnumTypeOptions
 from dynabuffers.ast.FieldType import FieldType, FieldTypeOptions
+from dynabuffers.ast.NamespaceType import NamespaceType, NamespaceTypeOptions
 from dynabuffers.ast.UnionType import UnionType, UnionTypeOptions
 from dynabuffers.ast.datatype.ArrayType import ArrayType, ArrayTypeOptions
 from dynabuffers.ast.datatype.BooleanType import BooleanType
@@ -102,6 +103,11 @@ class DynabuffersVisitor(DynabuffersBaseVisitor):
     def visitAnnotation(self, ctx: DynabuffersParser.AnnotationContext):
         values = super().visitAnnotation(ctx)
         return Annotation(AnnotationOptions(ctx.getChild(1).getText(), values))
+
+    def visitNamespaceType(self, ctx: DynabuffersParser.NamespaceTypeContext):
+        _name = ctx.getChild(1).getText()
+        _list = super().visitNamespaceType(ctx)
+        return NamespaceType(NamespaceTypeOptions(_name, _list))
 
     def visitValue(self, ctx: DynabuffersParser.ValueContext):
         if ctx.getText() == "[]":

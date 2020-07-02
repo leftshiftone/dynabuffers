@@ -49,6 +49,11 @@ class DynabuffersVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by DynabuffersParser#namespaceType.
+    def visitNamespaceType(self, ctx:DynabuffersParser.NamespaceTypeContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by DynabuffersParser#classOptions.
     def visitClassOptions(self, ctx:DynabuffersParser.ClassOptionsContext):
         return self.visitChildren(ctx)

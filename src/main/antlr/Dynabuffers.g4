@@ -25,7 +25,7 @@ SEMICOLON    : ';'              -> skip;
  * Parser Rules
  */
 // serializable
-compilation   : (enumType | classType | unionType)* ;
+compilation   : (enumType | classType | unionType | namespaceType)* ;
 enumType      : 'enum' IDENTIFIER '{' IDENTIFIER+ '}';
 classType     : 'class' IDENTIFIER classOptions? '{' fieldType+ '}';
 unionType     : 'union' IDENTIFIER unionOptions? '{' IDENTIFIER+ '}';
@@ -33,6 +33,7 @@ fieldType     : annotation* IDENTIFIER ':' (dataType | arrayType | optionType) f
 dataType      : ('string' | 'short' | 'boolean' | 'byte' | 'float' | 'long' | 'int' | 'map' | IDENTIFIER);
 arrayType     : '[' dataType ']';
 optionType    : (dataType '?') | (arrayType '?');
+namespaceType : 'namespace' IDENTIFIER '{' (enumType | classType | unionType)* '}';
 
 // structural
 classOptions : '(' ('primary' | 'deprecated' | 'implicit')+ ')';

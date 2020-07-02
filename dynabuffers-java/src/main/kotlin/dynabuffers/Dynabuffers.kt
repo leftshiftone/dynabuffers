@@ -2,7 +2,7 @@ package dynabuffers
 
 import dynabuffers.antlr.DynabuffersLexer
 import dynabuffers.antlr.DynabuffersParser
-import dynabuffers.api.ISerializable
+import dynabuffers.api.IType
 import dynabuffers.exception.DynabuffersException
 import dynabuffers.exception.DynabuffersExceptionListener
 import org.antlr.v4.runtime.CharStream
@@ -14,6 +14,8 @@ import java.io.Reader
 import java.nio.channels.ReadableByteChannel
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets.UTF_8
+import java.util.*
+import java.util.Optional.empty
 
 /**
  * Factory class for creating a DynabuffersEngine instance.
@@ -24,7 +26,7 @@ class Dynabuffers {
 
         @JvmStatic
         @JvmOverloads
-        fun parse(string: String, charset: Charset = UTF_8): DynabuffersEngine {
+        fun parse(string: String, namespace:Optional<String> = empty<String>(), charset: Charset = UTF_8): DynabuffersEngine {
             return DynabuffersEngine(parse(CharStreams.fromString(string), charset))
         }
 
@@ -52,7 +54,7 @@ class Dynabuffers {
             return DynabuffersEngine(parse(resource.getCharStream(), charset))
         }
 
-        private fun parse(stream: CharStream, charset: Charset): List<ISerializable> {
+        private fun parse(stream: CharStream, charset: Charset): List<IType> {
             val lexer = DynabuffersLexer(stream)
             val commonTokenStream = CommonTokenStream(lexer)
             val parser = DynabuffersParser(commonTokenStream)
@@ -67,7 +69,7 @@ class Dynabuffers {
             if (errorListener.get() != null) {
                 throw DynabuffersException(errorListener.get())
             }
-            return astList.map { it as ISerializable }
+            return astList
         }
     }
 

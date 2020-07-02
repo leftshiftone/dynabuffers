@@ -1,6 +1,6 @@
 package dynabuffers.api.map
 
-import dynabuffers.api.ISerializable
+import dynabuffers.api.IType
 import dynabuffers.ast.ClassType
 import dynabuffers.ast.UnionType
 import dynabuffers.ast.datatype.OptionType
@@ -8,8 +8,8 @@ import dynabuffers.ast.datatype.RefType
 import dynabuffers.exception.DynabuffersException
 
 open class DynabuffersMap(map: Map<String, Any?>,
-                          private val tree: List<ISerializable>,
-                          root: ISerializable) : HashMap<String, Any?>(map) {
+                          private val tree: List<IType>,
+                          root: IType) : HashMap<String, Any?>(map) {
 
     private val clazz = resolveClass(tree, root)
 
@@ -136,7 +136,7 @@ open class DynabuffersMap(map: Map<String, Any?>,
         return (if (type is UnionType) resolveClass(tree, type, source) else type) as ClassType
     }
 
-    private fun resolveClass(tree: List<ISerializable>, root: ISerializable, source: Map<String, Any?> = this): ClassType {
+    private fun resolveClass(tree: List<IType>, root: IType, source: Map<String, Any?> = this): ClassType {
         if (root is ClassType) return root
         if (root is UnionType) {
             if (source[":type"] == null) {

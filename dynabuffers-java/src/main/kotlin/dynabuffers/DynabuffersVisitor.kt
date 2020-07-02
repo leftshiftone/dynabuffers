@@ -20,11 +20,8 @@ import dynabuffers.antlr.DynabuffersBaseVisitor
 import dynabuffers.antlr.DynabuffersParser
 import dynabuffers.api.ISerializable
 import dynabuffers.api.IType
-import dynabuffers.ast.ClassType
-import dynabuffers.ast.EnumType
+import dynabuffers.ast.*
 import dynabuffers.ast.EnumType.EnumTypeOptions
-import dynabuffers.ast.FieldType
-import dynabuffers.ast.UnionType
 import dynabuffers.ast.datatype.*
 import dynabuffers.ast.structural.*
 import dynabuffers.ast.structural.Annotation
@@ -125,6 +122,12 @@ class DynabuffersVisitor(private val charset: Charset) : DynabuffersBaseVisitor<
 
     override fun visitFieldOptions(ctx: DynabuffersParser.FieldOptionsContext): List<IType> {
         return listOf(FieldOptions(FieldOptions.FieldOptionsOptions(ctx.text.contains("deprecated"))))
+    }
+
+    override fun visitNamespaceType(ctx: DynabuffersParser.NamespaceTypeContext): List<IType> {
+        val name = ctx.getChild(1).text
+        val list = super.visitNamespaceType(ctx).map { it as ISerializable }
+        return listOf(NamespaceType(NamespaceType.NamespaceTypeOptions(name, list)))
     }
 
     override fun aggregateResult(aggregate: List<IType>?, nextResult: List<IType>?): List<IType> {
