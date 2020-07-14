@@ -32,14 +32,8 @@ data class UnionType(val options: UnionTypeOptions) : IType, ISerializable {
         val clazz = classes.find {
             val attributes = value as Map<String, *>
 
-            val type = attributes[":type"]
-            if (type != null) {
-                return@find when (type) {
-                    is Number -> type == classes.indexOf(it)
-                    is String -> options.values.indexOf(type) == classes.indexOf(it)
-                    else -> false
-                }
-            }
+            if (getTypeFromAttributes(attributes) == classes.indexOf(it))
+                return@find true
 
             val fields1 = it.options.fields.map { field -> field.options.name }.sorted()
             val fields2 = attributes.keys.toList().sorted()
@@ -48,6 +42,15 @@ data class UnionType(val options: UnionTypeOptions) : IType, ISerializable {
         }
         require(clazz != null) { "union type $value cannot be resolved" }
         return clazz
+    }
+
+    private fun getTypeFromAttributes(attributes: Map<String, *>): Int {
+        val type = attributes.getOrDefault(":type", -1)
+        return when (type) {
+            is Number -> type.toInt()
+            is String -> options.values.indexOf(type)
+            else -> -1
+        }
     }
 
     data class UnionTypeOptions(val name: String, val values: List<String>, val options: UnionOptions)
