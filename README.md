@@ -141,6 +141,8 @@ class Product {
 
 Unions can be used to group multiple classes.
 
+> **WARNING**: The order of classes in a union should not be changed. New classes should always be appended at the end!
+
 ````
 class MessageA { type:string }
 class MessageB { type:string }
