@@ -9,9 +9,9 @@ import java.nio.ByteBuffer
 
 data class FieldType(val options: FieldTypeOptions) : IType, ISerializable {
 
-    override fun size(value: Any, registry: IRegistry) = options.dataType.size(value, registry)
+    override fun size(value: Any?, registry: IRegistry) = options.dataType.size(value, registry)
 
-    override fun serialize(value: Any, buffer: ByteBuffer, registry: IRegistry) {
+    override fun serialize(value: Any?, buffer: ByteBuffer, registry: IRegistry) {
         if (options.options.isDeprecated())
             registry.addNotification("deprecated field ${options.name} used.")
 
@@ -20,7 +20,7 @@ data class FieldType(val options: FieldTypeOptions) : IType, ISerializable {
         options.dataType.serialize(value, buffer, registry)
     }
 
-    override fun deserialize(buffer: ByteBuffer, registry: IRegistry): Any {
+    override fun deserialize(buffer: ByteBuffer, registry: IRegistry): Any? {
         if (options.options.isDeprecated())
             registry.addNotification("deprecated field ${options.name} used.")
 

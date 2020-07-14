@@ -8,23 +8,21 @@ import java.util.*
 
 class OptionType(private val options: OptionTypeOptions) : IType, ISerializable {
 
-    override fun size(value: Any, registry: IRegistry): Int {
-        val option = value as Optional<*>
-        if (option.isPresent)
-            return 1 + options.datatype.size(option.get(), registry)
+    override fun size(value: Any?, registry: IRegistry): Int {
+        if (!Objects.isNull(value))
+            return 1 + options.datatype.size(value, registry)
         return 1
     }
 
-    override fun serialize(value: Any, buffer: ByteBuffer, registry: IRegistry) {
-        val option = value as Optional<*>
-        buffer.put(if (option.isPresent) 1.toByte() else 0.toByte())
-        option.ifPresent { options.datatype.serialize(it, buffer, registry) }
+    override fun serialize(value: Any?, buffer: ByteBuffer, registry: IRegistry) {
+        buffer.put(if (!Objects.isNull(value)) 1.toByte() else 0.toByte())
+        Optional.ofNullable(value).ifPresent { options.datatype.serialize(it, buffer, registry) }
     }
 
-    override fun deserialize(buffer: ByteBuffer, registry: IRegistry): Any {
+    override fun deserialize(buffer: ByteBuffer, registry: IRegistry): Any? {
         if (buffer.get() == 0.toByte())
-            return Optional.empty<Any>()
-        return Optional.of(options.datatype.deserialize(buffer, registry))
+            return null
+        return options.datatype.deserialize(buffer, registry)
     }
 
     data class OptionTypeOptions(val datatype: ISerializable)

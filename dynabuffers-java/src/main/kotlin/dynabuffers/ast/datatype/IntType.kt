@@ -7,14 +7,14 @@ import java.nio.ByteBuffer
 
 class IntType : IType, ISerializable {
 
-    override fun size(value: Any, registry: IRegistry) = 4
+    override fun size(value: Any?, registry: IRegistry) = 4
 
-    override fun serialize(value: Any, buffer: ByteBuffer, registry: IRegistry) {
+    override fun serialize(value: Any?, buffer: ByteBuffer, registry: IRegistry) {
         buffer.putInt(int(value))
     }
 
     override fun deserialize(buffer: ByteBuffer, registry: IRegistry) = buffer.int
 
-    private fun int(obj: Any) = obj.toString().toInt()
+    private fun int(obj: Any?) = obj.toString().toInt()
 
 }

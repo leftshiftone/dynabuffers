@@ -1,0 +1,14 @@
+union Data(primary) {
+   MapData
+   ByteArrayData
+}
+
+class MapData {
+   name: string
+   content: map
+}
+
+class ByteArrayData {
+   name: string
+   content: [byte]
+}

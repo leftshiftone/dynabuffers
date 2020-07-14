@@ -18,11 +18,16 @@ class ClassType(ISerializable):
 
     def size(self, value, registry):
         for field in self.options.fields:
-            if not isinstance(field.options.datatype, OptionType):
-                if field.options.defaultVal is None and field.options.name not in value:
+            if field.options.defaultVal is None and field.options.name not in value:
+                if not isinstance(field.options.datatype, OptionType):
                     raise ValueError("field '" + str(field.options.name) + "' is missing")
-                if field.options.defaultVal is None and value[field.options.name] is None:
+                else:
+                    value[field.options.name] = None
+            if field.options.defaultVal is None and value[field.options.name] is None:
+                if not isinstance(field.options.datatype, OptionType):
                     raise ValueError("field '" + str(field.options.name) + "' is missing")
+                else:
+                    value[field.options.name] = None
 
         byName = lambda x: (x.options.name in value) or x.options.defaultVal is not None
         mapper = lambda x: x.size(value[x.options.name] if x.options.name in value else x.options.defaultVal, registry)
@@ -30,7 +35,7 @@ class ClassType(ISerializable):
         return sum(map(mapper, filter(byName, self.options.fields)))
 
     def serialize(self, value, buffer: ByteBuffer, registry):
-        if self.options.options.isDeprecated():
+        if self.options.options.is_deprecated():
             registry.addNotification("deprecated class " + self.options.name + " used")
 
         for field in self.options.fields:

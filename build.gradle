@@ -108,7 +108,7 @@ subprojects {
 }
 
 dependencies {
-    antlr "org.antlr:antlr4:4.7.2" // use ANTLR version 4
+    antlr "org.antlr:antlr4:4.8"
 }
 
 task generateGrammarSourceJava(type: AntlrTask) {

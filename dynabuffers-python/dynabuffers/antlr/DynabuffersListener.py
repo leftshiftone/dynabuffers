@@ -1,4 +1,4 @@
-# Generated from Dynabuffers.g4 by ANTLR 4.7.2
+# Generated from Dynabuffers.g4 by ANTLR 4.8
 from antlr4 import *
 if __name__ is not None and "." in __name__:
     from .DynabuffersParser import DynabuffersParser
@@ -80,12 +80,30 @@ class DynabuffersListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by DynabuffersParser#namespaceType.
+    def enterNamespaceType(self, ctx:DynabuffersParser.NamespaceTypeContext):
+        pass
+
+    # Exit a parse tree produced by DynabuffersParser#namespaceType.
+    def exitNamespaceType(self, ctx:DynabuffersParser.NamespaceTypeContext):
+        pass
+
+
     # Enter a parse tree produced by DynabuffersParser#classOptions.
     def enterClassOptions(self, ctx:DynabuffersParser.ClassOptionsContext):
         pass
 
     # Exit a parse tree produced by DynabuffersParser#classOptions.
     def exitClassOptions(self, ctx:DynabuffersParser.ClassOptionsContext):
+        pass
+
+
+    # Enter a parse tree produced by DynabuffersParser#unionOptions.
+    def enterUnionOptions(self, ctx:DynabuffersParser.UnionOptionsContext):
+        pass
+
+    # Exit a parse tree produced by DynabuffersParser#unionOptions.
+    def exitUnionOptions(self, ctx:DynabuffersParser.UnionOptionsContext):
         pass
 
 
@@ -116,3 +134,5 @@ class DynabuffersListener(ParseTreeListener):
         pass
 
 
+
+del DynabuffersParser

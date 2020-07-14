@@ -3,6 +3,7 @@ from dynabuffers.antlr.DynabuffersVisitor import DynabuffersVisitor as Dynabuffe
 from dynabuffers.ast.ClassType import ClassType, ClassTypeOptions
 from dynabuffers.ast.EnumType import EnumType, EnumTypeOptions
 from dynabuffers.ast.FieldType import FieldType, FieldTypeOptions
+from dynabuffers.ast.NamespaceType import NamespaceType, NamespaceTypeOptions
 from dynabuffers.ast.UnionType import UnionType, UnionTypeOptions
 from dynabuffers.ast.datatype.ArrayType import ArrayType, ArrayTypeOptions
 from dynabuffers.ast.datatype.BooleanType import BooleanType
@@ -18,6 +19,7 @@ from dynabuffers.ast.datatype.StringType import StringType, StringTypeOptions
 from dynabuffers.ast.structural.Annotation import AnnotationOptions, Annotation
 from dynabuffers.ast.structural.ClassOptions import ClassOptions, ClassOptionsOptions
 from dynabuffers.ast.structural.FieldOptions import FieldOptions, FieldOptionsOptions
+from dynabuffers.ast.structural.UnionOptions import UnionOptions, UnionOptionsOptions
 from dynabuffers.ast.structural.Value import Value, ValueOptions
 
 
@@ -33,19 +35,21 @@ class DynabuffersVisitor(DynabuffersBaseVisitor):
 
     def visitClassType(self, ctx: DynabuffersParser.ClassTypeContext):
         values = super().visitClassType(ctx)
-        classOptions = next(filter(lambda x: isinstance(x, ClassOptions), values), ClassOptions(ClassOptionsOptions(False, False)))
+        options = next(filter(lambda x: isinstance(x, ClassOptions), values), ClassOptions(ClassOptionsOptions(False, False, False)))
 
         fields = list(filter(lambda x: isinstance(x, FieldType), values))
-        return ClassType(ClassTypeOptions(ctx.getChild(1).getText(), fields, classOptions))
-
-
+        return ClassType(ClassTypeOptions(ctx.getChild(1).getText(), fields, options))
 
     def visitUnionType(self, ctx: DynabuffersParser.UnionTypeContext):
         values = []
         for i in range(3, ctx.getChildCount() - 1):
-            values.append(str(ctx.getChild(i)))
+            # TODO: remove workaround
+            if str(ctx.getChild(i)) != "{":
+                values.append(str(ctx.getChild(i)))
 
-        return UnionType(UnionTypeOptions(str(ctx.getChild(1)), values))
+        options = next(filter(lambda x: isinstance(x, UnionOptions), values), UnionOptions(UnionOptionsOptions(False, False, False)))
+
+        return UnionType(UnionTypeOptions(str(ctx.getChild(1)), values, options))
 
     def visitFieldType(self, ctx: DynabuffersParser.FieldTypeContext):
         values = super().visitFieldType(ctx)
@@ -86,7 +90,12 @@ class DynabuffersVisitor(DynabuffersBaseVisitor):
         return OptionType(OptionTypeOptions(datatype))
 
     def visitClassOptions(self, ctx: DynabuffersParser.ClassOptionsContext):
-        return ClassOptions(ClassOptionsOptions("primary" in ctx.getText(), "deprecated" in ctx.getText()))
+        implicit = "implicit" in ctx.getText()
+        return ClassOptions(ClassOptionsOptions("primary" in ctx.getText(), "deprecated" in ctx.getText(), implicit))
+
+    def visitUnionOptions(self, ctx: DynabuffersParser.UnionOptionsContext):
+        implicit = "implicit" in ctx.getText()
+        return UnionOptions(UnionOptionsOptions("primary" in ctx.getText(), "deprecated" in ctx.getText(), implicit))
 
     def visitFieldOptions(self, ctx: DynabuffersParser.FieldOptionsContext):
         return FieldOptions(FieldOptionsOptions("deprecated" in ctx.getText()))
@@ -95,7 +104,16 @@ class DynabuffersVisitor(DynabuffersBaseVisitor):
         values = super().visitAnnotation(ctx)
         return Annotation(AnnotationOptions(ctx.getChild(1).getText(), values))
 
+    def visitNamespaceType(self, ctx: DynabuffersParser.NamespaceTypeContext):
+        _name = ctx.getChild(1).getText()
+        _list = super().visitNamespaceType(ctx)
+        return NamespaceType(NamespaceTypeOptions(_name, _list))
+
     def visitValue(self, ctx: DynabuffersParser.ValueContext):
+        if ctx.getText() == "[]":
+            return Value(ValueOptions([]))
+        if ctx.getText() == "[:]":
+            return Value(ValueOptions({}))
         return Value(ValueOptions(ctx.getText()))
 
     def aggregateResult(self, aggregate, nextResult):

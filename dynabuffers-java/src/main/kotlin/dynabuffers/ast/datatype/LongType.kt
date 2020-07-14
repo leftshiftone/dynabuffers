@@ -7,9 +7,9 @@ import java.nio.ByteBuffer
 
 class LongType : IType, ISerializable {
 
-    override fun size(value: Any, registry: IRegistry) = 8
+    override fun size(value: Any?, registry: IRegistry) = 8
 
-    override fun serialize(value: Any, buffer: ByteBuffer, registry: IRegistry) {
+    override fun serialize(value: Any?, buffer: ByteBuffer, registry: IRegistry) {
         buffer.putLong(long(value))
     }
 

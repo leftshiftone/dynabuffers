@@ -25,17 +25,19 @@ SEMICOLON    : ';'              -> skip;
  * Parser Rules
  */
 // serializable
-compilation   : (enumType | classType | unionType)* ;
+compilation   : (enumType | classType | unionType | namespaceType)* ;
 enumType      : 'enum' IDENTIFIER '{' IDENTIFIER+ '}';
 classType     : 'class' IDENTIFIER classOptions? '{' fieldType+ '}';
-unionType     : 'union' IDENTIFIER '{' IDENTIFIER+ '}';
+unionType     : 'union' IDENTIFIER unionOptions? '{' IDENTIFIER+ '}';
 fieldType     : annotation* IDENTIFIER ':' (dataType | arrayType | optionType) fieldOptions? ('=' value)?;
 dataType      : ('string' | 'short' | 'boolean' | 'byte' | 'float' | 'long' | 'int' | 'map' | IDENTIFIER);
 arrayType     : '[' dataType ']';
-optionType    : dataType '?';
+optionType    : (dataType '?') | (arrayType '?');
+namespaceType : 'namespace' IDENTIFIER '{' (enumType | classType | unionType)* '}';
 
 // structural
-classOptions : '(' ('primary' | 'deprecated')+ ')';
+classOptions : '(' ('primary' | 'deprecated' | 'implicit')+ ')';
+unionOptions : '(' ('primary' | 'deprecated' | 'implicit')+ ')';
 fieldOptions : '(' 'deprecated' ')';
 annotation   : '@' IDENTIFIER ('(' value ')')?;
-value        : (STRING | NUMBER | BOOLEAN | IDENTIFIER);
+value        : (STRING | NUMBER | BOOLEAN | IDENTIFIER | '[]' | '[:]');

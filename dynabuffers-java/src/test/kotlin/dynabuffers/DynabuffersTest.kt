@@ -1,9 +1,9 @@
 package dynabuffers
 
+import dynabuffers.api.map.ImplicitDynabuffersMap
 import dynabuffers.exception.DynabuffersException
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.util.*
 
 class DynabuffersTest : AbstractDynabuffersTest() {
 
@@ -132,13 +132,59 @@ class Product {
     @Test
     fun testOptional() {
         val engine = Dynabuffers.parse("class Data { type:string? }")
-        assertMap(engine, mapOf("type" to Optional.of("test")))
+        assertMap(engine, mapOf("type" to "test"))
     }
 
     @Test
-    fun testEmptyOptional() {
+    fun testMissingOptional() {
         val engine = Dynabuffers.parse("class Data { type:string? }")
-        assertMap(engine, mapOf("type" to Optional.empty<String>()))
+        val result = engine.deserialize(engine.serialize(emptyMap()))
+
+        Assertions.assertEquals(result["type"], null)
+    }
+
+    @Test
+    fun testMissingOptionalList() {
+        val engine = Dynabuffers.parse("class Data { list:[string]? }")
+        val result = engine.deserialize(engine.serialize(emptyMap()))
+
+        Assertions.assertEquals(result["list"], null)
+    }
+
+    @Test
+    fun testOptionalValue() {
+        val engine = Dynabuffers.parse("""
+            class Data {
+               type:string = "test"
+               list:[string] = []
+               attr:map = [:]
+            }
+        """.trimIndent())
+        val result = engine.deserialize(engine.serialize(emptyMap()))
+        Assertions.assertTrue(result.containsKey("type"))
+        Assertions.assertTrue(result.containsKey("list"))
+        Assertions.assertTrue(result.containsKey("attr"))
+    }
+
+    @Test
+    fun testMissingField() {
+        Assertions.assertThrows(DynabuffersException::class.java) {
+            val engine = Dynabuffers.parse("class Data { type:string }")
+            engine.deserialize(engine.serialize(mapOf("type" to null)))
+        }
+    }
+
+    @Test
+    fun testImplicitClass() {
+        val engine = Dynabuffers.parse("""
+            class Data(implicit) {
+               value:[byte]
+            }
+        """.trimIndent())
+        val result = engine.deserialize(engine.serialize("test".toByteArray()))
+        Assertions.assertTrue(result.containsKey("value"))
+        Assertions.assertTrue(result is ImplicitDynabuffersMap)
+        Assertions.assertArrayEquals((result as ImplicitDynabuffersMap).getValue() as ByteArray, "test".toByteArray())
     }
 
 }

@@ -1,0 +1,10 @@
+namespace request {
+    class Message {
+        contentA: string
+    }
+}
+namespace response {
+    class Message {
+        contentB: string
+    }
+}

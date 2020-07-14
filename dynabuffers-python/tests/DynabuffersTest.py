@@ -3,6 +3,7 @@ import unittest
 from antlr4 import InputStream
 
 from dynabuffers.Dynabuffers import Dynabuffers
+from dynabuffers.api.map.ImplicitDynabuffersMap import ImplicitDynabuffersMap
 
 
 class DynabuffersTest(unittest.TestCase):
@@ -46,14 +47,14 @@ class Order(primary) { product:Product amount:int }
 
     def test_deprecated_class(self):
         engine = Dynabuffers.parse(InputStream("class Color(deprecated) { name:string }"))
-        engine.addListener(print)
+        engine.add_listener(print)
         map = engine.deserialize(engine.serialize({"name": "red"}))
 
         self.assertEqual(map, {"name": "red"})
 
     def test_deprecated_field(self):
         engine = Dynabuffers.parse(InputStream("class Color { name:string rgb:string(deprecated) }"))
-        engine.addListener(print)
+        engine.add_listener(print)
         map = engine.deserialize(engine.serialize({"name": "red", "rgb": "255,0,0"}))
 
         self.assertEqual(map, {"name": "red", "rgb": "255,0,0"})
@@ -121,6 +122,18 @@ class Product {
 
         self.assertEqual(map, result)
 
+    def test_missing_optional(self):
+        engine = Dynabuffers.parse("class Data { type:string? }")
+        result = engine.deserialize(engine.serialize({}))
+
+        self.assertEqual({"type": None}, result)
+
+    def test_missing_list_optional(self):
+        engine = Dynabuffers.parse("class Data { list:[string]? }")
+        result = engine.deserialize(engine.serialize({}))
+
+        self.assertEqual({"list": None}, result)
+
     def test_empty_optional(self):
         engine = Dynabuffers.parse("class Data { type:string? }")
         map = {"type": None}
@@ -128,6 +141,31 @@ class Product {
 
         self.assertEqual(map, result)
 
+    def test_optional_value(self):
+        engine = Dynabuffers.parse("""
+            class Data {
+               type:string = "test"
+               list:[string] = []
+               attr:map = [:]
+            }
+        """)
+        result = engine.deserialize(engine.serialize({}))
+        self.assertTrue("type" in result)
+        self.assertTrue("list" in result)
+        self.assertTrue("attr" in result)
 
-    if __name__ == "__main__":
-        unittest.main()
+    def test_implicit_class(self):
+        engine = Dynabuffers.parse("""
+                class Data(implicit) {
+                    value:[byte]
+                }
+        """)
+        result = engine.deserialize(engine.serialize(bytearray(b"test")))
+        self.assertTrue("value" in result)
+        self.assertTrue(isinstance(result, ImplicitDynabuffersMap))
+        self.assertEqual(result.get_value(), bytearray(b"test"))
+
+
+
+if __name__ == "__main__":
+    unittest.main()
