@@ -1,0 +1,29 @@
+class Message {
+    message: MessageType
+}
+
+union MessageType {
+    A
+    B
+}
+
+class A {
+    hello: string
+    some: SomeType
+}
+
+class B {
+    abc: string
+}
+
+union SomeType {
+    X
+    Y
+}
+
+class X {
+    i: int
+}
+class Y {
+    i: string
+}
