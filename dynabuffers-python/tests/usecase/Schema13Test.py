@@ -11,7 +11,7 @@ class Schema13Test(unittest.TestCase):
     error = "int too large to convert"
 
     def setUp(self):
-        self.engine = Dynabuffers.parse(FileStream(f"{self.root_dir}/schema13.dbs"))
+        self.engine = Dynabuffers.parse(FileStream(self.root_dir + "/schema13.dbs"))
 
     def test_type_hint(self):
         obj = {"message": {"type": 'query', "data": bytearray(b"abc"), ":type":1}}

@@ -31,7 +31,7 @@ def publish():
 
 def _execute(command, exec_dir=None):
     cmd = command.copy()
-    print(f"Executing: {' '.join(cmd)}")
+    print("Executing: " + " ".join(cmd))
     for e in cmd:
         if e.startswith("$"):
             cmd[cmd.index(e)] = os.getenv(cmd[cmd.index(e)].replace("$", ""))

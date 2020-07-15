@@ -11,7 +11,7 @@ class Schema11Test(unittest.TestCase):
     error = "int too large to convert"
 
     def setUp(self):
-        self.engine = Dynabuffers.parse(FileStream(f"{self.root_dir}/schema11.dbs"))
+        self.engine = Dynabuffers.parse(FileStream(self.root_dir + "/schema11.dbs"))
 
     def test_deep_map(self):
         obj = {"type": 'query', "data":{"a":"b", "c":{"d":{"e":1}}}}

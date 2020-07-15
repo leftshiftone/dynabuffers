@@ -37,8 +37,8 @@ class UnionType(ISerializable):
         classes = list(map(lambda x: registry.resolve(x), self.options.values))
 
         for clazz in classes:
-            fields1 = list(map(lambda x: x.options.name, clazz.options.fields))
-            fields2 = list(value.keys())
+            fields1 = sorted(list(map(lambda x: x.options.name, clazz.options.fields)))
+            fields2 = sorted(list(value.keys()))
 
             if ":type" in value and value[":type"] == classes.index(clazz):
                 return clazz

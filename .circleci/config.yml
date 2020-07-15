@@ -23,7 +23,7 @@ jobs:
             curl $BUILD_STATUS_URL\?flow\=circleci-completed -d '{"repository":"'"$CIRCLE_PROJECT_REPONAME"'","branch":"'"$CIRCLE_BRANCH"'","build_number":"'"$CIRCLE_PREVIOUS_BUILD_NUM"'","build_url":"'"$CIRCLE_BUILD_URL"'"}' -H "Content-Type: application/json" -X POST -i || true
   build:
     docker:
-      - image: python:3.7-stretch
+      - image: python:3.5-stretch
     environment:
       GRADLE_OPTS: '-Xmx128m -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-Xmx1024m"'
       NODE_VERSION: '10.20.1'
@@ -85,7 +85,7 @@ jobs:
 
   release:
     docker:
-      - image: python:3.7-stretch
+      - image: python:3.5-stretch
     environment:
       GRADLE_OPTS: '-Xmx128m -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-Xmx1024m"'
       NODE_VERSION: '10.20.1'
@@ -109,7 +109,7 @@ jobs:
 
   code-analytics:
     docker:
-      - image: python:3.7-stretch
+      - image: python:3.5-stretch
     environment:
       GRADLE_OPTS: '-Xmx128m -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-Xmx1024m"'
       NODE_VERSION: '10.20.1'
