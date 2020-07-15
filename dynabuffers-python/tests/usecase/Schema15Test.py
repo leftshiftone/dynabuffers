@@ -10,7 +10,7 @@ class Schema15Test(unittest.TestCase):
     root_dir = os.path.dirname(os.path.realpath(__file__))
 
     def setUp(self):
-        self.engine = Dynabuffers.parse(FileStream(f"{self.root_dir}/schema15.dbs"))
+        self.engine = Dynabuffers.parse(FileStream(self.root_dir + "/schema15.dbs"))
 
     def test_resolve_union_type_with_ordinal(self):
         obj = {"name": "test", "content": bytearray(b"text"), ":type": 1}

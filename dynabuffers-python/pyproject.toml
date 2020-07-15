@@ -5,7 +5,7 @@ description = "Dynamic cross platform serialization library."
 authors = ["Leftshift One <contact@leftshift.one>"]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.5"
 antlr4-python3-runtime = "4.7.2"
 
 [tool.poetry.dev-dependencies]

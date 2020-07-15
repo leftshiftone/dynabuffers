@@ -11,7 +11,7 @@ class Schema09Test(unittest.TestCase):
     error = ["'i' format requires -2147483648 <= number <= 2147483647", "argument out of range"]
 
     def setUp(self):
-        self.engine = Dynabuffers.parse(FileStream(f"{self.root_dir}/schema09.dbs"))
+        self.engine = Dynabuffers.parse(FileStream(self.root_dir + "/schema09.dbs"))
 
     def test_int_positive_boundary(self):
         obj = {"val": 2147483647}

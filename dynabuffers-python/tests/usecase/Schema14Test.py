@@ -10,7 +10,7 @@ class Schema13Test(unittest.TestCase):
     root_dir = os.path.dirname(os.path.realpath(__file__))
 
     def setUp(self):
-        self.engine = Dynabuffers.parse(FileStream(f"{self.root_dir}/schema14.dbs"))
+        self.engine = Dynabuffers.parse(FileStream(self.root_dir + "/schema14.dbs"))
 
     def test(self):
         obj = {"uuid": "1234",

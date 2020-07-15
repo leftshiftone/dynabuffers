@@ -12,7 +12,7 @@ class Schema05Test(unittest.TestCase):
     def test_parse(self):
         with open(f"{self.root_dir}/1.jpg", 'rb') as f:
             data = b"".join(f.readlines())
-            engine = Dynabuffers.parse(FileStream(f"{self.root_dir}/schema07.dbs"))
+            engine = Dynabuffers.parse(FileStream(self.root_dir + "/schema07.dbs"))
             map = engine.deserialize(engine.serialize({"image": data}))
 
             self.assertEqual(map, {"image": data})

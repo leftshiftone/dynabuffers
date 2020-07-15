@@ -11,7 +11,7 @@ class Schema08Test(unittest.TestCase):
     error = "'h' format requires -32768 <= number <= 32767"
 
     def setUp(self):
-        self.engine = Dynabuffers.parse(FileStream(f"{self.root_dir}/schema08.dbs"))
+        self.engine = Dynabuffers.parse(FileStream(self.root_dir + "/schema08.dbs"))
 
     def test_short_positive_boundary(self):
         obj = {"val": 32767}

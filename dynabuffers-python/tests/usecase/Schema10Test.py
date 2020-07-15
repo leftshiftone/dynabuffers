@@ -11,7 +11,7 @@ class Schema10Test(unittest.TestCase):
     error = "int too large to convert"
 
     def setUp(self):
-        self.engine = Dynabuffers.parse(FileStream(f"{self.root_dir}/schema10.dbs"))
+        self.engine = Dynabuffers.parse(FileStream(self.root_dir + "/schema10.dbs"))
 
     def test_long_positive_boundary(self):
         obj = {"val": 9223372036854775807}

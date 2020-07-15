@@ -10,7 +10,7 @@ class Schema17Test(unittest.TestCase):
     root_dir = os.path.dirname(os.path.realpath(__file__))
 
     def setUp(self):
-        self.engine = Dynabuffers.parse(FileStream(f"{self.root_dir}/schema17.dbs"))
+        self.engine = Dynabuffers.parse(FileStream(self.root_dir + "/schema17.dbs"))
 
     def test_namespace(self):
         message = {"contentA":"abc"}
