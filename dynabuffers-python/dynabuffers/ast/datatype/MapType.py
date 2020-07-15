@@ -1,5 +1,3 @@
-from typing import Dict, Any
-
 from dynabuffers.api.ISerializable import ISerializable, ByteBuffer
 from dynabuffers.ast.datatype.ArrayType import ArrayType, ArrayTypeOptions
 from dynabuffers.ast.datatype.BooleanType import BooleanType
@@ -54,7 +52,7 @@ class MapType(ISerializable):
             val_type.serialize(value[key], buffer, registry)
 
     def deserialize(self, buffer: ByteBuffer, registry):
-        result:Dict[str, Any] = dict()
+        result = dict()
 
         counter = 0
         amount = buffer.getShort()
@@ -156,10 +154,10 @@ class MapType(ISerializable):
 
         raise NameError("cannot handle value " + str(obj))
 
-    def merge_header(self, a:int, b:int) -> int:
+    def merge_header(self, a: int, b: int) -> int:
         right = 0xFFFFFF
         return a << 24 | (b & right)
 
-    def unmerge_header(self, c:int) -> (int, int):
+    def unmerge_header(self, c: int) -> (int, int):
         right = 0xFFFFFF
         return c >> 24, c & right
