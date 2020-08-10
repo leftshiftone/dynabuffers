@@ -99,6 +99,15 @@ class Product {
     }
 
     @Test
+    fun parseMapOfStringToList() {
+        val engine = Dynabuffers.parse("class Languages { word:map }")
+        engine.addListener(System.out::println)
+
+        val result = engine.deserialize(engine.serialize(mapOf("word" to mapOf("de" to listOf("world", "hello")))))
+        assertMap(mapOf("word" to mapOf("de" to arrayOf("world", "hello"))), result)
+    }
+
+    @Test
     fun parseBytearray() {
         val engine = Dynabuffers.parse("class Data { type:string data:[byte] }")
         assertMap(engine, mapOf("type" to "abc", "data" to "abcdefghijklmnopqrstuvwxyz".toByteArray()))
