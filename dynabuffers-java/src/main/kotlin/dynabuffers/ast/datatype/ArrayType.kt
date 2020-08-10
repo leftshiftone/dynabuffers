@@ -12,7 +12,7 @@ class ArrayType(private val options: ArrayTypeOptions) : IType, ISerializable {
         if (value is ByteArray) {
             return 4 + value.size
         }
-        return 4 + (size(value) * list(value).map { options.datatype.size(it!!, registry) }.sum())
+        return 4 + list(value).map { options.datatype.size(it!!, registry) }.sum()
     }
 
     override fun serialize(value: Any?, buffer: ByteBuffer, registry: IRegistry) {
