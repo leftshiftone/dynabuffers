@@ -33,7 +33,7 @@ fieldType     : annotation* IDENTIFIER ':' (dataType | arrayType | optionType) f
 dataType      : ('string' | 'short' | 'boolean' | 'byte' | 'float' | 'long' | 'int' | 'map' | IDENTIFIER);
 arrayType     : '[' dataType ']';
 optionType    : (dataType '?') | (arrayType '?');
-namespaceType : 'namespace' IDENTIFIER '{' (enumType | classType | unionType)* '}';
+namespaceType : 'namespace' IDENTIFIER '{' (enumType | classType | unionType | namespaceType)* '}';
 
 // structural
 classOptions : '(' ('primary' | 'deprecated' | 'implicit')+ ')';

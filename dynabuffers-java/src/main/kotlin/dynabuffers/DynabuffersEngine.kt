@@ -14,6 +14,7 @@ import dynabuffers.ast.annotation.*
 import dynabuffers.ast.structural.Annotation
 import dynabuffers.exception.DynabuffersException
 import java.nio.ByteBuffer
+import kotlin.streams.toList
 
 class DynabuffersEngine(private val tree: List<IType>) {
 
@@ -31,6 +32,12 @@ class DynabuffersEngine(private val tree: List<IType>) {
 
     fun serialize(namespaceName: String, map: Map<String, Any?>): ByteArray {
         val namespace = getNamespace(namespaceName)
+        val engine = DynabuffersEngine(namespace.options.list)
+        return engine.serialize(map)
+    }
+
+    fun serialize(namespaceNames: List<String>, map: Map<String, Any?>): ByteArray {
+        val namespace = getNamespace(namespaceNames)
         val engine = DynabuffersEngine(namespace.options.list)
         return engine.serialize(map)
     }
@@ -61,6 +68,12 @@ class DynabuffersEngine(private val tree: List<IType>) {
 
     fun deserialize(namespaceName: String, bytes: ByteArray): DynabuffersMap {
         val namespace = getNamespace(namespaceName)
+        val engine = DynabuffersEngine(namespace.options.list)
+        return engine.deserialize(bytes)
+    }
+
+    fun deserialize(namespaceNames: List<String>, bytes: ByteArray): DynabuffersMap {
+        val namespace = getNamespace(namespaceNames)
         val engine = DynabuffersEngine(namespace.options.list)
         return engine.deserialize(bytes)
     }
@@ -108,9 +121,27 @@ class DynabuffersEngine(private val tree: List<IType>) {
         } ?: if (classes.isNotEmpty()) classes[0] else throw DynabuffersException("no root type found")
     }
 
-    private fun getNamespace(name: String): NamespaceType {
-        val namespace = tree.filterIsInstance<NamespaceType>().find { it.options.name == name }
-        return namespace ?: throw DynabuffersException("no namespace with name $name found")
+    private fun getNamespace(name: String): NamespaceType = getNamespace(listOf(name))
+
+    private fun findNamespaceByName(name: String, namespace: List<NamespaceType>): NamespaceType? {
+        return namespace?.find { it.options.name==name }
     }
+
+    private fun getNamespace(names: List<String>, namespaces: List<NamespaceType>): NamespaceType {
+        val nsName= names.first()
+        val ns = findNamespaceByName(nsName, namespaces) ?: throw DynabuffersException("no namespace with name $nsName found")
+        if(names.size==1) return ns
+        return getNamespace(names.stream().skip(1).toList(), ns.nestedNamespaces)
+
+    }
+
+    private fun getNamespace(names: List<String>): NamespaceType {
+        val nsName= names.first()
+        val ns = findNamespaceByName(nsName, tree.filterIsInstance<NamespaceType>())
+                ?: throw DynabuffersException("no namespace with name $nsName found")
+        if(names.size==1) return ns
+        return getNamespace(names.stream().skip(1).toList(), ns.nestedNamespaces)
+    }
+
 
 }
