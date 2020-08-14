@@ -191,6 +191,64 @@ class Product {
         result = engine.deserialize(engine.serialize(map,["abc","def"]),["abc","def"])
         self.assertEqual(map, result)
 
+    def test_schema_with_nested_namespace_but_specified_namespaces_have_wrong_order_1(self):
+        engine = Dynabuffers.parse("""
+                namespace abc{
+                    namespace def {
+                        class Data {
+                            value: string
+                        }
+                    }
+                }
+            """)
+        map = {"value": "hallo"}
+        with self.assertRaises(Exception) as ctx:
+            engine.serialize(map,["def","abc"])
+        self.assertTrue(str(ctx.exception) in "no namespace with name def found")
+
+    def test_schema_with_nested_namespace_but_specified_namespaces_have_wrong_order_2(self):
+        engine = Dynabuffers.parse("""
+                namespace abc{
+                    namespace def {
+                        class Data {
+                            value: string
+                        }
+                    }
+                }
+            """)
+        map = {"value": "hallo"}
+        with self.assertRaises(Exception) as ctx:
+            engine.deserialize(engine.serialize(map,["abc","def"]),["def","abc"])
+        self.assertTrue(str(ctx.exception) in "no namespace with name def found")
+
+
+    def test_error_when_namespace_is_required_and_not_used_1(self):
+        engine = Dynabuffers.parse("""
+                namespace abc{
+                    class Data {
+                        value: string
+                    }
+                }
+            """)
+        map = {"value": "hallo"}
+        with self.assertRaises(Exception) as ctx:
+            engine.serialize(map)
+        self.assertTrue(str(ctx.exception) in "no root type found")
+
+    def test_error_when_namespace_is_required_and_not_used_2(self):
+        engine = Dynabuffers.parse("""
+                    namespace abc{
+                        class Data {
+                            value: string
+                        }
+                    }
+                """)
+        map = {"value": "hallo"}
+        with self.assertRaises(Exception) as ctx:
+            engine.deserialize(engine.serialize(map,"abc"))
+        self.assertTrue(str(ctx.exception) in "no root type found")
+
+
     def test_schema_with_namespace_containing_slash_in_name(self):
         engine = Dynabuffers.parse("""
                 namespace `leftshiftone/echo`{
