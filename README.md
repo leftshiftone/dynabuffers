@@ -193,6 +193,40 @@ val bytes = engine.serialize("request", mapOf("content" to "text"))
 engine.deserialize("request", bytes)
 ````
 
+Please note that namespaces can be nested in other namespaces
+
+````
+namespace abc{
+    class DataLevel0 {
+                value0: string
+            }
+    namespace def {
+        class DataLevel1 {
+                value1: int
+            }
+        namespace ghi {
+            class DataLevel2 {
+                value2: float
+            }
+        }
+    }
+}
+#Serializing DataLevel2
+engine.serialize(
+    listOf("abc", "def", "ghi"),
+    mapOf("value2" to 0.2f))
+
+#Serializing DataLevel1
+engine.serialize(
+    listOf("abc", "def"),
+    mapOf("value1" to 3))
+
+#Serializing DataLevel0
+engine.serialize(
+    listOf("abc", ),
+    mapOf("value0" to "someString"))
+````
+
 ## Validation
 By using annotations it is possible to declare validation rules for class fields.
 Dynabuffers has the following built-in annotations:
