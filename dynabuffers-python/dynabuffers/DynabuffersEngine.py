@@ -35,15 +35,29 @@ class DynabuffersEngine(object):
             raise ValueError("no root type found")
         return classes[0]
 
-    def get_namespace(self, name: str) -> NamespaceType:
-        namespace = next((x for x in self.tree if x.options.name == name), None)
+    def get_nested_namespace(self, names: [str]) -> NamespaceType:
+        namespaces = list(filter(lambda x: isinstance(x, NamespaceType), self.tree))
+        return self.get_namespace(names, namespaces)
+
+    def get_namespace(self, names: [str], namespaces: [NamespaceType]) -> NamespaceType:
+        nsName = names[0]
+        ns= self.find_namespace_by_name(nsName, namespaces)
+        if(len(names)==1):
+            return ns
+        return self.get_namespace(names[1:], ns.nestedNamespaces)
+
+    def find_namespace_by_name(self, name: str, namespaces: [NamespaceType] ) -> NamespaceType:
+        namespace = next((x for x in namespaces if x.options.name == name), None)
         if namespace is None:
             raise ValueError("no namespace with name " + str(name) + " found")
         return namespace
 
-    def serialize(self, value: Union[dict, Any], namespace_name:str = None) -> bytearray:
-        if namespace_name is not None:
-            namespace = self.get_namespace(namespace_name)
+    def serialize(self, value: Union[dict, Any], namespace_names:[str] = None) -> bytearray:
+        if namespace_names is not None:
+            if isinstance(namespace_names, list):
+                namespace = self.get_nested_namespace(namespace_names)
+            else:
+                namespace= self.get_nested_namespace([namespace_names])
             engine = DynabuffersEngine(namespace.options.list)
             return engine.serialize(value)
 
@@ -56,9 +70,12 @@ class DynabuffersEngine(object):
 
         return buffer.toBytes()
 
-    def deserialize(self, bytes: bytearray, namespace_name:str = None) -> DynabuffersMap:
-        if namespace_name is not None:
-            namespace = self.get_namespace(namespace_name)
+    def deserialize(self, bytes: bytearray, namespace_names:[str] = None) -> DynabuffersMap:
+        if namespace_names is not None:
+            if isinstance(namespace_names, list):
+                namespace = self.get_nested_namespace(namespace_names)
+            else:
+                namespace= self.get_nested_namespace([namespace_names])
             engine = DynabuffersEngine(namespace.options.list)
             return engine.deserialize(bytes)
 
