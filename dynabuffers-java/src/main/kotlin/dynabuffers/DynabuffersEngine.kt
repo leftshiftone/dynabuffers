@@ -123,8 +123,8 @@ class DynabuffersEngine(private val tree: List<IType>) {
 
     private fun getNamespace(name: String): NamespaceType = getNamespace(listOf(name))
 
-    private fun findNamespaceByName(name: String, namespace: List<NamespaceType>): NamespaceType? {
-        return namespace?.find { it.options.name==name }
+    private fun findNamespaceByName(name: String, namespaces: List<NamespaceType>?): NamespaceType? {
+        return namespaces?.find { it.options.name==name }
     }
 
     private fun getNamespace(names: List<String>, namespaces: List<NamespaceType>): NamespaceType {
@@ -132,16 +132,9 @@ class DynabuffersEngine(private val tree: List<IType>) {
         val ns = findNamespaceByName(nsName, namespaces) ?: throw DynabuffersException("no namespace with name $nsName found")
         if(names.size==1) return ns
         return getNamespace(names.stream().skip(1).toList(), ns.nestedNamespaces)
-
     }
 
-    private fun getNamespace(names: List<String>): NamespaceType {
-        val nsName= names.first()
-        val ns = findNamespaceByName(nsName, tree.filterIsInstance<NamespaceType>())
-                ?: throw DynabuffersException("no namespace with name $nsName found")
-        if(names.size==1) return ns
-        return getNamespace(names.stream().skip(1).toList(), ns.nestedNamespaces)
-    }
-
+    private fun getNamespacesFromRootLevel() =  tree.filterIsInstance<NamespaceType>()
+    private fun getNamespace(names: List<String>): NamespaceType = getNamespace(names, getNamespacesFromRootLevel())
 
 }

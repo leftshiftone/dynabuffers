@@ -196,4 +196,134 @@ class Product {
         Assertions.assertArrayEquals((result as ImplicitDynabuffersMap).getValue() as ByteArray, "test".toByteArray())
     }
 
+    @Test
+    fun `Schema with namespace`() {
+        val engine = Dynabuffers.parse("""
+            namespace abc{
+                class Data {
+                    value: string
+                }
+            }
+        """.trimIndent())
+        val result = engine.deserialize("abc",engine.serialize("abc", mapOf("value" to "someString")))
+        Assertions.assertTrue(result.containsKey("value"))
+        Assertions.assertTrue(result.containsValue("someString"))
+    }
+
+    @Test
+    fun `Schema with namespace, but if namespace not used to serialized-deserialized and therefore clases are not found`() {
+        val engine = Dynabuffers.parse("""
+            namespace abc{
+                class Data {
+                    value: string
+                }
+            }
+        """.trimIndent())
+        try{
+            engine.serialize(mapOf("value" to "someString"))
+            Assertions.assertTrue(false,"Execution should not come here")
+        }catch(ex : DynabuffersException){
+            Assertions.assertTrue(ex.message=="no root type found")
+        }
+
+        try{
+            val msg= engine.serialize("abc",mapOf("value" to "someString"))
+            engine.deserialize(msg)
+            Assertions.assertTrue(false,"Execution should not come here")
+        }catch(ex : DynabuffersException){
+            Assertions.assertTrue(ex.message=="no root type found")
+        }
+    }
+
+    @Test
+    fun `Nested namespaces are processed if given in proper order`() {
+        val engine = Dynabuffers.parse("""
+            namespace abc{
+                namespace def {
+                    class Data {
+                        value: string
+                    }
+                }
+            }
+        """.trimIndent())
+        val result = engine.deserialize(listOf("abc","def"),engine.serialize(listOf("abc","def"), mapOf("value" to "someString")))
+        Assertions.assertTrue(result.containsKey("value"))
+        Assertions.assertTrue(result.containsValue("someString"))
+    }
+
+    @Test
+    fun `Data cannot be serialized-deserialized when schema has nested namespaces and their names are not given in the proper order`() {
+        val engine = Dynabuffers.parse("""
+            namespace abc{
+                namespace def {
+                    class Data {
+                        value: string
+                    }
+                }
+            }
+        """.trimIndent())
+        try{
+            engine.serialize(listOf("def","abc"),mapOf("value" to "someString"))
+            Assertions.assertTrue(false,"Execution should not come here")
+        }catch(ex : DynabuffersException){
+            Assertions.assertTrue(ex.message=="no namespace with name def found")
+        }
+
+        try{
+            val msg= engine.serialize(listOf("abc","def"),mapOf("value" to "someString"))
+            engine.deserialize(listOf("def","abc"),msg)
+            Assertions.assertTrue(false,"Execution should not come here")
+        }catch(ex : DynabuffersException){
+            Assertions.assertTrue(ex.message=="no namespace with name def found")
+        }
+    }
+
+    @Test
+    fun `Namespaces names may contain slashes if surrounded by literal symbol`() {
+        val engine = Dynabuffers.parse("""
+            namespace `leftshiftone/echo`{
+                namespace abc {
+                    namespace def {
+                        class Data {
+                            value: string
+                        }
+                    }
+                }
+            }
+        """.trimIndent())
+        val result = engine.deserialize(listOf("`leftshiftone/echo`","abc","def"),engine.serialize(listOf("`leftshiftone/echo`","abc","def"), mapOf("value" to "someString")))
+        Assertions.assertTrue(result.containsKey("value"))
+        Assertions.assertTrue(result.containsValue("someString"))
+    }
+
+    @Test
+    fun `Use of classes from namespaces is allowed in any level of the nested structure`() {
+        val engine = Dynabuffers.parse("""
+            namespace `leftshiftone/echo`{
+                class DataLevel0 {
+                            value0: string
+                        }
+                namespace abc {
+                    class DataLevel1 {
+                            value1: int
+                        }
+                    namespace def {
+                        class DataLevel2 {
+                            value2: float
+                        }
+                    }
+                }
+            }
+        """.trimIndent())
+        val resultLevel0 = engine.deserialize(listOf("`leftshiftone/echo`"),engine.serialize(listOf("`leftshiftone/echo`"), mapOf("value0" to "someString")))
+        Assertions.assertTrue(resultLevel0.containsKey("value0"))
+        Assertions.assertTrue(resultLevel0.containsValue("someString"))
+        val resultLevel1 = engine.deserialize(listOf("`leftshiftone/echo`","abc"),engine.serialize(listOf("`leftshiftone/echo`","abc"), mapOf("value1" to 3)))
+        Assertions.assertTrue(resultLevel1.containsKey("value1"))
+        Assertions.assertTrue(resultLevel1.containsValue(3))
+        val resultLevel2 = engine.deserialize(listOf("`leftshiftone/echo`","abc","def"),engine.serialize(listOf("`leftshiftone/echo`","abc","def"), mapOf("value2" to 0.2f)))
+        Assertions.assertTrue(resultLevel2.containsKey("value2"))
+        Assertions.assertTrue(resultLevel2.containsValue(0.2f))
+    }
+
 }
