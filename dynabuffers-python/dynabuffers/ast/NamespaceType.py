@@ -9,5 +9,6 @@ class NamespaceTypeOptions:
 
 class NamespaceType:
 
-    def __init__(self, options: NamespaceTypeOptions):
+    def __init__(self, options: NamespaceTypeOptions, nestedNamespaces: ['NamespaceType']):
         self.options = options
+        self.nestedNamespaces = nestedNamespaces

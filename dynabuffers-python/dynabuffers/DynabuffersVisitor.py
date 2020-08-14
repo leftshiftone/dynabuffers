@@ -106,8 +106,9 @@ class DynabuffersVisitor(DynabuffersBaseVisitor):
 
     def visitNamespaceType(self, ctx: DynabuffersParser.NamespaceTypeContext):
         _name = ctx.getChild(1).getText()
-        _list = super().visitNamespaceType(ctx)
-        return NamespaceType(NamespaceTypeOptions(_name, _list))
+        _list = list(filter(lambda x: not isinstance(x, NamespaceType), super().visitNamespaceType(ctx)))
+        _nestedNamespaces = list(filter(lambda x: isinstance(x, NamespaceType), super().visitNamespaceType(ctx)))
+        return NamespaceType(NamespaceTypeOptions(_name, _list), _nestedNamespaces)
 
     def visitValue(self, ctx: DynabuffersParser.ValueContext):
         if ctx.getText() == "[]":

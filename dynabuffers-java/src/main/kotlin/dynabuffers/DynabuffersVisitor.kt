@@ -126,8 +126,9 @@ class DynabuffersVisitor(private val charset: Charset) : DynabuffersBaseVisitor<
 
     override fun visitNamespaceType(ctx: DynabuffersParser.NamespaceTypeContext): List<IType> {
         val name = ctx.getChild(1).text
-        val list = super.visitNamespaceType(ctx).map { it as ISerializable }
-        return listOf(NamespaceType(NamespaceType.NamespaceTypeOptions(name, list)))
+        val list = super.visitNamespaceType(ctx).filter { !(it is NamespaceType) }.map { it as ISerializable }
+        val nestedNamespaces = super.visitNamespaceType(ctx).filter { it is NamespaceType }.map { it as NamespaceType }
+        return listOf(NamespaceType(NamespaceType.NamespaceTypeOptions(name, list),  nestedNamespaces))
     }
 
     override fun aggregateResult(aggregate: List<IType>?, nextResult: List<IType>?): List<IType> {

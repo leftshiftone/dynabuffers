@@ -1,0 +1,12 @@
+namespace echo {
+    namespace incoming {
+        class Message {
+            contentA: string
+        }
+    }
+    namespace outgoing {
+        class Message {
+            contentB: string
+        }
+    }
+}
