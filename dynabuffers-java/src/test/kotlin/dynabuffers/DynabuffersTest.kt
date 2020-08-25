@@ -205,13 +205,13 @@ class Product {
                 }
             }
         """.trimIndent())
-        val result = engine.deserialize("abc",engine.serialize("abc", mapOf("value" to "someString")))
+        val result = engine.deserialize(engine.serialize(mapOf("value" to "someString"), "abc"), "abc")
         Assertions.assertTrue(result.containsKey("value"))
         Assertions.assertTrue(result.containsValue("someString"))
     }
 
     @Test
-    fun `Schema with namespace, but if namespace not used to serialized-deserialized and therefore clases are not found`() {
+    fun `Schema with single namespace, therefore default namespace is chosen if no namespace is supplied`() {
         val engine = Dynabuffers.parse("""
             namespace abc{
                 class Data {
@@ -219,19 +219,70 @@ class Product {
                 }
             }
         """.trimIndent())
-        try{
+        val map = mapOf("value" to "someString")
+        Assertions.assertEquals(map, engine.deserialize(engine.serialize(map)))
+        Assertions.assertEquals(map, engine.deserialize(engine.serialize(map, "abc")))
+        Assertions.assertEquals(map, engine.deserialize(engine.serialize(map), "abc"))
+    }
+
+    @Test
+    fun `Schema with nested namespaces, therefore default namespace is chosen if no namespace is supplied`() {
+        val engine = Dynabuffers.parse("""
+            namespace abc{
+                namespace xyz {
+                    class Data {
+                        value: string
+                    }
+                }
+            }
+        """.trimIndent())
+        val map = mapOf("value" to "someString")
+        Assertions.assertEquals(map, engine.deserialize(engine.serialize(map)))
+        Assertions.assertEquals(map, engine.deserialize(engine.serialize(map, listOf("abc", "xyz"))))
+        Assertions.assertEquals(map, engine.deserialize(engine.serialize(map), listOf("abc", "xyz")))
+    }
+
+    @Test
+    fun `Schema with multiple nested namespaces, therefore outer namespace is chosen as default`() {
+        val engine = Dynabuffers.parse("""
+            namespace abc{
+                namespace uvw {}
+                namespace xyz {}                
+                class Data {
+                    value: string
+                }
+            }
+        """.trimIndent())
+        val map = mapOf("value" to "someString")
+        Assertions.assertEquals(map, engine.deserialize(engine.serialize(map)))
+        Assertions.assertEquals(map, engine.deserialize(engine.serialize(map, listOf("abc"))))
+        Assertions.assertEquals(map, engine.deserialize(engine.serialize(map), listOf("abc")))
+    }
+
+    @Test
+    fun `Schema with multiple namespaces, therefore default namespace is not chosen`() {
+        val engine = Dynabuffers.parse("""
+            namespace abc{
+                class Data {
+                    value: string
+                }
+            }
+            namespace xyz {
+            }
+        """.trimIndent())
+        try {
             engine.serialize(mapOf("value" to "someString"))
-            Assertions.assertTrue(false,"Execution should not come here")
-        }catch(ex : DynabuffersException){
-            Assertions.assertTrue(ex.message=="no root type found")
+            Assertions.assertTrue(false, "Execution should not come here")
+        } catch (ex: DynabuffersException) {
+            Assertions.assertTrue(ex.message == "no root type found")
         }
 
-        try{
-            val msg= engine.serialize("abc",mapOf("value" to "someString"))
+        try {
+            val msg = engine.serialize(mapOf("value" to "someString"), "abc")
             engine.deserialize(msg)
-            Assertions.assertTrue(false,"Execution should not come here")
-        }catch(ex : DynabuffersException){
-            Assertions.assertTrue(ex.message=="no root type found")
+            Assertions.assertTrue(false, "Execution should not come here")
+        } catch (ex: DynabuffersException) {
+            Assertions.assertTrue(ex.message == "no root type found")
         }
     }
 
@@ -246,7 +297,7 @@ class Product {
                 }
             }
         """.trimIndent())
-        val result = engine.deserialize(listOf("abc","def"),engine.serialize(listOf("abc","def"), mapOf("value" to "someString")))
+        val result = engine.deserialize(engine.serialize(mapOf("value" to "someString"), listOf("abc", "def")), listOf("abc", "def"))
         Assertions.assertTrue(result.containsKey("value"))
         Assertions.assertTrue(result.containsValue("someString"))
     }
@@ -262,19 +313,19 @@ class Product {
                 }
             }
         """.trimIndent())
-        try{
-            engine.serialize(listOf("def","abc"),mapOf("value" to "someString"))
-            Assertions.assertTrue(false,"Execution should not come here")
-        }catch(ex : DynabuffersException){
-            Assertions.assertTrue(ex.message=="no namespace with name def found")
+        try {
+            engine.serialize(mapOf("value" to "someString"), listOf("def", "abc"))
+            Assertions.assertTrue(false, "Execution should not come here")
+        } catch (ex: DynabuffersException) {
+            Assertions.assertTrue(ex.message == "no namespace with name def found")
         }
 
-        try{
-            val msg= engine.serialize(listOf("abc","def"),mapOf("value" to "someString"))
-            engine.deserialize(listOf("def","abc"),msg)
-            Assertions.assertTrue(false,"Execution should not come here")
-        }catch(ex : DynabuffersException){
-            Assertions.assertTrue(ex.message=="no namespace with name def found")
+        try {
+            val msg = engine.serialize(mapOf("value" to "someString"), listOf("abc", "def"))
+            engine.deserialize(msg, listOf("def", "abc"))
+            Assertions.assertTrue(false, "Execution should not come here")
+        } catch (ex: DynabuffersException) {
+            Assertions.assertTrue(ex.message == "no namespace with name def found")
         }
     }
 
@@ -291,7 +342,7 @@ class Product {
                 }
             }
         """.trimIndent())
-        val result = engine.deserialize(listOf("`leftshiftone/echo`","abc","def"),engine.serialize(listOf("`leftshiftone/echo`","abc","def"), mapOf("value" to "someString")))
+        val result = engine.deserialize(engine.serialize(mapOf("value" to "someString"), listOf("`leftshiftone/echo`", "abc", "def")), listOf("`leftshiftone/echo`", "abc", "def"))
         Assertions.assertTrue(result.containsKey("value"))
         Assertions.assertTrue(result.containsValue("someString"))
     }
@@ -315,13 +366,13 @@ class Product {
                 }
             }
         """.trimIndent())
-        val resultLevel0 = engine.deserialize(listOf("`leftshiftone/echo`"),engine.serialize(listOf("`leftshiftone/echo`"), mapOf("value0" to "someString")))
+        val resultLevel0 = engine.deserialize(engine.serialize(mapOf("value0" to "someString"), listOf("`leftshiftone/echo`")), listOf("`leftshiftone/echo`"))
         Assertions.assertTrue(resultLevel0.containsKey("value0"))
         Assertions.assertTrue(resultLevel0.containsValue("someString"))
-        val resultLevel1 = engine.deserialize(listOf("`leftshiftone/echo`","abc"),engine.serialize(listOf("`leftshiftone/echo`","abc"), mapOf("value1" to 3)))
+        val resultLevel1 = engine.deserialize(engine.serialize(mapOf("value1" to 3), listOf("`leftshiftone/echo`", "abc")), listOf("`leftshiftone/echo`", "abc"))
         Assertions.assertTrue(resultLevel1.containsKey("value1"))
         Assertions.assertTrue(resultLevel1.containsValue(3))
-        val resultLevel2 = engine.deserialize(listOf("`leftshiftone/echo`","abc","def"),engine.serialize(listOf("`leftshiftone/echo`","abc","def"), mapOf("value2" to 0.2f)))
+        val resultLevel2 = engine.deserialize(engine.serialize(mapOf("value2" to 0.2f), listOf("`leftshiftone/echo`", "abc", "def")), listOf("`leftshiftone/echo`", "abc", "def"))
         Assertions.assertTrue(resultLevel2.containsKey("value2"))
         Assertions.assertTrue(resultLevel2.containsValue(0.2f))
     }

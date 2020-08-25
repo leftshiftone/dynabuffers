@@ -18,28 +18,27 @@ import kotlin.streams.toList
 
 class DynabuffersEngine(private val tree: List<IType>) {
 
+    private val namespaceResolver: NamespaceResolver = NamespaceResolver(this.tree)
     private val listeners = ArrayList<(String) -> Unit>()
 
     fun addListener(consumer: (String) -> Unit) = listeners.add(consumer)
 
-    fun serialize(map: Map<String, Any?>): ByteArray {
+    @JvmOverloads
+    fun serialize(map: Map<String, Any?>, namespaceNames: List<String>? = null): ByteArray {
+        val namespace: NamespaceType? = namespaceResolver.getNamespace(namespaceNames)
+        if (namespace != null) {
+            val engine = DynabuffersEngine(namespace.options.list)
+            return engine.serialize(map)
+        }
+
         val clazz = getRootType() as ISerializable
         val buffer = ByteBuffer.allocate(clazz.size(map, this.registry()))
         clazz.serialize(map, buffer, this.registry())
-
         return buffer.array()
     }
 
-    fun serialize(namespaceName: String, map: Map<String, Any?>): ByteArray {
-        val namespace = getNamespace(namespaceName)
-        val engine = DynabuffersEngine(namespace.options.list)
-        return engine.serialize(map)
-    }
-
-    fun serialize(namespaceNames: List<String>, map: Map<String, Any?>): ByteArray {
-        val namespace = getNamespace(namespaceNames)
-        val engine = DynabuffersEngine(namespace.options.list)
-        return engine.serialize(map)
+    fun serialize(map: Map<String, Any?>, namespaceName: String): ByteArray {
+        return serialize(map, listOf(namespaceName))
     }
 
     fun serialize(result: String) = serialize(mapOf("value" to result))
@@ -53,7 +52,14 @@ class DynabuffersEngine(private val tree: List<IType>) {
     fun serialize(result: Boolean) = serialize(mapOf("value" to result))
 
     @Suppress("UNCHECKED_CAST")
-    fun deserialize(bytes: ByteArray): DynabuffersMap {
+    @JvmOverloads
+    fun deserialize(bytes: ByteArray, namespaceNames: List<String>? = null): DynabuffersMap {
+        val namespace: NamespaceType? = namespaceResolver.getNamespace(namespaceNames)
+        if (namespace != null) {
+            val engine = DynabuffersEngine(namespace.options.list)
+            return engine.deserialize(bytes)
+        }
+
         val root = getRootType() as ISerializable
         val map = root.deserialize(ByteBuffer.wrap(bytes), this.registry()) as Map<String, Any>
 
@@ -66,22 +72,14 @@ class DynabuffersEngine(private val tree: List<IType>) {
         }
     }
 
-    fun deserialize(namespaceName: String, bytes: ByteArray): DynabuffersMap {
-        val namespace = getNamespace(namespaceName)
-        val engine = DynabuffersEngine(namespace.options.list)
-        return engine.deserialize(bytes)
-    }
-
-    fun deserialize(namespaceNames: List<String>, bytes: ByteArray): DynabuffersMap {
-        val namespace = getNamespace(namespaceNames)
-        val engine = DynabuffersEngine(namespace.options.list)
-        return engine.deserialize(bytes)
+    fun deserialize(bytes: ByteArray, namespaceName: String): DynabuffersMap {
+        return deserialize(bytes, listOf(namespaceName))
     }
 
     private fun registry(): IRegistry {
         return object : IRegistry {
-            override fun resolveAnnotation(annotation: Annotation):IAnnotation {
-                when(annotation.options.name) {
+            override fun resolveAnnotation(annotation: Annotation): IAnnotation {
+                when (annotation.options.name) {
                     "NotBlank" -> return NotBlank(annotation.options.values)
                     "MinLength" -> return MinLength(annotation.options.values)
                     "MaxLength" -> return MaxLength(annotation.options.values)
@@ -110,6 +108,7 @@ class DynabuffersEngine(private val tree: List<IType>) {
         }
     }
 
+
     private fun getRootType(): IType {
         val classes = tree.filter { it is ClassType || it is UnionType }
         return classes.find {
@@ -120,21 +119,4 @@ class DynabuffersEngine(private val tree: List<IType>) {
             }
         } ?: if (classes.isNotEmpty()) classes[0] else throw DynabuffersException("no root type found")
     }
-
-    private fun getNamespace(name: String): NamespaceType = getNamespace(listOf(name))
-
-    private fun findNamespaceByName(name: String, namespaces: List<NamespaceType>?): NamespaceType? {
-        return namespaces?.find { it.options.name==name }
-    }
-
-    private fun getNamespace(names: List<String>, namespaces: List<NamespaceType>): NamespaceType {
-        val nsName= names.first()
-        val ns = findNamespaceByName(nsName, namespaces) ?: throw DynabuffersException("no namespace with name $nsName found")
-        if(names.size==1) return ns
-        return getNamespace(names.stream().skip(1).toList(), ns.nestedNamespaces)
-    }
-
-    private fun getNamespacesFromRootLevel() =  tree.filterIsInstance<NamespaceType>()
-    private fun getNamespace(names: List<String>): NamespaceType = getNamespace(names, getNamespacesFromRootLevel())
-
 }
