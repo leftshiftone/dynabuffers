@@ -108,7 +108,6 @@ class DynabuffersEngine(private val tree: List<IType>) {
         }
     }
 
-
     private fun getRootType(): IType {
         val classes = tree.filter { it is ClassType || it is UnionType }
         return classes.find {

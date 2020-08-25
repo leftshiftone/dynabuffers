@@ -1,5 +1,3 @@
-from typing import List, Union
-
 from dynabuffers.api.ISerializable import ISerializable
 
 
