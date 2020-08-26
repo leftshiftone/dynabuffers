@@ -174,7 +174,7 @@ class Product {
                 }
             """)
         map = {"value": "hallo"}
-        result = engine.deserialize(engine.serialize(map,"abc"),"abc")
+        result = engine.deserialize(engine.serialize(map, "abc"), "abc")
         self.assertEqual(map, result)
 
     def test_schema_with_nested_namespace(self):
@@ -188,7 +188,7 @@ class Product {
                 }
             """)
         map = {"value": "hallo"}
-        result = engine.deserialize(engine.serialize(map,["abc","def"]),["abc","def"])
+        result = engine.deserialize(engine.serialize(map, ["abc", "def"]), ["abc", "def"])
         self.assertEqual(map, result)
 
     def test_schema_with_nested_namespace_but_specified_namespaces_have_wrong_order_1(self):
@@ -203,7 +203,7 @@ class Product {
             """)
         map = {"value": "hallo"}
         with self.assertRaises(Exception) as ctx:
-            engine.serialize(map,["def","abc"])
+            engine.serialize(map, ["def", "abc"])
         self.assertTrue(str(ctx.exception) in "no namespace with name def found")
 
     def test_schema_with_nested_namespace_but_specified_namespaces_have_wrong_order_2(self):
@@ -218,11 +218,10 @@ class Product {
             """)
         map = {"value": "hallo"}
         with self.assertRaises(Exception) as ctx:
-            engine.deserialize(engine.serialize(map,["abc","def"]),["def","abc"])
+            engine.deserialize(engine.serialize(map, ["abc", "def"]), ["def", "abc"])
         self.assertTrue(str(ctx.exception) in "no namespace with name def found")
 
-
-    def test_error_when_namespace_is_required_and_not_used_1(self):
+    def test_default_namespace_is_used_if_only_one_is_defined(self):
         engine = Dynabuffers.parse("""
                 namespace abc{
                     class Data {
@@ -231,23 +230,57 @@ class Product {
                 }
             """)
         map = {"value": "hallo"}
-        with self.assertRaises(Exception) as ctx:
-            engine.serialize(map)
-        self.assertTrue(str(ctx.exception) in "no root type found")
+        self.assertEqual(map, engine.deserialize(engine.serialize(map), "abc"))
+        self.assertEqual(map, engine.deserialize(engine.serialize(map, "abc")))
+        self.assertEqual(map, engine.deserialize(engine.serialize(map)))
 
-    def test_error_when_namespace_is_required_and_not_used_2(self):
+    def test_default_namespace_resolution_works_with_nested_namespaces(self):
         engine = Dynabuffers.parse("""
-                    namespace abc{
+                namespace abc{
+                    namespace xyz {
                         class Data {
                             value: string
                         }
                     }
-                """)
+                }                
+            """)
         map = {"value": "hallo"}
+
+        self.assertEqual(map, engine.deserialize(engine.serialize(map, ["abc", "xyz"])))
+        self.assertEqual(map, engine.deserialize(engine.serialize(map), ["abc", "xyz"]))
+        self.assertEqual(map, engine.deserialize(engine.serialize(map)))
+
+    def test_default_namespace_resolution_fails_if_multiple_namespaces_are_defined(self):
+        engine = Dynabuffers.parse("""
+                namespace abc{
+                    class Data {
+                        value: string
+                    }
+                }
+                namespace xyz {
+                }
+            """)
+        map = {"value": "hallo"}
+
         with self.assertRaises(Exception) as ctx:
-            engine.deserialize(engine.serialize(map,"abc"))
+            engine.deserialize(engine.serialize(map))
         self.assertTrue(str(ctx.exception) in "no root type found")
 
+    def test_default_namespace_resolution_works_until_multiple_namespaces_are_available(self):
+        engine = Dynabuffers.parse("""
+            namespace abc{
+                namespace uvw {
+                }
+                namespace xyz {
+                }
+                class Data {
+                    value: string
+                }                
+            }            
+        """)
+        map = {"value": "hallo"}
+
+        self.assertEqual(map, engine.deserialize(engine.serialize(map)))
 
     def test_schema_with_namespace_containing_slash_in_name(self):
         engine = Dynabuffers.parse("""
@@ -262,9 +295,9 @@ class Product {
                 }
             """)
         map = {"value": "hallo"}
-        result = engine.deserialize(engine.serialize(map,["`leftshiftone/echo`","abc","def"]),["`leftshiftone/echo`","abc","def"])
+        result = engine.deserialize(engine.serialize(map, ["`leftshiftone/echo`", "abc", "def"]),
+                                    ["`leftshiftone/echo`", "abc", "def"])
         self.assertEqual(map, result)
-
 
     def test_schema_with_nested_namespaces_containing_clases_in_all_levels(self):
         engine = Dynabuffers.parse("""
@@ -286,14 +319,15 @@ class Product {
             """)
         map0 = {"value0": "someString"}
         map1 = {"value1": 3}
-        map2 = {"value2": ["a","b"]}
-        result0 = engine.deserialize(engine.serialize(map0,["`leftshiftone/echo`"]),["`leftshiftone/echo`"])
+        map2 = {"value2": ["a", "b"]}
+        result0 = engine.deserialize(engine.serialize(map0, ["`leftshiftone/echo`"]), ["`leftshiftone/echo`"])
         self.assertEqual(map0, result0)
-        result1 = engine.deserialize(engine.serialize(map1,["`leftshiftone/echo`","abc"]),["`leftshiftone/echo`","abc"])
+        result1 = engine.deserialize(engine.serialize(map1, ["`leftshiftone/echo`", "abc"]),
+                                     ["`leftshiftone/echo`", "abc"])
         self.assertEqual(map1, result1)
-        result2 = engine.deserialize(engine.serialize(map2,["`leftshiftone/echo`","abc","def"]),["`leftshiftone/echo`","abc","def"])
+        result2 = engine.deserialize(engine.serialize(map2, ["`leftshiftone/echo`", "abc", "def"]),
+                                     ["`leftshiftone/echo`", "abc", "def"])
         self.assertEqual(map2, result2)
-
 
 
 if __name__ == "__main__":

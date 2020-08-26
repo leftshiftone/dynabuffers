@@ -2,7 +2,7 @@ from dynabuffers.api.ISerializable import ISerializable
 
 
 class NamespaceTypeOptions:
-    def __init__(self, name, list:[ISerializable]):
+    def __init__(self, name, list: [ISerializable]):
         self.name = name
         self.list = list
 

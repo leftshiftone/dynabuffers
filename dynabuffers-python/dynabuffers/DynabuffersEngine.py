@@ -1,5 +1,6 @@
-from typing import Union, Any
+from typing import Union, Any, List
 
+from dynabuffers.NamespaceResolver import NamespaceResolver
 from dynabuffers.api.ISerializable import ISerializable, ByteBuffer
 from dynabuffers.api.map.DynabuffersMap import DynabuffersMap
 from dynabuffers.api.map.ImplicitDynabuffersMap import ImplicitDynabuffersMap
@@ -20,12 +21,13 @@ class DynabuffersEngine(object):
 
     def __init__(self, tree: [ISerializable]):
         self.tree = tree
+        self.namespace_resolver = NamespaceResolver(tree)
         self.listeners = []
 
     def add_listener(self, listener):
         self.listeners.append(listener)
 
-    def get_root_type(self) -> ClassType:
+    def __get_root_type(self) -> ClassType:
         classes = list(filter(lambda x: isinstance(x, ClassType) or isinstance(x, UnionType), self.tree))
         for clazz in classes:
             if clazz.options.options.is_primary():
@@ -35,55 +37,33 @@ class DynabuffersEngine(object):
             raise ValueError("no root type found")
         return classes[0]
 
-    def get_nested_namespace(self, names: [str]) -> NamespaceType:
-        namespaces = list(filter(lambda x: isinstance(x, NamespaceType), self.tree))
-        return self.get_namespace(names, namespaces)
-
-    def get_namespace(self, names: [str], namespaces: [NamespaceType]) -> NamespaceType:
-        nsName = names[0]
-        ns= self.find_namespace_by_name(nsName, namespaces)
-        if(len(names)==1):
-            return ns
-        return self.get_namespace(names[1:], ns.nestedNamespaces)
-
-    def find_namespace_by_name(self, name: str, namespaces: [NamespaceType] ) -> NamespaceType:
-        namespace = next((x for x in namespaces if x.options.name == name), None)
-        if namespace is None:
-            raise ValueError("no namespace with name " + str(name) + " found")
-        return namespace
-
-    def serialize(self, value: Union[dict, Any], namespace_names:[str] = None) -> bytearray:
-        if namespace_names is not None:
-            if isinstance(namespace_names, list):
-                namespace = self.get_nested_namespace(namespace_names)
-            else:
-                namespace= self.get_nested_namespace([namespace_names])
+    def serialize(self, value: Union[dict, Any], namespace_names: Union[List[str], str, None] = None) -> bytearray:
+        namespace = self.namespace_resolver.get_nested_namespace(namespace_names)
+        if namespace is not None:
             engine = DynabuffersEngine(namespace.options.list)
             return engine.serialize(value)
 
         if not isinstance(value, dict):
             return self.serialize({"value": value})
 
-        clazz = self.get_root_type()
+        clazz = self.__get_root_type()
         buffer = ByteBuffer(clazz.size(value, Registry(self.tree, self.listeners)))
         clazz.serialize(value, buffer, Registry(self.tree, self.listeners))
 
         return buffer.toBytes()
 
-    def deserialize(self, bytes: bytearray, namespace_names:[str] = None) -> DynabuffersMap:
-        if namespace_names is not None:
-            if isinstance(namespace_names, list):
-                namespace = self.get_nested_namespace(namespace_names)
-            else:
-                namespace= self.get_nested_namespace([namespace_names])
+    def deserialize(self, bytes: bytearray, namespace_names: [str] = None) -> DynabuffersMap:
+        namespace = self.namespace_resolver.get_nested_namespace(namespace_names)
+        if namespace is not None:
             engine = DynabuffersEngine(namespace.options.list)
             return engine.deserialize(bytes)
 
-        root = self.get_root_type()
+        root = self.__get_root_type()
         result = root.deserialize(ByteBuffer(len(bytes), bytes), Registry(self.tree, self.listeners))
         if root.options.options.is_implicit:
             return ImplicitDynabuffersMap(result, self.tree, root)
         return DynabuffersMap(result, self.tree, root)
+
 
 class Registry(object):
 
