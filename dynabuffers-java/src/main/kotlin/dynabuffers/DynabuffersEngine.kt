@@ -8,13 +8,11 @@ import dynabuffers.api.map.DynabuffersMap
 import dynabuffers.api.map.ImplicitDynabuffersMap
 import dynabuffers.ast.ClassType
 import dynabuffers.ast.EnumType
-import dynabuffers.ast.NamespaceType
 import dynabuffers.ast.UnionType
 import dynabuffers.ast.annotation.*
 import dynabuffers.ast.structural.Annotation
 import dynabuffers.exception.DynabuffersException
 import java.nio.ByteBuffer
-import kotlin.streams.toList
 
 class DynabuffersEngine(private val tree: List<IType>) {
 
@@ -24,21 +22,40 @@ class DynabuffersEngine(private val tree: List<IType>) {
     fun addListener(consumer: (String) -> Unit) = listeners.add(consumer)
 
     @JvmOverloads
-    fun serialize(map: Map<String, Any?>, namespaceNames: List<String>? = null): ByteArray {
-        val namespace: NamespaceType? = namespaceResolver.getNamespace(namespaceNames)
-        if (namespace != null) {
-            val engine = DynabuffersEngine(namespace.options.list)
-            return engine.serialize(map)
+    fun serialize(map: Map<String, Any?>): ByteArray {
+        return when (val namespaceDescription = namespaceResolver.getNamespace(map)) {
+            is AbsentNamespace -> {
+                val clazz = getRootType() as ISerializable
+                val buffer = ByteBuffer.allocate(clazz.size(map, this.registry()) + 1)
+                buffer.put(0)
+                clazz.serialize(map, buffer, this.registry())
+                buffer.array()
+            }
+            is ConcreteNamespaceDescription -> {
+                val engine = DynabuffersEngine(namespaceDescription.namespace.options.list)
+                return engine.serializeNamespaceAware(map, namespaceDescription)
+            }
         }
-
-        val clazz = getRootType() as ISerializable
-        val buffer = ByteBuffer.allocate(clazz.size(map, this.registry()))
-        clazz.serialize(map, buffer, this.registry())
-        return buffer.array()
     }
 
     fun serialize(map: Map<String, Any?>, namespaceName: String): ByteArray {
-        return serialize(map, listOf(namespaceName))
+        if (map.containsKey(SpecialKey.NAMESPACE.key)) throw IllegalStateException("Nope sir")
+        return serialize(map.plus(SpecialKey.NAMESPACE.key to namespaceName))
+    }
+
+    fun serialize(map: Map<String, Any?>, namespaceNames: List<String>): ByteArray {
+        if (map.containsKey(SpecialKey.NAMESPACE.key)) throw IllegalStateException("Nope sir")
+        return serialize(map.plus(SpecialKey.NAMESPACE.key to namespaceNames.joinToString(".")))
+    }
+
+    private fun serializeNamespaceAware(map: Map<String, Any?>, namespaceInformation: ConcreteNamespaceDescription): ByteArray {
+        val clazz = getRootType() as ISerializable
+        val amountNamespaces = namespaceInformation.path.size.toByte()
+        val buffer = ByteBuffer.allocate(clazz.size(map, this.registry()) + 1 + amountNamespaces)
+        buffer.put(amountNamespaces)
+        namespaceInformation.path.forEach { buffer.put(it.position) }
+        clazz.serialize(map, buffer, this.registry())
+        return buffer.array()
     }
 
     fun serialize(result: String) = serialize(mapOf("value" to result))
@@ -51,17 +68,28 @@ class DynabuffersEngine(private val tree: List<IType>) {
     fun serialize(result: Double) = serialize(mapOf("value" to result))
     fun serialize(result: Boolean) = serialize(mapOf("value" to result))
 
+
     @Suppress("UNCHECKED_CAST")
     @JvmOverloads
     fun deserialize(bytes: ByteArray, namespaceNames: List<String>? = null): DynabuffersMap {
-        val namespace: NamespaceType? = namespaceResolver.getNamespace(namespaceNames)
-        if (namespace != null) {
-            val engine = DynabuffersEngine(namespace.options.list)
-            return engine.deserialize(bytes)
+        val bb = ByteBuffer.wrap(bytes)
+        return when (val namespaceDescription = namespaceResolver.getNamespace(bb)) {
+            is AbsentNamespace -> internalDeserialize(bb, null)
+            is ConcreteNamespaceDescription -> {
+                val engine = DynabuffersEngine(namespaceDescription.namespace.options.list)
+                engine.internalDeserialize(bb, namespaceDescription)
+            }
         }
+    }
 
+    private fun internalDeserialize(byteBuffer: ByteBuffer, namespaceInfo: ConcreteNamespaceDescription?): DynabuffersMap {
         val root = getRootType() as ISerializable
-        val map = root.deserialize(ByteBuffer.wrap(bytes), this.registry()) as Map<String, Any>
+        val map = if (namespaceInfo != null) {
+            val m = root.deserialize(byteBuffer, this.registry()) as Map<String, Any>
+            m.plus(SpecialKey.NAMESPACE.key to namespaceInfo.joinedPath())
+        } else {
+            root.deserialize(byteBuffer, this.registry()) as Map<String, Any>
+        }
 
         return when (root) {
             is ClassType -> if (root.options.options.isImplicit())

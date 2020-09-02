@@ -26,7 +26,7 @@ class Dynabuffers {
 
         @JvmStatic
         @JvmOverloads
-        fun parse(string: String, namespace:Optional<String> = empty<String>(), charset: Charset = UTF_8): DynabuffersEngine {
+        fun parse(string: String, namespace: Optional<String> = empty<String>(), charset: Charset = UTF_8): DynabuffersEngine {
             return DynabuffersEngine(parse(CharStreams.fromString(string), charset))
         }
 

@@ -1,5 +1,6 @@
 package dynabuffers.api.map
 
+import dynabuffers.SpecialKey
 import dynabuffers.api.IType
 import dynabuffers.ast.ClassType
 import dynabuffers.ast.UnionType
@@ -98,6 +99,7 @@ open class DynabuffersMap(map: Map<String, Any?>,
     private fun isDefined(key: String): Boolean {
         return when (key) {
             ":type" -> true
+            SpecialKey.NAMESPACE.key -> true
             else -> clazz.options.fields.any { it.options.name == key }
         }
     }
@@ -115,7 +117,7 @@ open class DynabuffersMap(map: Map<String, Any?>,
      * Indicates if the given key value is a RefType.
      */
     private fun isRefType(key: String): Boolean {
-        if (key == ":type") return false
+        if (key == ":type" || key == SpecialKey.NAMESPACE.key) return false
         val field = clazz.options.fields.find { it.options.name == key }!!
         return field.options.dataType is RefType
     }

@@ -3,6 +3,7 @@ package dynabuffers.usecase
 import dynabuffers.AbstractDynabuffersTest
 import dynabuffers.Dynabuffers
 import dynabuffers.DynabuffersEngine
+import dynabuffers.SpecialKey
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -19,8 +20,7 @@ class Schema17Test : AbstractDynabuffersTest() {
     fun namespaceTest() {
         val message = mapOf("contentA" to "abc")
         val result = engine.deserialize(engine.serialize(message, "request"), "request")
-
-        assertMap(message, result)
+        assertMap(message.plus(SpecialKey.NAMESPACE.key to "request"), result)
     }
 
 }

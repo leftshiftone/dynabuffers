@@ -2,9 +2,12 @@ package dynabuffers
 
 import dynabuffers.api.map.ImplicitDynabuffersMap
 import dynabuffers.exception.DynabuffersException
+import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
 
 class DynabuffersTest : AbstractDynabuffersTest() {
 
@@ -209,9 +212,9 @@ class Product {
             }
         """.trimIndent())
         val map = mapOf("value" to "someString")
-        assertThat(map).isEqualTo(engine.deserialize(engine.serialize(map)))
-        assertThat(map).isEqualTo(engine.deserialize(engine.serialize(map, "abc")))
-        assertThat(map).isEqualTo(engine.deserialize(engine.serialize(map), "abc"))
+        assertThat(map.plus(SpecialKey.NAMESPACE.key to "abc")).isEqualTo(engine.deserialize(engine.serialize(map)))
+        assertThat(map.plus(SpecialKey.NAMESPACE.key to "abc")).isEqualTo(engine.deserialize(engine.serialize(map, "abc")))
+        assertThat(map.plus(SpecialKey.NAMESPACE.key to "abc")).isEqualTo(engine.deserialize(engine.serialize(map), "abc"))
     }
 
     @Test
@@ -226,12 +229,13 @@ class Product {
             }
         """.trimIndent())
         val map = mapOf("value" to "someString")
-        assertThat(map).isEqualTo(engine.deserialize(engine.serialize(map)))
-        assertThat(map).isEqualTo(engine.deserialize(engine.serialize(map, listOf("abc", "xyz"))))
-        assertThat(map).isEqualTo(engine.deserialize(engine.serialize(map), listOf("abc", "xyz")))
+        assertThat(map.plus(SpecialKey.NAMESPACE.key to "abc.xyz")).isEqualTo(engine.deserialize(engine.serialize(map)))
+        assertThat(map.plus(SpecialKey.NAMESPACE.key to "abc.xyz")).isEqualTo(engine.deserialize(engine.serialize(map, listOf("abc", "xyz"))))
+        assertThat(map.plus(SpecialKey.NAMESPACE.key to "abc.xyz")).isEqualTo(engine.deserialize(engine.serialize(map), listOf("abc", "xyz")))
     }
 
     @Test
+    @Disabled("Should we really choose a default namespace here?")
     fun `Schema with multiple nested namespaces, therefore outer namespace is chosen as default`() {
         val engine = Dynabuffers.parse("""
             namespace abc{
@@ -263,10 +267,7 @@ class Product {
 
         assertThatThrownBy { engine.serialize(mapOf("value" to "someString")) }
                 .isInstanceOf(DynabuffersException::class.java)
-                .hasMessage("no root type found")
-        assertThatThrownBy { engine.deserialize(msg) }
-                .isInstanceOf(DynabuffersException::class.java)
-                .hasMessage("no root type found")
+                .hasMessage("Could not infer default namespace")
     }
 
     @Test
@@ -286,7 +287,7 @@ class Product {
     }
 
     @Test
-    fun `Data cannot be serialized-deserialized when schema has nested namespaces and their names are not given in the proper order`() {
+    fun `Data can be serialized-deserialized when schema has nested namespaces and their names are not given in the proper order - since `() {
         val engine = Dynabuffers.parse("""
             namespace abc{
                 namespace def {
@@ -302,9 +303,8 @@ class Product {
                 .isInstanceOf(DynabuffersException::class.java)
                 .hasMessage("no namespace with name def found")
 
-        assertThatThrownBy { engine.deserialize(msg, listOf("def", "abc")) }
-                .isInstanceOf(DynabuffersException::class.java)
-                .hasMessage("no namespace with name def found")
+        val result = engine.deserialize(msg, listOf("def", "abc"))
+        assertThat(result).isEqualTo(mapOf("value" to "someString", ":namespace" to "abc.def"))
     }
 
     @Test

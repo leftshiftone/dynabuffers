@@ -3,6 +3,7 @@ package dynabuffers.usecase
 import dynabuffers.AbstractDynabuffersTest
 import dynabuffers.Dynabuffers
 import dynabuffers.DynabuffersEngine
+import dynabuffers.SpecialKey
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -20,7 +21,7 @@ class Schema19Test : AbstractDynabuffersTest() {
         val message = mapOf("contentA" to "abc")
         val serializedMessage = engine.serialize(message, listOf("echo", "incoming"))
         val result = engine.deserialize(serializedMessage, listOf("echo", "incoming"))
-        assertMap(message, result)
+        assertMap(message.plus(SpecialKey.NAMESPACE.key to "echo.incoming"), result)
     }
 
 }
