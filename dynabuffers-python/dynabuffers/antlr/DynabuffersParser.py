@@ -1,10 +1,9 @@
-# Generated from Dynabuffers.g4 by ANTLR 4.7.2
+# Generated from Dynabuffers.g4 by ANTLR 4.7
 # encoding: utf-8
 from antlr4 import *
 from io import StringIO
 from typing.io import TextIO
 import sys
-
 
 def serializedATN():
     with StringIO() as buf:
@@ -152,10 +151,9 @@ class DynabuffersParser ( Parser ):
 
     def __init__(self, input:TokenStream, output:TextIO = sys.stdout):
         super().__init__(input, output)
-        self.checkVersion("4.7.2")
+        self.checkVersion("4.7")
         self._interp = ParserATNSimulator(self, self.atn, self.decisionsToDFA, self.sharedContextCache)
         self._predicates = None
-
 
 
 
@@ -258,7 +256,6 @@ class DynabuffersParser ( Parser ):
             self.exitRule()
         return localctx
 
-
     class EnumTypeContext(ParserRuleContext):
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -325,7 +322,6 @@ class DynabuffersParser ( Parser ):
         finally:
             self.exitRule()
         return localctx
-
 
     class ClassTypeContext(ParserRuleContext):
 
@@ -410,7 +406,6 @@ class DynabuffersParser ( Parser ):
             self.exitRule()
         return localctx
 
-
     class UnionTypeContext(ParserRuleContext):
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -489,7 +484,6 @@ class DynabuffersParser ( Parser ):
         finally:
             self.exitRule()
         return localctx
-
 
     class FieldTypeContext(ParserRuleContext):
 
@@ -613,7 +607,6 @@ class DynabuffersParser ( Parser ):
             self.exitRule()
         return localctx
 
-
     class DataTypeContext(ParserRuleContext):
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -665,7 +658,6 @@ class DynabuffersParser ( Parser ):
             self.exitRule()
         return localctx
 
-
     class ArrayTypeContext(ParserRuleContext):
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -715,7 +707,6 @@ class DynabuffersParser ( Parser ):
         finally:
             self.exitRule()
         return localctx
-
 
     class OptionTypeContext(ParserRuleContext):
 
@@ -783,7 +774,6 @@ class DynabuffersParser ( Parser ):
         finally:
             self.exitRule()
         return localctx
-
 
     class NamespaceTypeContext(ParserRuleContext):
 
@@ -903,7 +893,6 @@ class DynabuffersParser ( Parser ):
             self.exitRule()
         return localctx
 
-
     class ClassOptionsContext(ParserRuleContext):
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -966,7 +955,6 @@ class DynabuffersParser ( Parser ):
         finally:
             self.exitRule()
         return localctx
-
 
     class UnionOptionsContext(ParserRuleContext):
 
@@ -1031,7 +1019,6 @@ class DynabuffersParser ( Parser ):
             self.exitRule()
         return localctx
 
-
     class FieldOptionsContext(ParserRuleContext):
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -1078,7 +1065,6 @@ class DynabuffersParser ( Parser ):
         finally:
             self.exitRule()
         return localctx
-
 
     class AnnotationContext(ParserRuleContext):
 
@@ -1143,7 +1129,6 @@ class DynabuffersParser ( Parser ):
         finally:
             self.exitRule()
         return localctx
-
 
     class ValueContext(ParserRuleContext):
 
