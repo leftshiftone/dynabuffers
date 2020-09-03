@@ -189,8 +189,11 @@ namespace response {
    class Data { content: string }
 }
 
-val bytes = engine.serialize("request", mapOf("content" to "text"))
-engine.deserialize("request", bytes)
+val bytes = engine.serialize(mapOf("content" to "text"),"request")
+//or
+val bytes = engine.serialize(mapOf("content" to "text", ":namespace" to "request"))
+
+engine.deserialize(bytes) // => mapOf("content" to "text", ":namespace" to "request")
 ````
 
 Please note that namespaces can be nested in other namespaces
@@ -211,20 +214,24 @@ namespace abc{
         }
     }
 }
+
 #Serializing DataLevel2
 engine.serialize(
-    listOf("abc", "def", "ghi"),
-    mapOf("value2" to 0.2f))
+    mapOf("value2" to 0.2f),
+    listOf("abc", "def", "ghi")
+)
 
 #Serializing DataLevel1
 engine.serialize(
-    listOf("abc", "def"),
-    mapOf("value1" to 3))
+    mapOf("value1" to 3),
+    listOf("abc", "def")
+)
 
 #Serializing DataLevel0
 engine.serialize(
-    listOf("abc", ),
-    mapOf("value0" to "someString"))
+    mapOf("value0" to "someString"),
+    listOf("abc")
+)
 ````
 
 ## Validation
