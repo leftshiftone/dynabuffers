@@ -27,7 +27,7 @@ SEMICOLON    : ';'              -> skip;
  * Parser Rules
  */
 // serializable
-compilation   : (enumType | classType | unionType | namespaceType)* ;
+compilation   : (enumType | classType | unionType | namespaceType)* EOF ;
 enumType      : 'enum' IDENTIFIER '{' IDENTIFIER+ '}';
 classType     : 'class' IDENTIFIER classOptions? '{' fieldType+ '}';
 unionType     : 'union' IDENTIFIER unionOptions? '{' IDENTIFIER+ '}';
