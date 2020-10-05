@@ -340,6 +340,18 @@ class Product {
                                      ["`leftshiftone/echo`", "abc", "def"])
         self.assertEqual(map2, result2)
 
+    def test_number_with_dot(self):
+        engine = Dynabuffers.parse("""
+class Data {
+    value: float = 0.5
+}
+        """)
+        value = round(engine.deserialize(engine.serialize({"value": 0.6}))["value"], 1)
+        self.assertEqual(0.6, value)
+
+        value = round(engine.deserialize(engine.serialize({}))["value"], 1)
+        self.assertEqual(0.5, value)
+
 
 if __name__ == "__main__":
     unittest.main()

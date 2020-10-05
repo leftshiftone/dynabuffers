@@ -7,7 +7,7 @@ grammar Dynabuffers;
 IDENTIFIER : Letter LetterOrDigit*;
 IDENTIFIER_LITERAL : '`' LetterOrDigitOrSymbol* '`';
 STRING     : '"' StringCharacter* '"';
-NUMBER     : Digit+;
+NUMBER     : Digit+(('.')Digit+)?;
 BOOLEAN    : 'true' | 'false';
 
 fragment Digit           : '-'?[0-9];

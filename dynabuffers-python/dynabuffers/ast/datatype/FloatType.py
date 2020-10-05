@@ -7,7 +7,7 @@ class FloatType(ISerializable):
         return 4
 
     def serialize(self, value, buffer, registry):
-        buffer.putFloat(value)
+        buffer.putFloat(value if isinstance(value, float) else float(value))
 
     def deserialize(self, buffer, registry):
         return buffer.getFloat()

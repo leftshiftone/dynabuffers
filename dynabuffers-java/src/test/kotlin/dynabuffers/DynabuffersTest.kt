@@ -2,12 +2,10 @@ package dynabuffers
 
 import dynabuffers.api.map.ImplicitDynabuffersMap
 import dynabuffers.exception.DynabuffersException
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertDoesNotThrow
 
 class DynabuffersTest : AbstractDynabuffersTest() {
 
@@ -354,6 +352,17 @@ class Product {
         val resultLevel2 = engine.deserialize(engine.serialize(mapOf("value2" to 0.2f), listOf("`leftshiftone/echo`", "abc", "def")), listOf("`leftshiftone/echo`", "abc", "def"))
         assertThat(resultLevel2).containsKey("value2")
         assertThat(resultLevel2).containsValue(0.2f)
+    }
+
+    @Test
+    fun `Test float with a dot`() {
+        val engine = Dynabuffers.parse("""
+class Data {
+    value: float = 0.5
+}
+        """.trimIndent())
+        assertThat(engine.deserialize(engine.serialize(mapOf("value" to 0.6)))).containsEntry("value", 0.6f)
+        assertThat(engine.deserialize(engine.serialize(emptyMap()))).containsEntry("value", 0.5f)
     }
 
 }
