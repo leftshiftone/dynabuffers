@@ -28,7 +28,4 @@ namespace second {
               response: string
             }
         }
-    }
 }
-
-
