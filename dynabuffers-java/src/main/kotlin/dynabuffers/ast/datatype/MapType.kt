@@ -17,18 +17,22 @@ class MapType(val options: MapTypeOptions) : IType, ISerializable {
     private val intType = IntType()
     private val longType = LongType()
     private val shortType = ShortType()
+    private val nullType = NullType()
 
     override fun size(value: Any?, registry: IRegistry): Int {
         var size = 2
         (value as Map<*, *>)
-                .filter { e -> e.key != null && e.value != null }
-                .forEach { k, v ->
+                .filter { e -> e.key != null }
+                .forEach { (k, v) ->
                     val keyType = getKeyType(k!!)
-                    val valType = getValType(v!!)
 
                     size += 4
                     size += keyType.size(k, registry)
-                    size += valType.size(v, registry)
+
+                    if (v != null) {
+                        val valType = getValType(v)
+                        size += valType.size(v, registry)
+                    }
                 }
         return size
     }
@@ -36,10 +40,10 @@ class MapType(val options: MapTypeOptions) : IType, ISerializable {
     override fun serialize(value: Any?, buffer: ByteBuffer, registry: IRegistry) {
         buffer.putShort((value as Map<*, *>).size.toShort())
         value
-                .filter { e -> e.key != null && e.value != null }
-                .forEach { k, v ->
+                .filter { e -> e.key != null }
+                .forEach { (k, v) ->
                     val keyType = getKeyType(k!!)
-                    val valType = getValType(v!!)
+                    val valType = getValType(v)
 
                     val keySize = keyType.size(k, registry)
                     val valSize = valType.size(v, registry)
@@ -75,7 +79,7 @@ class MapType(val options: MapTypeOptions) : IType, ISerializable {
         return map
     }
 
-    private fun getValType(obj: Any): ISerializable = when (obj) {
+    private fun getValType(obj: Any?): ISerializable = when (obj) {
         is String -> stringType
         is Map<*, *> -> this
         is Boolean -> booleanType
@@ -86,6 +90,7 @@ class MapType(val options: MapTypeOptions) : IType, ISerializable {
         is Short -> shortType
         is Array<*> -> ArrayType(ArrayTypeOptions(getValType(obj.first() ?: "")))
         is Collection<*> -> ArrayType(ArrayTypeOptions(getValType(obj.first() ?: "")))
+        null -> nullType
         else -> throw IllegalArgumentException("cannot handle value $obj")
     }
 
@@ -94,7 +99,7 @@ class MapType(val options: MapTypeOptions) : IType, ISerializable {
         else -> throw IllegalArgumentException("cannot handle $obj")
     }
 
-    private fun typeToOrdinal(obj: Any): Byte = when (obj) {
+    private fun typeToOrdinal(obj: Any?): Byte = when (obj) {
         is String -> 0
         is Boolean -> 10
         is Byte -> 20
@@ -105,6 +110,7 @@ class MapType(val options: MapTypeOptions) : IType, ISerializable {
         is Map<*, *> -> 70
         is Array<*> -> (80 + typeToOrdinal(obj.first() ?: "") / 10).toByte()
         is Collection<*> -> (80 + typeToOrdinal(obj.first() ?: "") / 10).toByte()
+        null -> 90
         else -> throw IllegalArgumentException("cannot handle value $obj")
     }
 
@@ -125,6 +131,7 @@ class MapType(val options: MapTypeOptions) : IType, ISerializable {
         85 -> ArrayType(ArrayTypeOptions(LongType()))
         86 -> ArrayType(ArrayTypeOptions(ShortType()))
         87 -> ArrayType(ArrayTypeOptions(this))
+        90 -> nullType
         else -> throw IllegalArgumentException("cannot handle ordinal $ordinal")
     }
 
@@ -133,7 +140,7 @@ class MapType(val options: MapTypeOptions) : IType, ISerializable {
         return a.toInt().shl(24).or(b.and(right))
     }
 
-    private fun unmergeHeader(c: Int):Pair<Byte, Int> {
+    private fun unmergeHeader(c: Int): Pair<Byte, Int> {
         val right = 0xFFFFFF
 
         val aBack = c.shr(24).toByte();

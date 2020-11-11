@@ -28,6 +28,12 @@ class Schema11Test : AbstractDynabuffersTest() {
     }
 
     @Test
+    fun testMapWithNotNull() {
+        val envelope = mapOf("type" to "query", "data" to mapOf("a" to "b"))
+        assertMap(engine, envelope, envelope)
+    }
+
+    @Test
     fun testMapWithNull() {
         val envelope = mapOf("type" to "query", "data" to mapOf("a" to null))
         assertMap(engine, envelope, envelope)
