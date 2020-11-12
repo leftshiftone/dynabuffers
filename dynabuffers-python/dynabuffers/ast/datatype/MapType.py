@@ -5,6 +5,7 @@ from dynabuffers.ast.datatype.ByteType import ByteType
 from dynabuffers.ast.datatype.FloatType import FloatType
 from dynabuffers.ast.datatype.IntType import IntType
 from dynabuffers.ast.datatype.LongType import LongType
+from dynabuffers.ast.datatype.NoneType import NoneType
 from dynabuffers.ast.datatype.ShortType import ShortType
 from dynabuffers.ast.datatype.StringType import StringType, StringTypeOptions
 
@@ -22,22 +23,24 @@ class MapType(ISerializable):
     def size(self, value, registry):
         size = 2
         for key in value:
-            if key is None or value[key] is None:
+            if key is None:
                 continue
 
             key_type = self._get_key_type(key)
-            val_type = self._get_val_type(value[key])
 
             size += 4
             size += key_type.size(key, registry)
-            size += val_type.size(value[key], registry)
+
+            if value[key] is not None:
+                val_type = self._get_val_type(value[key])
+                size += val_type.size(value[key], registry)
 
         return size
 
     def serialize(self, value, buffer: ByteBuffer, registry):
         buffer.putShort(len(value))
         for key in value:
-            if key is None or value[key] is None:
+            if key is None:
                 continue
 
             key_type = self._get_key_type(key)
@@ -89,6 +92,8 @@ class MapType(ISerializable):
             return ByteType()
         if isinstance(obj, list):
             return ArrayType(ArrayTypeOptions(self._get_val_type(obj[0])))
+        if obj is None:
+            return NoneType()
         raise NameError("cannot handle value " + str(obj))
 
     def _get_key_type(self, obj) -> ISerializable:
@@ -115,7 +120,8 @@ class MapType(ISerializable):
             return 70
         if isinstance(obj, list):
             return 80 + self._type_to_ordinal(obj[0])
-
+        if obj is None:
+            return 90
         raise NameError("cannot handle value " + str(obj))
 
     def _ordinal_to_type(self, obj):
@@ -151,7 +157,8 @@ class MapType(ISerializable):
             return ArrayType(ArrayTypeOptions(ShortType()))
         if obj == 87:
             return ArrayType(ArrayTypeOptions(self))
-
+        if obj == 90:
+            return NoneType()
         raise NameError("cannot handle value " + str(obj))
 
     def merge_header(self, a: int, b: int) -> int:
