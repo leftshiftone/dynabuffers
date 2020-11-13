@@ -81,6 +81,14 @@ allprojects {
             }
         }
     }
+    configurations.all {
+        resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+            def requested = details.requested
+            if (requested.group == "org.jetbrains.kotlin") {
+                details.useVersion kotlinVersion
+            }
+        }
+    }
 
     if (System.getenv("CI")) {
         afterEvaluate { rootProject.tasks.postRelease.finalizedBy rootProject.tasks.sendReleaseEmail }
