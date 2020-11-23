@@ -88,8 +88,8 @@ class MapType(val options: MapTypeOptions) : IType, ISerializable {
         is Int -> intType
         is Long -> longType
         is Short -> shortType
-        is Array<*> -> ArrayType(ArrayTypeOptions(getValType(obj.first() ?: "")))
-        is Collection<*> -> ArrayType(ArrayTypeOptions(getValType(obj.first() ?: "")))
+        is Array<*> -> ArrayType(ArrayTypeOptions(getValType(obj.firstOrNull() ?: "")))
+        is Collection<*> -> ArrayType(ArrayTypeOptions(getValType(obj.firstOrNull() ?: "")))
         null -> nullType
         else -> throw IllegalArgumentException("cannot handle value $obj")
     }
@@ -108,8 +108,8 @@ class MapType(val options: MapTypeOptions) : IType, ISerializable {
         is Long -> 50
         is Short -> 60
         is Map<*, *> -> 70
-        is Array<*> -> (80 + typeToOrdinal(obj.first() ?: "") / 10).toByte()
-        is Collection<*> -> (80 + typeToOrdinal(obj.first() ?: "") / 10).toByte()
+        is Array<*> -> (80 + typeToOrdinal(obj.firstOrNull() ?: "") / 10).toByte()
+        is Collection<*> -> (80 + typeToOrdinal(obj.firstOrNull() ?: "") / 10).toByte()
         null -> 90
         else -> throw IllegalArgumentException("cannot handle value $obj")
     }
