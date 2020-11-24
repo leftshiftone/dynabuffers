@@ -39,4 +39,10 @@ class Schema11Test : AbstractDynabuffersTest() {
         assertMap(engine, envelope, envelope)
     }
 
+    @Test
+    fun testSelection() {
+        val envelope = mapOf("type" to "query", "data" to mapOf("testValue" to arrayOf(mapOf("a" to "b"))))
+        assertMap(engine, envelope, envelope)
+    }
+
 }
