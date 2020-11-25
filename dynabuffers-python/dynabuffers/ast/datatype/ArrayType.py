@@ -12,7 +12,8 @@ class ArrayType(ISerializable):
         self.options = options
 
     def size(self, value, registry):
-        return 4 + (len(value) * self.options.datatype.size(value, registry))
+        s = sum(map(lambda val: self.options.datatype.size(val, registry), value))
+        return 4 + s
 
     def serialize(self, value, buffer, registry):
         buffer.putInt(len(value))

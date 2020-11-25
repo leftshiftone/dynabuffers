@@ -33,5 +33,16 @@ class Schema11Test(unittest.TestCase):
         result = self.engine.deserialize(self.engine.serialize(obj))
         self.assertEqual(result, obj)
 
+    def test_map_with_empty_array(self):
+        obj = {"type": 'query', "data": {"e": []}}
+        result = self.engine.deserialize(self.engine.serialize(obj))
+        self.assertEqual(result, obj)
+
+    def test_map_with_array_of_maps(self):
+        obj = {"type": 'query', "data": {"e": [{"key1": "val1"}, {"key2": "val2"}]}}
+        result = self.engine.deserialize(self.engine.serialize(obj))
+        self.assertEqual(result, obj)
+
+
 if __name__ == "__main__":
     unittest.main()
