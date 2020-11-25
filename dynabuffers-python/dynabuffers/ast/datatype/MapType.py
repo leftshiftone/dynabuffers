@@ -91,7 +91,7 @@ class MapType(ISerializable):
         if isinstance(obj, bytes):
             return ByteType()
         if isinstance(obj, list):
-            return ArrayType(ArrayTypeOptions(self._get_val_type(obj[0])))
+            return ArrayType(ArrayTypeOptions(self._get_val_type("" if len(obj) == 0 else obj[0])))
         if obj is None:
             return NoneType()
         raise NameError("cannot handle value " + str(obj))
@@ -119,7 +119,7 @@ class MapType(ISerializable):
         if isinstance(obj, dict):
             return 70
         if isinstance(obj, list):
-            return 80 + self._type_to_ordinal(obj[0])
+            return int(80 + self._type_to_ordinal("" if len(obj) == 0 else obj[0]) / 10)
         if obj is None:
             return 90
         raise NameError("cannot handle value " + str(obj))

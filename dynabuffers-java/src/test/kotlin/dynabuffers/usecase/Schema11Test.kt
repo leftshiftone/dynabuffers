@@ -39,4 +39,36 @@ class Schema11Test : AbstractDynabuffersTest() {
         assertMap(engine, envelope, envelope)
     }
 
+    @Test
+    fun testArrayOfMaps() {
+        val envelope = mapOf("type" to "query", "data" to mapOf("mapKey1" to arrayOf(mapOf("innerMapKey1" to "innerVal1"))))
+        assertMap(engine, envelope, envelope)
+    }
+
+    @Test
+    fun testListsOfMaps() {
+        val input = mapOf("type" to "query", "data" to mapOf("mapKey1" to listOf(
+                mapOf("innerMapKey1" to "innerVal1"),
+                mapOf("innerMapKey2" to "innerVal2")
+        )))
+        val expected = mapOf("type" to "query", "data" to mapOf("mapKey1" to arrayOf(
+                mapOf("innerMapKey1" to "innerVal1"),
+                mapOf("innerMapKey2" to "innerVal2")
+        )))
+        assertMap(engine, input, expected)
+    }
+
+    @Test
+    fun testCollectionOfMaps() {
+        val input = mapOf("type" to "query", "data" to mapOf("mapKey1" to mutableListOf(
+                mapOf("innerMapKey1" to "innerVal1"),
+                mapOf("innerMapKey2" to "innerVal2")
+        )))
+        val expected = mapOf("type" to "query", "data" to mapOf("mapKey1" to arrayOf(
+                mapOf("innerMapKey1" to "innerVal1"),
+                mapOf("innerMapKey2" to "innerVal2")
+        )))
+        assertMap(engine, input, expected)
+    }
+
 }
