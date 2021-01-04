@@ -87,7 +87,7 @@ class MapType(ISerializable):
         if isinstance(obj, float):
             return FloatType()
         if isinstance(obj, int):
-            return IntType()
+            return IntType() if -2147483648 <= obj <= 2147483647 else LongType()
         if isinstance(obj, bytes):
             return ByteType()
         if isinstance(obj, list):
@@ -111,7 +111,7 @@ class MapType(ISerializable):
         if isinstance(obj, float):
             return 30
         if isinstance(obj, int):
-            return 40
+            return 40 if -2147483648 <= obj <= 2147483647 else 50
         if isinstance(obj, bytes) and len(obj) == 8:
             return 50
         if isinstance(obj, bytes) and len(obj) == 2:
@@ -134,7 +134,7 @@ class MapType(ISerializable):
         if obj == 30:
             return FloatType()
         if obj == 40:
-            return IntType()
+            return IntType() if -2147483648 <= obj <= 2147483647 else LongType()
         if obj == 50:
             return LongType()
         if obj == 60:
