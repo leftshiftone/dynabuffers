@@ -134,7 +134,7 @@ class MapType(ISerializable):
         if obj == 30:
             return FloatType()
         if obj == 40:
-            return IntType() if -2147483648 <= obj <= 2147483647 else LongType()
+            return IntType()
         if obj == 50:
             return LongType()
         if obj == 60:
