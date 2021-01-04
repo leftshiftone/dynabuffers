@@ -10,7 +10,7 @@ class Schema22(unittest.TestCase):
     root_dir = os.path.dirname(os.path.realpath(__file__))
 
     def setUp(self):
-        self.engine = Dynabuffers.parse(FileStream(f"{self.root_dir}/schema22.dbs"))
+        self.engine = Dynabuffers.parse(FileStream(self.root_dir + "/schema22.dbs"))
 
     def test(self):
         values = [
