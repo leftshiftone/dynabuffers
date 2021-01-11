@@ -6,7 +6,7 @@ from antlr4 import FileStream
 from dynabuffers.Dynabuffers import Dynabuffers
 
 
-class Schema13Test(unittest.TestCase):
+class Schema14Test(unittest.TestCase):
     root_dir = os.path.dirname(os.path.realpath(__file__))
 
     def setUp(self):
