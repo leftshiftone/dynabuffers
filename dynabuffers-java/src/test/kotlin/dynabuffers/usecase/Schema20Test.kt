@@ -21,7 +21,7 @@ class Schema20Test : AbstractDynabuffersTest() {
         val message = mapOf("contentA" to "abc")
         val serializedMessage = engine.serialize(message, listOf("`leftshiftone/echo`", "incoming"))
 
-        val result = engine.deserialize(serializedMessage, listOf("`leftshiftone/echo`", "incoming"))
+        val result = engine.deserialize(serializedMessage)
 
         assertMap(message.plus(SpecialKey.NAMESPACE.key to "`leftshiftone/echo`.incoming"), result)
     }

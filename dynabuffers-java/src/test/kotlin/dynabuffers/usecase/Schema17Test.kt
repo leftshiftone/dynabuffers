@@ -19,7 +19,7 @@ class Schema17Test : AbstractDynabuffersTest() {
     @Test
     fun namespaceTest() {
         val message = mapOf("contentA" to "abc")
-        val result = engine.deserialize(engine.serialize(message, "request"), "request")
+        val result = engine.deserialize(engine.serialize(message, "request"))
         assertMap(message.plus(SpecialKey.NAMESPACE.key to "request"), result)
     }
 
