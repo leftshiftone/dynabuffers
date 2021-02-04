@@ -1,12 +1,12 @@
 from typing import Union, Any, List
 
-from dynabuffers.NamespaceResolver import NamespaceResolver, NamespaceDescription
+from dynabuffers import NAMESPACE_KEY
+from dynabuffers.NamespaceResolver import NamespaceResolver
+from dynabuffers.RootElement import RootElement
 from dynabuffers.api.ISerializable import ISerializable, ByteBuffer
 from dynabuffers.api.map.DynabuffersMap import DynabuffersMap
-from dynabuffers.api.map.ImplicitDynabuffersMap import ImplicitDynabuffersMap
 from dynabuffers.ast.ClassType import ClassType
 from dynabuffers.ast.EnumType import EnumType
-from dynabuffers.ast.NamespaceType import NamespaceType
 from dynabuffers.ast.UnionType import UnionType
 from dynabuffers.ast.annotation.GreaterEquals import GreaterEquals
 from dynabuffers.ast.annotation.GreaterThan import GreaterThan
@@ -27,54 +27,23 @@ class DynabuffersEngine(object):
     def add_listener(self, listener):
         self.listeners.append(listener)
 
-    def __get_root_type(self) -> ClassType:
-        classes = list(filter(lambda x: isinstance(x, ClassType) or isinstance(x, UnionType), self.tree))
-        for clazz in classes:
-            if clazz.options.options.is_primary():
-                return clazz
-
-        if len(classes) == 0:
-            raise ValueError("no root type found")
-        return classes[0]
-
     def serialize(self, value: Union[dict, Any], namespace_names: Union[List[str], str] = None) -> bytearray:
         if not isinstance(value, dict):
             return self.serialize({"value": value})
 
         if namespace_names is not None:
-            if ':namespace' in value:
-                raise Exception(":namespace is already present in dictionary - use serialize/1")
+            if NAMESPACE_KEY in value:
+                raise Exception(f"{NAMESPACE_KEY} is already present in dictionary - use serialize/1")
             if isinstance(namespace_names, List):
-                value[':namespace'] = '.'.join(namespace_names)
+                value[NAMESPACE_KEY] = '.'.join(namespace_names)
             if isinstance(namespace_names, str):
-                value[':namespace'] = namespace_names
-            return self.serialize(value)
-        namespace_description = self.namespace_resolver.get_namespace(value)
-        if namespace_description is not None:
-            engine = DynabuffersEngine(namespace_description.namespace.options.list)
-            return engine.__serialize_namespace_aware(value, namespace_description)
+                value[NAMESPACE_KEY] = namespace_names
 
-
-        clazz = self.__get_root_type()
-        buffer = ByteBuffer(
-            clazz.size(value, Registry(self.tree, self.listeners)) + 1)  # plus 1 for the namespace path length byte
-        buffer.put(bytes([0]))  # no namespaces found - put 0 as namespace path length
-        clazz.serialize(value, buffer, Registry(self.tree, self.listeners))
-
+        root_element = RootElement(self.tree)
+        registry = Registry(self.tree, self.listeners)
+        buffer = ByteBuffer(root_element.size(value, registry))
+        root_element.serialize(value, buffer, registry)
         return buffer.toBytes()
-
-    def __serialize_namespace_aware(self, value: dict, namespace_description: NamespaceDescription) -> bytearray:
-        clazz = self.__get_root_type()
-        len_namespace_path = len(namespace_description.path)
-        buffer = ByteBuffer(clazz.size(value, Registry(self.tree, self.listeners)) + 1 + len_namespace_path)
-        buffer.put(bytes([len_namespace_path]))
-
-        for waypoint in namespace_description.path:
-            buffer.put(bytes([waypoint.position]))
-
-        clazz.serialize(value, buffer, Registry(self.tree, self.listeners))
-        return buffer.toBytes()
-
 
     def deserialize(self, bytes: bytearray, namespaces: Union[List[str], str] = None) -> DynabuffersMap:
         """
@@ -82,25 +51,9 @@ class DynabuffersEngine(object):
         :param namespaces: only there for compat reasons => unused and deprecated!
         :return:
         """
-        namespace_description = self.namespace_resolver.get_namespace_from_serialized(bytes)
-        if namespace_description is not None:
-            engine = DynabuffersEngine(namespace_description.namespace.options.list)
-            bytes_without_namespace_info = len(namespace_description.path) + 1
-            return engine.__internal_deserialize(bytes[bytes_without_namespace_info:], namespace_description)
-        return self.__internal_deserialize(bytes[1:], None)
-
-
-    def __internal_deserialize(self, bb: bytearray, namespace_description: Union[NamespaceDescription, None]) -> DynabuffersMap:
-        def _assemble() ->  DynabuffersMap:
-            root = self.__get_root_type()
-            result = root.deserialize(ByteBuffer(len(bb), bb), Registry(self.tree, self.listeners))
-            if root.options.options.is_implicit:
-                return ImplicitDynabuffersMap(result, self.tree, root)
-            return DynabuffersMap(result, self.tree, root)
-        map = _assemble()
-        if namespace_description is not None:
-            map[":namespace"] = namespace_description.joined_path()
-        return map
+        bb = ByteBuffer(len(bytes), bytes)
+        registry = Registry(self.tree, self.listeners)
+        return RootElement(self.tree).deserialize(bb, registry)
 
 
 class Registry(object):
