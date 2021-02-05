@@ -9,6 +9,7 @@ import dynabuffers.ast.*
 import dynabuffers.ast.annotation.*
 import dynabuffers.ast.structural.Annotation
 import dynabuffers.exception.DynabuffersException
+import dynabuffers.header.RootElement
 import java.nio.ByteBuffer
 
 class DynabuffersEngine(private val tree: List<IType>) {

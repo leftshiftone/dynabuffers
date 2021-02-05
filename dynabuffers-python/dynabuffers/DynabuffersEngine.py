@@ -2,7 +2,7 @@ from typing import Union, Any, List
 
 from dynabuffers import NAMESPACE_KEY
 from dynabuffers.NamespaceResolver import NamespaceResolver
-from dynabuffers.RootElement import RootElement
+from dynabuffers.header.RootElement import RootElement
 from dynabuffers.api.ISerializable import ISerializable, ByteBuffer
 from dynabuffers.api.map.DynabuffersMap import DynabuffersMap
 from dynabuffers.ast.ClassType import ClassType

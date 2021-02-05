@@ -1,7 +1,7 @@
 from typing import List, Union
 
 from dynabuffers import NAMESPACE_KEY
-from dynabuffers.Header import Header
+from dynabuffers.header.Header import Header
 from dynabuffers.NamespaceResolver import NamespaceResolver, NamespaceDescription
 from dynabuffers.api.ISerializable import ISerializable
 from dynabuffers.api.map.DynabuffersMap import DynabuffersMap

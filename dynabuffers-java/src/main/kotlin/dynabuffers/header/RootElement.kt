@@ -1,11 +1,16 @@
-package dynabuffers.ast
+package dynabuffers.header
 
-import dynabuffers.*
+import dynabuffers.ConcreteNamespaceDescription
+import dynabuffers.NamespaceDescription
+import dynabuffers.NamespaceResolver
+import dynabuffers.SpecialKey
 import dynabuffers.api.IRegistry
 import dynabuffers.api.ISerializable
 import dynabuffers.api.IType
 import dynabuffers.api.map.DynabuffersMap
 import dynabuffers.api.map.ImplicitDynabuffersMap
+import dynabuffers.ast.ClassType
+import dynabuffers.ast.UnionType
 import dynabuffers.exception.DynabuffersException
 import java.nio.ByteBuffer
 
@@ -36,7 +41,7 @@ class RootElement(val tree: List<IType>) : ISerializable {
     override fun deserialize(buffer: ByteBuffer, registry: IRegistry): DynabuffersMap {
         val header = Header(namespaceResolver, version).deserialize(buffer, registry)
         if (header.version != version)
-            throw DynabuffersException("Provided Dynabuffers version does not match current version. Expected: $version Actual: ${header.version}")
+            throw DynabuffersException("Dynabuffers version of serialized data does not match current version. Expected: $version Actual: ${header.version}")
 
         // TODO: Handle reserved bytes here (Encryption etc)
 

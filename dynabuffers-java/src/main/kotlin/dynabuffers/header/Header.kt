@@ -1,4 +1,4 @@
-package dynabuffers.ast
+package dynabuffers.header
 
 import dynabuffers.NamespaceDescription
 import dynabuffers.NamespaceResolver
@@ -10,8 +10,6 @@ import java.nio.ByteBuffer
 import kotlin.experimental.and
 import kotlin.experimental.or
 import kotlin.math.ceil
-
-data class HeaderSpec(val version: Byte, val reserved: Byte, val namespaceDescription: NamespaceDescription)
 
 class Header(
     private val namespaceResolver: NamespaceResolver,
@@ -34,7 +32,8 @@ class Header(
         buffer.put(version)
         // 2. Byte: Namespace depth + reserved bits
         val namespacePath = getNamespacePath(value as Map<String, Any?>)
-        val namespaceDepth = namespacePath.size.toByte().checkedShiftLeft(numberOfReservedBits)
+        val namespaceDepth =
+            namespacePath.size.toByte().checkedShiftLeft(numberOfReservedBits, "Maximum namespace depth exceeded.")
         buffer.put(namespaceDepth or reserved.assertOnlyNFirstBitsSet(numberOfReservedBits))
         // 3. up to 6. Byte: Namespace path
         compress4BitToBytes(namespacePath).forEach { buffer.put(it) }
@@ -54,9 +53,17 @@ class Header(
 
     private fun compress4BitToBytes(bits: List<Byte>): List<Byte> {
         val bitsToCompress = if (bits.size % 2 == 0) bits else bits.plus(0)
+
         return bitsToCompress
             .chunked(2) {
-                (it[0].checkedShiftLeft(4) + it[1].assertOnlyNFirstBitsSet(4)).toByte()
+                val firstNamespace =
+                    it[0].checkedShiftLeft(4, "Maximum number of namespaces on the same level exceeded.")
+                val secondNamespace =
+                    it[1].assertOnlyNFirstBitsSet(4, "Maximum number of namespaces on the same layer exceeded.")
+                (firstNamespace + secondNamespace).toByte() // TODO: use or?
             }
+
     }
 }
+
+data class HeaderSpec(val version: Byte, val reserved: Byte, val namespaceDescription: NamespaceDescription)
