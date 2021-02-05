@@ -1,6 +1,7 @@
 from typing import List, Union
 
 from dynabuffers import NAMESPACE_KEY
+from dynabuffers.header.DynabuffersVersion import DYNABUFFERS_VERSION
 from dynabuffers.header.Header import Header
 from dynabuffers.NamespaceResolver import NamespaceResolver, NamespaceDescription
 from dynabuffers.api.ISerializable import ISerializable
@@ -11,9 +12,9 @@ from dynabuffers.ast.UnionType import UnionType
 
 
 class RootElement(ISerializable):
-    def __init__(self, tree: [ISerializable]):
+    def __init__(self, tree: [ISerializable], version: int = DYNABUFFERS_VERSION.get_major()):
         self._tree = tree
-        self._version = 1
+        self._version = version
         self._namespace_resolver = NamespaceResolver(tree)
 
     def size(self, value, registry):

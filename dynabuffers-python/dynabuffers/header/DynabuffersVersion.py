@@ -11,4 +11,4 @@ class VersionWrapper:
             raise ValueError(f"Dynabuffers major version cannot be extracted from: {self._version}") from err
 
 
-DYNABUFFERS_VERSION = VersionWrapper("@VERSION@")
+DYNABUFFERS_VERSION = VersionWrapper("1.2.0-SNAPSHOT")

@@ -1,9 +1,6 @@
 package dynabuffers.header
 
-import dynabuffers.ConcreteNamespaceDescription
-import dynabuffers.NamespaceDescription
-import dynabuffers.NamespaceResolver
-import dynabuffers.SpecialKey
+import dynabuffers.*
 import dynabuffers.api.IRegistry
 import dynabuffers.api.ISerializable
 import dynabuffers.api.IType
@@ -14,8 +11,8 @@ import dynabuffers.ast.UnionType
 import dynabuffers.exception.DynabuffersException
 import java.nio.ByteBuffer
 
-class RootElement(val tree: List<IType>) : ISerializable {
-    private val version: Byte = 1 // TODO: Get correct version
+class RootElement(val tree: List<IType>, private val version: Byte = DynabuffersVersion.current.getMajor()) :
+    ISerializable {
     private var namespaceResolver = NamespaceResolver(tree)
 
     override fun size(value: Any?, registry: IRegistry): Int {

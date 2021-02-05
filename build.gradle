@@ -65,37 +65,6 @@ asteriaReport {
         "${project.buildDir}/test-results/${it}/binary"
     })
 }
-task generateVersionClassJava(type: Copy) {
-    def dstPath = "${project(":dynabuffers-java").projectDir}/src/main/kotlin/dynabuffers/header"
-    from "${project(":dynabuffers-java").projectDir}/src/main/resources/templates"
-    into dstPath
-    include "DynabuffersVersion.vm"
-    rename ("DynabuffersVersion.vm", "DynabuffersVersion.kt")
-    doLast {
-        replaceVersionInTemplate("$dstPath/DynabuffersVersion.kt")
-    }
-}
-
-task generateVersionClassPython(type: Copy) {
-    def dstPath = "${project(":dynabuffers-python").projectDir}/dynabuffers/header"
-    from "${project(":dynabuffers-python").projectDir}/resources/templates"
-    into dstPath
-    include "DynabuffersVersion.vm"
-    rename ("DynabuffersVersion.vm", "DynabuffersVersion.py")
-    doLast {
-        replaceVersionInTemplate("$dstPath/DynabuffersVersion.py")
-    }
-}
-
-classes.dependsOn generateVersionClassJava, generateVersionClassPython
-
-def replaceVersionInTemplate(String path) {
-    ant.replace(
-            file: path,
-            token: "@VERSION@",
-            value: project.version.toString()
-    )
-}
 
 allprojects {
     apply plugin: "one.leftshift.asteria-dependency"
@@ -165,6 +134,36 @@ task generateGrammarSourcePython(type: AntlrTask) {
 }
 generateGrammarSource.dependsOn generateGrammarSourceJava
 generateGrammarSource.dependsOn generateGrammarSourcePython
+
+task generateVersionClassJava(type: Copy) {
+    def dstPath = "${projectDir}/src/main/kotlin/dynabuffers/header"
+    from "${projectDir}/src/main/resources/templates"
+    into dstPath
+    include "DynabuffersVersion.vm"
+    rename ("DynabuffersVersion.vm", "DynabuffersVersion.kt")
+    doLast {
+        replaceVersionInTemplate("$dstPath/DynabuffersVersion.kt")
+    }
+}
+
+task generateVersionClassPython(type: Copy) {
+    def dstPath = "${project(":dynabuffers-python").projectDir}/dynabuffers/header"
+    from "${project(":dynabuffers-python").projectDir}/resources/templates"
+    into dstPath
+    include "DynabuffersVersion.vm"
+    rename ("DynabuffersVersion.vm", "DynabuffersVersion.py")
+    doLast {
+        replaceVersionInTemplate("$dstPath/DynabuffersVersion.py")
+    }
+}
+
+def replaceVersionInTemplate(String path) {
+    ant.replace(
+            file: path,
+            token: "@VERSION@",
+            value: project.version.toString()
+    )
+}
 
 task setVersionPython() {
     doLast {
