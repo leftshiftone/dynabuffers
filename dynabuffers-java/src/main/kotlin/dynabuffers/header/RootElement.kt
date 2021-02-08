@@ -40,7 +40,7 @@ class RootElement(val tree: List<IType>, private val version: Byte = Dynabuffers
         if (header.version != version)
             throw DynabuffersException("Dynabuffers version of serialized data does not match current version. Expected: $version Actual: ${header.version}")
 
-        // TODO: Handle reserved bytes here (Encryption etc)
+        // TODO: Handle flag bits here (Encryption etc)
 
         if (header.namespaceDescription is ConcreteNamespaceDescription) {
             val newRoot = RootElement(header.namespaceDescription.namespace.options.list)

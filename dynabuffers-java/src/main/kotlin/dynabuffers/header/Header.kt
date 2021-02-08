@@ -4,23 +4,20 @@ import dynabuffers.NamespaceDescription
 import dynabuffers.NamespaceResolver
 import dynabuffers.api.IRegistry
 import dynabuffers.api.ISerializable
-import dynabuffers.assertOnlyNFirstBitsSet
-import dynabuffers.checkedShiftLeft
 import java.nio.ByteBuffer
 import kotlin.experimental.and
-import kotlin.experimental.or
 import kotlin.math.ceil
 
 class Header(
     private val namespaceResolver: NamespaceResolver,
     private val version: Byte,
-    private val reserved: Byte = 0
+    private val flags: Byte = 0
 ) : ISerializable {
-    private val numberOfReservedBits = 5
+    private val numberOfFlagBits = 5
 
     override fun size(value: Any?, registry: IRegistry): Int {
         val namespacePathSize = getNamespacePath(value as Map<String, Any?>).size
-        return 2 + ceil(namespacePathSize / 2.0).toInt() // 1 Version + 1 Namespace Depth/Reserved + 0 - 4 Namespace Identifier
+        return 2 + ceil(namespacePathSize / 2.0).toInt() // 1 Version + 1 Namespace Depth/Flags + 0 - 4 Namespace Path Indicator
     }
 
     private fun getNamespacePath(map: Map<String, Any?>): List<Byte> {
@@ -29,12 +26,12 @@ class Header(
 
     override fun serialize(value: Any?, buffer: ByteBuffer, registry: IRegistry) {
         // 1. Byte: Version
-        buffer.put(version)
-        // 2. Byte: Namespace depth + reserved bits
+        buffer.put(version.toByte())
+        // 2. Byte: Namespace depth + flag bits
         val namespacePath = getNamespacePath(value as Map<String, Any?>)
-        val namespaceDepth =
-            namespacePath.size.toByte().checkedShiftLeft(numberOfReservedBits, "Maximum namespace depth exceeded.")
-        buffer.put(namespaceDepth or reserved.assertOnlyNFirstBitsSet(numberOfReservedBits))
+        val namespaceDepth = Subbyte(namespacePath.size, 8 - numberOfFlagBits, "Namespace Depth")
+        val flagBits = Subbyte(flags, numberOfFlagBits, "Flags")
+        buffer.put(Subbyte.compressValuesIntoByte(listOf(namespaceDepth, flagBits)))
         // 3. up to 6. Byte: Namespace path
         compress4BitToBytes(namespacePath).forEach { buffer.put(it) }
     }
@@ -43,12 +40,12 @@ class Header(
         val deserializedVersion = buffer.get()
 
         val secondByte = buffer.get()
-        val reservedBits = secondByte and (0xFF shr (8 - numberOfReservedBits)).toByte()
-        val namespaceDepth = secondByte.toInt() shr numberOfReservedBits
+        val flagBits = secondByte and (0xFF shr (8 - numberOfFlagBits)).toByte()
+        val namespaceDepth = secondByte.toInt() shr numberOfFlagBits
 
         val namespaceDescription = namespaceResolver.getNamespace(buffer, namespaceDepth)
 
-        return HeaderSpec(deserializedVersion, reservedBits, namespaceDescription)
+        return HeaderSpec(deserializedVersion, flagBits, namespaceDescription)
     }
 
     private fun compress4BitToBytes(bits: List<Byte>): List<Byte> {
@@ -56,14 +53,11 @@ class Header(
 
         return bitsToCompress
             .chunked(2) {
-                val firstNamespace =
-                    it[0].checkedShiftLeft(4, "Maximum number of namespaces on the same level exceeded.")
-                val secondNamespace =
-                    it[1].assertOnlyNFirstBitsSet(4, "Maximum number of namespaces on the same layer exceeded.")
-                (firstNamespace + secondNamespace).toByte() // TODO: use or?
+                val firstNamespace = Subbyte(it[0], 4, "Namespace Path Indicator")
+                val secondNamespace = Subbyte(it[1], 4, "Namespace Path Indicator")
+                Subbyte.compressValuesIntoByte(listOf(firstNamespace, secondNamespace))
             }
-
     }
 }
 
-data class HeaderSpec(val version: Byte, val reserved: Byte, val namespaceDescription: NamespaceDescription)
+data class HeaderSpec(val version: Byte, val flags: Byte, val namespaceDescription: NamespaceDescription)

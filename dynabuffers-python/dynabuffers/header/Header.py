@@ -7,9 +7,9 @@ from dynabuffers.api.Subbyte import Subbyte
 
 
 class HeaderSpec:
-    def __init__(self, version: int, reserved: int, namespace_description: NamespaceDescription):
+    def __init__(self, version: int, flags: int, namespace_description: NamespaceDescription):
         self._version = version
-        self._reserved = reserved
+        self._flags = flags
         self._namespace_description = namespace_description
 
     @property
@@ -17,8 +17,8 @@ class HeaderSpec:
         return self._version
 
     @property
-    def reserved(self):
-        return self._reserved
+    def flags(self):
+        return self._flags
 
     @property
     def namespace_description(self):
@@ -26,12 +26,12 @@ class HeaderSpec:
 
 
 class Header(ISerializable):
-    _number_of_reserved_bits = 5
+    _number_of_flag_bits = 5
 
-    def __init__(self, namespace_resolver: NamespaceResolver, version: int, reserved: int = 0):
+    def __init__(self, namespace_resolver: NamespaceResolver, version: int, flags: int = 0):
         self._namespace_resolver = namespace_resolver
         self._version = version
-        self._reserved = reserved
+        self._flags = flags
 
     def size(self, value, registry):
         namespace_path_size = len(self.get_namespace_path(value))
@@ -47,11 +47,11 @@ class Header(ISerializable):
         # 1. Byte: Version
         buffer.put(bytes([self._version]))
 
-        # 2. Byte: Namespace depth + reserved bits
+        # 2. Byte: Namespace depth + flag bits
         namespace_path = self.get_namespace_path(value)
-        namespace_depth = Subbyte(len(namespace_path), 8 - self._number_of_reserved_bits)
-        reserved_bits = Subbyte(self._reserved, self._number_of_reserved_bits)
-        buffer.put(Subbyte.compress_values_into_byte([namespace_depth, reserved_bits]))
+        namespace_depth = Subbyte(len(namespace_path), 8 - self._number_of_flag_bits, "Namespace Depth")
+        flag_bits = Subbyte(self._flags, self._number_of_flag_bits, "Flags")
+        buffer.put(Subbyte.compress_values_into_byte([namespace_depth, flag_bits]))
 
         # 3. - 6. Byte: Namespace path
         for byte in self.compress_4_bit_values_to_bytes(namespace_path):
@@ -61,15 +61,15 @@ class Header(ISerializable):
         deserialized_version = buffer.get()
 
         second_byte = buffer.get()
-        reserved_bits = second_byte & (0xFF >> (8 - self._number_of_reserved_bits))
-        namespace_depth = second_byte >> self._number_of_reserved_bits
+        flag_bits = second_byte & (0xFF >> (8 - self._number_of_flag_bits))
+        namespace_depth = second_byte >> self._number_of_flag_bits
 
         namespace_description = self._namespace_resolver.get_namespace_from_serialized(buffer, namespace_depth)
-        return HeaderSpec(deserialized_version, reserved_bits, namespace_description)
+        return HeaderSpec(deserialized_version, flag_bits, namespace_description)
 
     def compress_4_bit_values_to_bytes(self, bits: List[int]) -> List[bytes]:
         bits = bits[:]
         if len(bits) % 2 == 1:
             bits.append(0)
-        subbytes = [Subbyte(subbyte, 4) for subbyte in bits]
-        return Subbyte.compress_values_into_bytes(subbytes, "Maximum number of namespaces on the same level exceeded.")
+        subbytes = [Subbyte(subbyte, 4, "Namespace Path Indicator") for subbyte in bits]
+        return Subbyte.compress_values_into_bytes(subbytes)

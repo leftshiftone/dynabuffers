@@ -41,7 +41,7 @@ class RootElement(ISerializable):
             raise ValueError(f"Dynabuffers version of serialized data does not match current version. "
                              f"Expected: {self._version}  Actual: {header.version}")
 
-        # TODO: Handle reserved bytes here
+        # TODO: Handle flag bits here
 
         if header.namespace_description is not None:
             new_root = RootElement(header.namespace_description.namespace.options.list)

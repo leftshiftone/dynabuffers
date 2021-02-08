@@ -10,15 +10,15 @@ The following document describes the serialization format of the dynabuffers lib
 1 Byte:  [   0    0    0    0    0    0    0    0   ]
 
 
-             |--- Flags  ---|    |---   NIL  ---|
+             |-- ND  --|    |---    Flags    ---|
 2 Byte:  [   0    0    0    0    0    0    0    0   ]
 
-             |--- Namespace Path Indicator   ---|
+             |---  NPI   ---|    |---  NPI   ---|
 3 Byte:  [   0    0    0    0    0    0    0    0   ]
 
 ...
 
-16 Byte:  [   0    0    0    0    0    0    0    0   ]
+6 Byte:  [   0    0    0    0    0    0    0    0   ]
 
 ```
 
@@ -32,44 +32,23 @@ Values: __0-255__
 
 Description:
 
-Holds the dynabuffers major version as a single byte value. 
-
-
-
----
-
-**Flags**
-
-Type: __4bit__
-
-Values: __0/1 (Bit set or unset)__
-
-Description:
-
-Represents the possible set flags.
-
-|Bit | 3                | 2               | 1        | 0        |
-|----| ---------------- | --------------- | -------- | -------- |
-|Flag| Compression Flag | Encryption Flag | Reserved | Reserved |
-
+Holds the DynaBuffers major version as a single byte value.
 
 
 ---
 
-**Namespace Information Length (NIL)**
+**Namespace Depth (ND)**
 
-Type: __4bit__
+Type: __3bit__
 
-Values: __0-16__
+Values: __0-7__
 
 Description:
 
-Denotes the how many bytes containing namespace path indicators follow.
+Denotes how many namespace path indicators are present.
 
 Example:
-
-Namespace D should be selected. This requires a NIL of 3.
-
+Namespace D should be selected. This requires a Namespace Depth of 3.
 
 ```
 namespace A {              # 0
@@ -85,11 +64,27 @@ The namespace path would be: `[0,1,0]` to select namespace D.
 
 ---
 
-**Namespace Path Indicator**
+**Flags**
 
-Type: __8bit__
+Type: __5bit__
 
-Values: __0-255__
+Values: __0/1 (Bit set or unset)__
+
+Description:
+
+Represents the possible set flags.
+
+|Bit | 4                | 3               | 2        | 1        | 0        |
+|----| ---------------- | --------------- | -------- | -------- | -------- |
+|Flag| Compression Flag | Encryption Flag | Reserved | Reserved | Reserved |
+
+---
+
+**Namespace Path Indicator (NPI)**
+
+Type: __4bit__
+
+Values: __0-15__
 
 Description:
 

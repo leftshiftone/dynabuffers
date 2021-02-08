@@ -4,9 +4,9 @@ from dataclasses import dataclass
 from typing import List
 
 
-def assert_only_n_first_bits_set(value: int, n: int, message: str = ""):
+def assert_only_n_first_bits_set(value: int, n: int, name: str):
     if ((0xFF >> (8 - n)) & value) != value:
-        raise ValueError(f"{message} Value {value} is too large for max field size {n} bit.")
+        raise ValueError(f"Value {value} of {name} is too large for field size of {n} bits.")
     return value
 
 
@@ -15,8 +15,15 @@ class Subbyte:
     value: int
     number_of_bits: int
 
+    def __init__(self, value: int, number_of_bits: int, name: str):
+        if number_of_bits > 8 or number_of_bits < 1:
+            raise ValueError(f"Field size of {number_of_bits} bits for field {name} must be in range 1-8.")
+        assert_only_n_first_bits_set(value, number_of_bits, name)
+        self.value = value
+        self.number_of_bits = number_of_bits
+
     @staticmethod
-    def compress_values_into_bytes(values: List[Subbyte], message: str = "") -> List[bytes]:
+    def compress_values_into_bytes(values: List[Subbyte]) -> List[bytes]:
         result = []
         subbytes_for_byte: List[Subbyte] = []
         total_bits = 0
@@ -24,20 +31,19 @@ class Subbyte:
             subbytes_for_byte.append(subbyte)
             total_bits += subbyte.number_of_bits
             if total_bits >= 8:
-                result.append(Subbyte.compress_values_into_byte(subbytes_for_byte, message))
+                result.append(Subbyte.compress_values_into_byte(subbytes_for_byte))
                 subbytes_for_byte.clear()
                 total_bits = 0
         return result
 
     @staticmethod
-    def compress_values_into_byte(values: List[Subbyte], message: str = "") -> bytes:
+    def compress_values_into_byte(values: List[Subbyte]) -> bytes:
         remaining_bits = 8
         result = 0
         for value in values:
-            assert_only_n_first_bits_set(value.value, value.number_of_bits)
             result |= value.value << (remaining_bits - value.number_of_bits)
             remaining_bits -= value.number_of_bits
         if remaining_bits != 0:
             raise ValueError(
-                f"{message} Subbyte values have invalid length in bits. Expected: 8 Actual: {8 - remaining_bits}")
+                f"Subbyte values ({values}) have invalid length in bits. Expected: 8 Actual: {8 - remaining_bits}")
         return bytes([result])

@@ -3,6 +3,7 @@ package dynabuffers.usecase
 import dynabuffers.AbstractDynabuffersTest
 import dynabuffers.Dynabuffers
 import dynabuffers.DynabuffersEngine
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -33,16 +34,15 @@ class Schema09Test : AbstractDynabuffersTest() {
 
     @Test
     fun testShortPositiveOverflow() {
-        Assertions.assertThrows(NumberFormatException::class.java) {
-            engine.serialize(mapOf("val" to Int.MAX_VALUE.toLong() + 1))
-        }
+        assertThatThrownBy { engine.serialize(mapOf("val" to Int.MAX_VALUE.toLong() + 1)) }
+            .isInstanceOf(NumberFormatException::class.java)
+
     }
 
     @Test
     fun testShortNegativeOverflow() {
-        Assertions.assertThrows(NumberFormatException::class.java) {
-            engine.serialize(mapOf("val" to Int.MIN_VALUE.toLong() - 1))
-        }
+        assertThatThrownBy { engine.serialize(mapOf("val" to Int.MIN_VALUE.toLong() - 1)) }
+            .isInstanceOf(NumberFormatException::class.java)
     }
 
 }
