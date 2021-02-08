@@ -38,8 +38,8 @@ class RootElement(ISerializable):
     def deserialize(self, buffer: 'ByteBuffer', registry):
         header = Header(self._namespace_resolver, self._version).deserialize(buffer, registry)
         if header.version != self._version:
-            raise ValueError(f"Dynabuffers version of serialized data does not match current version. "
-                             f"Expected: {self._version}  Actual: {header.version}")
+            raise ValueError("Dynabuffers version of serialized data does not match current version. "
+                             "Expected: {}  Actual: {}".format(self._version, header.version))
 
         # TODO: Handle flag bits here
 

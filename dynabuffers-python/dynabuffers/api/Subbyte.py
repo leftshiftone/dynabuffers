@@ -6,7 +6,7 @@ from typing import List
 
 def assert_only_n_first_bits_set(value: int, n: int, name: str):
     if ((0xFF >> (8 - n)) & value) != value:
-        raise ValueError(f"Value {value} of {name} is too large for field size of {n} bits.")
+        raise ValueError("Value {} of {} is too large for field size of {} bits.".format(value, name, n))
     return value
 
 
@@ -17,7 +17,7 @@ class Subbyte:
 
     def __init__(self, value: int, number_of_bits: int, name: str):
         if number_of_bits > 8 or number_of_bits < 1:
-            raise ValueError(f"Field size of {number_of_bits} bits for field {name} must be in range 1-8.")
+            raise ValueError("Field size of {} bits for field {} must be in range 1-8.".format(number_of_bits, name))
         assert_only_n_first_bits_set(value, number_of_bits, name)
         self.value = value
         self.number_of_bits = number_of_bits
@@ -35,7 +35,7 @@ class Subbyte:
                 subbytes_for_byte.clear()
                 total_bits = 0
         if total_bits != 0:
-            raise ValueError(f"Provided bits ({(len(result) * 8) + total_bits}) must be a multiple of 8.")
+            raise ValueError("Provided bits ({}) must be a multiple of 8.".format((len(result) * 8) + total_bits))
         return result
 
     @staticmethod
@@ -46,6 +46,6 @@ class Subbyte:
             result |= value.value << (remaining_bits - value.number_of_bits)
             remaining_bits -= value.number_of_bits
         if remaining_bits != 0:
-            raise ValueError(
-                f"Subbyte values ({values}) have invalid length in bits. Expected: 8 Actual: {8 - remaining_bits}")
+            raise ValueError("Subbyte values ({}) have invalid length in bits. "
+                             "Expected: 8 Actual: {}".format(values, 8 - remaining_bits))
         return bytes([result])

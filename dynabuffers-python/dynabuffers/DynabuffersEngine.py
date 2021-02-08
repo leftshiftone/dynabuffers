@@ -33,7 +33,7 @@ class DynabuffersEngine(object):
 
         if namespace_names is not None:
             if NAMESPACE_KEY in value:
-                raise Exception(f"{NAMESPACE_KEY} is already present in dictionary - use serialize/1")
+                raise Exception("{} is already present in dictionary - use serialize/1".format(NAMESPACE_KEY))
             if isinstance(namespace_names, List):
                 value[NAMESPACE_KEY] = '.'.join(namespace_names)
             if isinstance(namespace_names, str):
