@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import List
 
 
@@ -10,17 +9,22 @@ def assert_only_n_first_bits_set(value: int, n: int, name: str):
     return value
 
 
-@dataclass
 class Subbyte:
-    value: int
-    number_of_bits: int
 
     def __init__(self, value: int, number_of_bits: int, name: str):
         if number_of_bits > 8 or number_of_bits < 1:
             raise ValueError("Field size of {} bits for field {} must be in range 1-8.".format(number_of_bits, name))
         assert_only_n_first_bits_set(value, number_of_bits, name)
-        self.value = value
-        self.number_of_bits = number_of_bits
+        self._value = value
+        self._number_of_bits = number_of_bits
+
+    @property
+    def value(self):
+        return self._value
+
+    @property
+    def number_of_bits(self):
+        return self._number_of_bits
 
     @staticmethod
     def compress_values_into_bytes(values: List[Subbyte]) -> List[bytes]:
