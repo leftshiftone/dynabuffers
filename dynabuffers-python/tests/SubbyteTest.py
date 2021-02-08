@@ -66,3 +66,23 @@ class SubbyteTest(unittest.TestCase):
     def test_compress_invalid_number_of_subbytes_to_byte(self, values: List[Subbyte]):
         with self.assertRaises(ValueError):
             Subbyte.compress_values_into_byte(values)
+
+    def test_compress_subbytes_to_multiple_bytes(self):
+        values = [
+            Subbyte(1, 4, "1-4"),
+            Subbyte(1, 4, "5-8"),
+            Subbyte(1, 4, "9-12"),
+            Subbyte(1, 4, "13-16")
+        ]
+        resulting_bytes = [bytes([17]), bytes([17])]
+        self.assertEqual(resulting_bytes, Subbyte.compress_values_into_bytes(values))
+
+    def test_compress_subbytes_to_multiple_bytes_with_invalid_number_of_bits_fails(self):
+        values = [
+            Subbyte(1, 4, "1-4"),
+            Subbyte(1, 4, "5-8"),
+            Subbyte(1, 4, "9-12"),
+            Subbyte(1, 3, "13-15")
+        ]
+        with self.assertRaises(ValueError):
+            Subbyte.compress_values_into_bytes(values)

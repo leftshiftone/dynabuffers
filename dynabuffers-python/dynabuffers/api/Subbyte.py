@@ -34,6 +34,8 @@ class Subbyte:
                 result.append(Subbyte.compress_values_into_byte(subbytes_for_byte))
                 subbytes_for_byte.clear()
                 total_bits = 0
+        if total_bits != 0:
+            raise ValueError(f"Provided bits ({(len(result) * 8) + total_bits}) must be a multiple of 8.")
         return result
 
     @staticmethod
