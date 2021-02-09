@@ -12,6 +12,14 @@ def assert_only_n_first_bits_set(value: int, n: int, name: str):
 class Subbyte:
 
     def __init__(self, value: int, number_of_bits: int, name: str):
+        """
+        Creates and validates a Subbyte (value smaller or equal to a byte in size) with the given value and
+        number_of_bits as size in bits.
+        :param value: value of the Subbyte
+        :param number_of_bits: the size of the Subbyte in bits
+        :param name: name of the Subbyte used for logging errors
+        :return: Subbyte
+        """
         if number_of_bits > 8 or number_of_bits < 1:
             raise ValueError("Field size of {} bits for field {} must be in range 1-8.".format(number_of_bits, name))
         assert_only_n_first_bits_set(value, number_of_bits, name)
@@ -29,7 +37,7 @@ class Subbyte:
     @staticmethod
     def compress_values_into_bytes(values: List[Subbyte]) -> List[bytes]:
         result = []
-        subbytes_for_byte: List[Subbyte] = []
+        subbytes_for_byte = []
         total_bits = 0
         for subbyte in values:
             subbytes_for_byte.append(subbyte)
@@ -44,6 +52,12 @@ class Subbyte:
 
     @staticmethod
     def compress_values_into_byte(values: List[Subbyte]) -> bytes:
+        """
+        Compresses multiple Subbyte values into a byte value if they have the correct number of bits in total.
+        :param values: list of Subbyte values
+        :return: bytes
+        :raise ValueError if the Subbytes values do not have 8 bits in total.
+        """
         remaining_bits = 8
         result = 0
         for value in values:
