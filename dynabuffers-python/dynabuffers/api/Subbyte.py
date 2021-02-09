@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from typing import List
 
 
@@ -35,7 +33,7 @@ class Subbyte:
         return self._number_of_bits
 
     @staticmethod
-    def compress_values_into_bytes(values: List[Subbyte]) -> List[bytes]:
+    def compress_values_into_bytes(values: List['Subbyte']) -> List[bytes]:
         result = []
         subbytes_for_byte = []
         total_bits = 0
@@ -51,7 +49,7 @@ class Subbyte:
         return result
 
     @staticmethod
-    def compress_values_into_byte(values: List[Subbyte]) -> bytes:
+    def compress_values_into_byte(values: List['Subbyte']) -> bytes:
         """
         Compresses multiple Subbyte values into a byte value if they have the correct number of bits in total.
         :param values: list of Subbyte values
