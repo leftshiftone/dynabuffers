@@ -1,6 +1,7 @@
+from math import ceil
 from typing import List, Union, Any
 
-from dynabuffers.api.ISerializable import ISerializable
+from dynabuffers.api.ISerializable import ISerializable, ByteBuffer
 from dynabuffers.ast.NamespaceType import NamespaceType
 
 
@@ -32,7 +33,8 @@ class NamespaceDescription:
         return self._path
 
     def joined_path(self) -> str:
-        return ".".join(list(map(lambda waypoint: waypoint.name,self._path)))
+        return ".".join(list(map(lambda waypoint: waypoint.name, self._path)))
+
 
 class NamespaceResolver:
     def __init__(self, tree: List[ISerializable]):
@@ -50,20 +52,25 @@ class NamespaceResolver:
             return self.get_namespace_from_names(namespaces.split('.'))
         return self._infer_default_namespace()
 
-    def get_namespace_from_serialized(self, bb: bytes) -> Union[NamespaceDescription, None]:
+    def get_namespace_from_serialized(self, bb: ByteBuffer, len_namespace_path: int) -> Union[
+        NamespaceDescription, None]:
         """
-        Reads the encoded namespace path directly from the given bytes
-        :param bb:
+        Reads the encoded namespace path directly from the given byte buffer
+        WARNING: Modifies the provided byte buffer
+        :param bb: byte buffer of serialized payload
+        :param len_namespace_path: denotes the length of the namespace path (in terms of namespaces)
         :return:
         """
-        #first byte denotes the length of the path aka how many more bytes do I need to read?
-        len_namespace_path = bb[0]
         if len_namespace_path == 0:
             return None
 
+        namespace_bytes = [bb.get() for _ in range(ceil(len_namespace_path / 2))]
         waypoints = []
-        for i in range(1, (len_namespace_path + 1)):
-            waypoints.append(bb[i])
+        # Read waypoints from bytes, 2 waypoints per byte
+        for byte in namespace_bytes:
+            waypoints.append(byte & 0xF0)
+            waypoints.append(byte & 0x0F)
+        waypoints = waypoints[:len_namespace_path]
 
         # map the read path to the namespaces within the schema - sorry this is not very elegant
         namespaces = list(map(lambda nd: nd.namespace, self.__get_namespaces_from_root_level()))
@@ -100,6 +107,7 @@ class NamespaceResolver:
         infers the namespace from the schema - multiple nested namespaces will cause this method to raise an exception.
         :return:
         """
+
         def _resolve(namespaces: List[NamespaceDescription]) -> Union[NamespaceDescription, None]:
             if len(namespaces) == 0:
                 return None

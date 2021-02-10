@@ -24,6 +24,7 @@ class Schema21Test : AbstractDynabuffersTest() {
         val message = mapOf("request" to "hello world", SpecialKey.NAMESPACE.key to "first.incoming")
         val serializedMessage = engine.serialize(message)
         val result = engine.deserialize(serializedMessage)
+        print(Base64.getEncoder().encodeToString(serializedMessage))
         assertMap(message, result)
     }
 
@@ -53,7 +54,7 @@ class Schema21Test : AbstractDynabuffersTest() {
 
     @Test
     fun `serialized with python - deserialized with java`() {
-        val result = engine.deserialize(Base64.getDecoder().decode("AgAAAAAAC2hlbGxvIHdvcmxk"))
+        val result = engine.deserialize(Base64.getDecoder().decode("AUAAAAAAC2hlbGxvIHdvcmxk"))
         Assertions.assertThat(result).isEqualTo(mapOf("request" to "hello world", SpecialKey.NAMESPACE.key to "first.incoming"))
     }
 }

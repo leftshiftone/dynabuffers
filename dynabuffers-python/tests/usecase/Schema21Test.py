@@ -26,7 +26,7 @@ class Schema21Test(unittest.TestCase):
         self.assertEqual(message, result)
 
     def test_serialized_with_java(self):
-        result = self.engine.deserialize(base64.decodebytes(b"AgAAAAAAC2hlbGxvIHdvcmxk"))
+        result = self.engine.deserialize(bytearray(base64.decodebytes(b"AUAAAAAAC2hlbGxvIHdvcmxk")))
         self.assertEqual(result, {"request": "hello world", ":namespace": "first.incoming"})
 
 

@@ -4,9 +4,10 @@ import dynabuffers.api.IType
 import dynabuffers.ast.NamespaceType
 import dynabuffers.exception.DynabuffersException
 import java.nio.ByteBuffer
+import kotlin.experimental.and
 import kotlin.streams.toList
 
-internal class NamespaceResolver(private val tree: List<IType>) {
+class NamespaceResolver(private val tree: List<IType>) {
 
     /**
      * Gets a namespace from the given list or tries to infer ([inferDefaultNamespace]) the namespace if no names are passed.
@@ -30,18 +31,19 @@ internal class NamespaceResolver(private val tree: List<IType>) {
      * Extracts the namespace description out of a serialized dynabuffers message wrapped as a [ByteBuffer]
      * WARNING: this method modifies the given ByteBuffer
      */
-    fun getNamespace(serialized: ByteBuffer): NamespaceDescription {
-        val encodedNamespacesLength = serialized.get()
-        if (encodedNamespacesLength == 0.toByte()) return AbsentNamespace
+    fun getNamespace(serialized: ByteBuffer, namespaceDepth: Int): NamespaceDescription {
+        if (namespaceDepth == 0) return AbsentNamespace
 
-        val path = (1..encodedNamespacesLength).map {
-            serialized.get()
-        }
+        val namespacePathBuffer = ByteArray(kotlin.math.ceil(namespaceDepth / 2.0).toInt())
+        serialized.get(namespacePathBuffer)
+        val path = namespacePathBuffer.toList()
+            .flatMap { listOf((it.toInt() shr 4).toByte(), it and 0x0F) }
+            .take(namespaceDepth)
 
         return getNamepacesFromPath(path)
     }
 
-    private fun getNamepacesFromPath(path: List<Byte>): NamespaceDescription {
+    fun getNamepacesFromPath(path: List<Byte>): NamespaceDescription {
         val nss = getNamespaceFromPath(path)
         val waypoints = nss.map { it.path.first() }
         return ConcreteNamespaceDescription(checkNotNull(nss.lastOrNull()).namespace, waypoints)
@@ -119,15 +121,23 @@ internal class NamespaceResolver(private val tree: List<IType>) {
     }
 }
 
-internal sealed class NamespaceDescription() {
+sealed class NamespaceDescription() {
     abstract fun joinedPath(): String
+    abstract fun getWaypoints(): List<Waypoint>
 }
 
-internal class ConcreteNamespaceDescription(val namespace: NamespaceType, val path: List<Waypoint>) : NamespaceDescription() {
+class ConcreteNamespaceDescription(val namespace: NamespaceType, val path: List<Waypoint>) : NamespaceDescription() {
     override fun joinedPath(): String = path.joinToString(".") { it.name }
+    override fun getWaypoints(): List<Waypoint> {
+        return path
+    }
+
 }
 
-internal data class Waypoint(val name: String, val position: Byte)
-internal object AbsentNamespace : NamespaceDescription() {
+data class Waypoint(val name: String, val position: Byte)
+object AbsentNamespace : NamespaceDescription() {
     override fun joinedPath(): String = throw IllegalStateException("No namespace has no name")
+    override fun getWaypoints(): List<Waypoint> {
+        return emptyList()
+    }
 }

@@ -188,14 +188,16 @@ class Product {
 
     @Test
     fun `Schema with namespace`() {
-        val engine = Dynabuffers.parse("""
+        val engine = Dynabuffers.parse(
+            """
             namespace abc{
                 class Data {
                     value: string
                 }
             }
-        """.trimIndent())
-        val result = engine.deserialize(engine.serialize(mapOf("value" to "someString"), "abc"), "abc")
+        """.trimIndent()
+        )
+        val result = engine.deserialize(engine.serialize(mapOf("value" to "someString"), "abc"))
         assertThat(result).containsKey("value")
         assertThat(result).containsValue("someString")
     }
@@ -211,8 +213,15 @@ class Product {
         """.trimIndent())
         val map = mapOf("value" to "someString")
         assertThat(map.plus(SpecialKey.NAMESPACE.key to "abc")).isEqualTo(engine.deserialize(engine.serialize(map)))
-        assertThat(map.plus(SpecialKey.NAMESPACE.key to "abc")).isEqualTo(engine.deserialize(engine.serialize(map, "abc")))
-        assertThat(map.plus(SpecialKey.NAMESPACE.key to "abc")).isEqualTo(engine.deserialize(engine.serialize(map), "abc"))
+        assertThat(map.plus(SpecialKey.NAMESPACE.key to "abc")).isEqualTo(
+            engine.deserialize(
+                engine.serialize(
+                    map,
+                    "abc"
+                )
+            )
+        )
+        assertThat(map.plus(SpecialKey.NAMESPACE.key to "abc")).isEqualTo(engine.deserialize(engine.serialize(map)))
     }
 
     @Test
@@ -228,8 +237,15 @@ class Product {
         """.trimIndent())
         val map = mapOf("value" to "someString")
         assertThat(map.plus(SpecialKey.NAMESPACE.key to "abc.xyz")).isEqualTo(engine.deserialize(engine.serialize(map)))
-        assertThat(map.plus(SpecialKey.NAMESPACE.key to "abc.xyz")).isEqualTo(engine.deserialize(engine.serialize(map, listOf("abc", "xyz"))))
-        assertThat(map.plus(SpecialKey.NAMESPACE.key to "abc.xyz")).isEqualTo(engine.deserialize(engine.serialize(map), listOf("abc", "xyz")))
+        assertThat(map.plus(SpecialKey.NAMESPACE.key to "abc.xyz")).isEqualTo(
+            engine.deserialize(
+                engine.serialize(
+                    map,
+                    listOf("abc", "xyz")
+                )
+            )
+        )
+        assertThat(map.plus(SpecialKey.NAMESPACE.key to "abc.xyz")).isEqualTo(engine.deserialize(engine.serialize(map)))
     }
 
     @Test
@@ -247,7 +263,7 @@ class Product {
         val map = mapOf("value" to "someString")
         assertThat(map).isEqualTo(engine.deserialize(engine.serialize(map)))
         assertThat(map).isEqualTo(engine.deserialize(engine.serialize(map, listOf("abc"))))
-        assertThat(map).isEqualTo(engine.deserialize(engine.serialize(map), listOf("abc")))
+        assertThat(map).isEqualTo(engine.deserialize(engine.serialize(map)))
     }
 
     @Test
@@ -270,7 +286,8 @@ class Product {
 
     @Test
     fun `Nested namespaces are processed if given in proper order`() {
-        val engine = Dynabuffers.parse("""
+        val engine = Dynabuffers.parse(
+            """
             namespace abc{
                 namespace def {
                     class Data {
@@ -278,8 +295,9 @@ class Product {
                     }
                 }
             }
-        """.trimIndent())
-        val result = engine.deserialize(engine.serialize(mapOf("value" to "someString"), listOf("abc", "def")), listOf("abc", "def"))
+        """.trimIndent()
+        )
+        val result = engine.deserialize(engine.serialize(mapOf("value" to "someString"), listOf("abc", "def")))
         assertThat(result).containsKey("value")
         assertThat(result).containsValue("someString")
     }
@@ -301,7 +319,7 @@ class Product {
                 .isInstanceOf(DynabuffersException::class.java)
                 .hasMessage("no namespace with name def found")
 
-        val result = engine.deserialize(msg, listOf("def", "abc"))
+        val result = engine.deserialize(msg)
         assertThat(result).isEqualTo(mapOf("value" to "someString", ":namespace" to "abc.def"))
     }
 
@@ -317,8 +335,14 @@ class Product {
                     }
                 }
             }
-        """.trimIndent())
-        val result = engine.deserialize(engine.serialize(mapOf("value" to "someString"), listOf("`leftshiftone/echo`", "abc", "def")), listOf("`leftshiftone/echo`", "abc", "def"))
+        """.trimIndent()
+        )
+        val result = engine.deserialize(
+            engine.serialize(
+                mapOf("value" to "someString"),
+                listOf("`leftshiftone/echo`", "abc", "def")
+            )
+        )
         assertThat(result).containsKey("value")
         assertThat(result).containsValue("someString")
     }
@@ -341,15 +365,19 @@ class Product {
                     }
                 }
             }
-        """.trimIndent())
-        val resultLevel0 = engine.deserialize(engine.serialize(mapOf("value0" to "someString"), listOf("`leftshiftone/echo`")), listOf("`leftshiftone/echo`"))
+        """.trimIndent()
+        )
+        val resultLevel0 =
+            engine.deserialize(engine.serialize(mapOf("value0" to "someString"), listOf("`leftshiftone/echo`")))
         assertThat(resultLevel0).containsKey("value0")
         assertThat(resultLevel0).containsValue("someString")
 
-        val resultLevel1 = engine.deserialize(engine.serialize(mapOf("value1" to 3), listOf("`leftshiftone/echo`", "abc")), listOf("`leftshiftone/echo`", "abc"))
+        val resultLevel1 =
+            engine.deserialize(engine.serialize(mapOf("value1" to 3), listOf("`leftshiftone/echo`", "abc")))
         assertThat(resultLevel1).containsKey("value1")
         assertThat(resultLevel1).containsValue(3)
-        val resultLevel2 = engine.deserialize(engine.serialize(mapOf("value2" to 0.2f), listOf("`leftshiftone/echo`", "abc", "def")), listOf("`leftshiftone/echo`", "abc", "def"))
+        val resultLevel2 =
+            engine.deserialize(engine.serialize(mapOf("value2" to 0.2f), listOf("`leftshiftone/echo`", "abc", "def")))
         assertThat(resultLevel2).containsKey("value2")
         assertThat(resultLevel2).containsValue(0.2f)
     }
