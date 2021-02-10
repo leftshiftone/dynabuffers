@@ -11,11 +11,11 @@ class DynabuffersVersion(private val version: String) {
     }
 
     fun getMajor(): Byte {
-        val major = version.split('.')[0]
         try {
+            val major = version.split('.')[0]
             return major.toByte()
-        } catch (nfe: NumberFormatException) {
-            throw DynabuffersException("Dynabuffers major version cannot be extracted from: $version.\nReason: $nfe")
+        } catch (ex: Exception) {
+            throw DynabuffersException("Dynabuffers major version cannot be extracted from: $version.\nReason: $ex")
         }
     }
 }
