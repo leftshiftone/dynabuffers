@@ -20,8 +20,9 @@ class DynabuffersEngine(private val tree: List<IType>) {
 
     fun serialize(map: Map<String, Any?>): ByteArray {
         val root = RootElement(tree)
-        val buffer = ByteBuffer.allocate(root.size(map, this.registry()))
-        root.serialize(map, buffer, this.registry())
+        val registry = Registry(tree, listeners)
+        val buffer = ByteBuffer.allocate(root.size(map, registry))
+        root.serialize(map, buffer, registry)
         return buffer.array()
     }
 
@@ -48,39 +49,6 @@ class DynabuffersEngine(private val tree: List<IType>) {
 
     fun deserialize(bytes: ByteArray): DynabuffersMap {
         val bb = ByteBuffer.wrap(bytes)
-        return RootElement(tree).deserialize(bb, registry())
-    }
-
-
-    private fun registry(): IRegistry {
-        return object : IRegistry {
-            override fun resolveAnnotation(annotation: Annotation): IAnnotation {
-                when (annotation.options.name) {
-                    "NotBlank" -> return NotBlank(annotation.options.values)
-                    "MinLength" -> return MinLength(annotation.options.values)
-                    "MaxLength" -> return MaxLength(annotation.options.values)
-                    "GreaterThan" -> return GreaterThan(annotation.options.values)
-                    "GreaterEquals" -> return GreaterEquals(annotation.options.values)
-                    "LowerThan" -> return LowerThan(annotation.options.values)
-                    "LowerEquals" -> return LowerEquals(annotation.options.values)
-                    else -> throw DynabuffersException("unknown annotation ${annotation.options.name}")
-                }
-
-            }
-
-            override fun addNotification(notification: String) {
-                listeners.forEach { it(notification) }
-            }
-
-            override fun resolve(name: String): ISerializable {
-                return tree.filterIsInstance<ISerializable>().find {
-                    if (it is ClassType && it.options.name == name) return@find true
-                    if (it is EnumType && it.options.name == name) return@find true
-                    if (it is UnionType && it.options.name == name) return@find true
-
-                    return@find false
-                } ?: throw DynabuffersException("invalid reference $name")
-            }
-        }
+        return RootElement(tree).deserialize(bb, Registry(tree, listeners))
     }
 }

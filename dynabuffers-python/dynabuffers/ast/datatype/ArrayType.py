@@ -12,7 +12,7 @@ class ArrayType(ISerializable):
         self.options = options
 
     def size(self, value, registry):
-        s = sum(map(lambda val: self.options.datatype.size(val, registry), value))
+        s = sum([self.options.datatype.size(item, registry) for item in value])
         return 4 + s
 
     def serialize(self, value, buffer, registry):
