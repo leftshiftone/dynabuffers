@@ -8,9 +8,9 @@ class BooleanType(ISerializable):
 
     def serialize(self, value, buffer, registry):
         if value:
-            buffer.put(1)
+            buffer.put(bytes([1]))
         else:
-            buffer.put(0)
+            buffer.put(bytes([0]))
 
     def deserialize(self, buffer, registry):
         if buffer.get() == 0:
