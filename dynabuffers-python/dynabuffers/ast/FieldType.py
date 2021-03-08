@@ -17,14 +17,14 @@ class FieldType(ISerializable):
         self.options = options
 
     def size(self, value, registry):
-        return self.options.datatype.size(value, registry)
+        return 1 + len(str(value).encode("utf-8"))
 
     def serialize(self, value, buffer: ByteBuffer, registry):
         if self.options.options:
             registry.addNotification("deprecated field " + self.options.name + " used")
 
-        for annotation in map(lambda x: registry.resolveAnnotation(x.options.name, x.options.values),
-                              self.options.annotations):
+        for annotation in list(
+                map(lambda x: registry.resolveAnnotation(x.options.name, x.options.values), self.options.annotations)):
             annotation.validate(self.options.name, value)
 
         self.options.datatype.serialize(value, buffer, registry)

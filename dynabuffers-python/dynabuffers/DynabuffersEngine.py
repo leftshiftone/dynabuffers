@@ -2,10 +2,19 @@ from typing import Union, Any, List
 
 from dynabuffers import NAMESPACE_KEY
 from dynabuffers.NamespaceResolver import NamespaceResolver
-from dynabuffers.Registry import Registry
+from dynabuffers.header.RootElement import RootElement
 from dynabuffers.api.ISerializable import ISerializable, ByteBuffer
 from dynabuffers.api.map.DynabuffersMap import DynabuffersMap
-from dynabuffers.header.RootElement import RootElement
+from dynabuffers.ast.ClassType import ClassType
+from dynabuffers.ast.EnumType import EnumType
+from dynabuffers.ast.UnionType import UnionType
+from dynabuffers.ast.annotation.GreaterEquals import GreaterEquals
+from dynabuffers.ast.annotation.GreaterThan import GreaterThan
+from dynabuffers.ast.annotation.LowerEquals import LowerEquals
+from dynabuffers.ast.annotation.LowerThan import LowerThan
+from dynabuffers.ast.annotation.MaxLength import MaxLength
+from dynabuffers.ast.annotation.MinLength import MinLength
+from dynabuffers.ast.annotation.NotBlank import NotBlank
 
 
 class DynabuffersEngine(object):
@@ -45,3 +54,40 @@ class DynabuffersEngine(object):
         bb = ByteBuffer(len(bytes), bytes)
         registry = Registry(self.tree, self.listeners)
         return RootElement(self.tree).deserialize(bb, registry)
+
+
+class Registry(object):
+
+    def __init__(self, tree: [ISerializable], listeners):
+        self.tree = tree
+        self.listeners = listeners
+
+    def resolveAnnotation(self, name, args):
+        if name == "GreaterThan":
+            return GreaterThan(args)
+        if name == "GreaterEquals":
+            return GreaterEquals(args)
+        if name == "LowerThan":
+            return LowerThan(args)
+        if name == "LowerEquals":
+            return LowerEquals(args)
+        if name == "MaxLength":
+            return MaxLength(args)
+        if name == "MinLength":
+            return MinLength(args)
+        if name == "NotBlank":
+            return NotBlank(args)
+        raise ValueError("unknown annotation " + str(name))
+
+    def resolve(self, name: str):
+        for element in self.tree:
+            if isinstance(element, ClassType) and element.options.name == name:
+                return element
+            if isinstance(element, EnumType) and element.options.name == name:
+                return element
+            if isinstance(element, UnionType) and element.options.name == name:
+                return element
+
+    def addNotification(self, notification: str):
+        for listener in self.listeners:
+            listener(notification)

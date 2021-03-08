@@ -1,7 +1,6 @@
 from typing import List, Union
 
 from dynabuffers import NAMESPACE_KEY
-from dynabuffers.DynabuffersEngine import Registry
 from dynabuffers.header.DynabuffersVersion import DYNABUFFERS_VERSION
 from dynabuffers.header.Header import Header
 from dynabuffers.NamespaceResolver import NamespaceResolver, NamespaceDescription
@@ -21,7 +20,7 @@ class RootElement(ISerializable):
     def size(self, value, registry):
         schema = self.__get_schema_for_namespace(value)
         header_size = Header(self._namespace_resolver, self._version).size(value, registry)
-        content_size = self.__get_root_type(schema).size(value, registry.createForSchema(schema))
+        content_size = self.__get_root_type(schema).size(value, registry)
         return header_size + content_size
 
     def __get_schema_for_namespace(self, value: dict) -> List[ISerializable]:
@@ -34,7 +33,7 @@ class RootElement(ISerializable):
         header = Header(self._namespace_resolver, self._version)
         header.serialize(value, buffer, registry)
         schema = self.__get_schema_for_namespace(value)
-        self.__get_root_type(schema).serialize(value, buffer, registry.createForSchema(schema))
+        self.__get_root_type(schema).serialize(value, buffer, registry)
 
     def deserialize(self, buffer: 'ByteBuffer', registry):
         header = Header(self._namespace_resolver, self._version).deserialize(buffer, registry)
@@ -45,10 +44,8 @@ class RootElement(ISerializable):
         # TODO: Handle flag bits here
 
         if header.namespace_description is not None:
-            schema = header.namespace_description.namespace.options.list
-            new_root = RootElement(schema)
-            new_registry = registry.createForSchema(schema)
-            return new_root.__deserialize_content(buffer, new_registry, header.namespace_description)
+            new_root = RootElement(header.namespace_description.namespace.options.list)
+            return new_root.__deserialize_content(buffer, registry, header.namespace_description)
         return self.__deserialize_content(buffer, registry, None)
 
     def __deserialize_content(self, buffer: 'ByteBuffer', registry,

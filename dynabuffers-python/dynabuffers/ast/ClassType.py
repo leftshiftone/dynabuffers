@@ -29,13 +29,10 @@ class ClassType(ISerializable):
                 else:
                     value[field.options.name] = None
 
-        size = 0
-        for field in self.options.fields:
-            if field.options.name in value:
-                size += field.size(value[field.options.name], registry)
-            elif field.options.defaultVal is not None:
-                size += field.size(field.options.defaultVal, registry)
-        return size
+        byName = lambda x: (x.options.name in value) or x.options.defaultVal is not None
+        mapper = lambda x: x.size(value[x.options.name] if x.options.name in value else x.options.defaultVal, registry)
+
+        return sum(map(mapper, filter(byName, self.options.fields)))
 
     def serialize(self, value, buffer: ByteBuffer, registry):
         if self.options.options.is_deprecated():

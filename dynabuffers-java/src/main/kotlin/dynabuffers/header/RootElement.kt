@@ -17,8 +17,7 @@ class RootElement(val tree: List<IType>, private val version: Byte = Dynabuffers
 
     override fun size(value: Any?, registry: IRegistry): Int {
         val schema = getSchemaForNamespace(value as Map<String, Any?>)
-        val schemaRegistry = registry.createForSchema(schema)
-        return Header(namespaceResolver, version).size(value, registry) + getRootType(schema).size(value, schemaRegistry)
+        return Header(namespaceResolver, version).size(value, registry) + getRootType(schema).size(value, registry)
     }
 
     private fun getSchemaForNamespace(value: Map<String, Any?>): List<IType> {
@@ -33,7 +32,7 @@ class RootElement(val tree: List<IType>, private val version: Byte = Dynabuffers
         val header = Header(namespaceResolver, version)
         header.serialize(value, buffer, registry)
         val schema = getSchemaForNamespace(value as Map<String, Any?>)
-        getRootType(schema).serialize(value, buffer, registry.createForSchema(schema))
+        getRootType(schema).serialize(value, buffer, registry)
     }
 
     override fun deserialize(buffer: ByteBuffer, registry: IRegistry): DynabuffersMap {
@@ -44,10 +43,8 @@ class RootElement(val tree: List<IType>, private val version: Byte = Dynabuffers
         // TODO: Handle flag bits here (Encryption etc)
 
         if (header.namespaceDescription is ConcreteNamespaceDescription) {
-            val schema = header.namespaceDescription.namespace.options.list
-            val newRoot = RootElement(schema)
-            val newRegistry = registry.createForSchema(schema)
-            return newRoot.deserializeContent(buffer, newRegistry, header.namespaceDescription)
+            val newRoot = RootElement(header.namespaceDescription.namespace.options.list)
+            return newRoot.deserializeContent(buffer, registry, header.namespaceDescription)
         }
         return deserializeContent(buffer, registry, header.namespaceDescription)
     }
