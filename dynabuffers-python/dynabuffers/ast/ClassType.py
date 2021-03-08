@@ -5,7 +5,7 @@ from dynabuffers.ast.structural import ClassOptions
 
 
 class ClassTypeOptions:
-    def __init__(self, name, fields:[FieldType], options:ClassOptions):
+    def __init__(self, name, fields: [FieldType], options: ClassOptions):
         self.name = name
         self.fields = fields
         self.options = options
@@ -29,10 +29,13 @@ class ClassType(ISerializable):
                 else:
                     value[field.options.name] = None
 
-        byName = lambda x: (x.options.name in value) or x.options.defaultVal is not None
-        mapper = lambda x: x.size(value[x.options.name] if x.options.name in value else x.options.defaultVal, registry)
-
-        return sum(map(mapper, filter(byName, self.options.fields)))
+        size = 0
+        for field in self.options.fields:
+            if field.options.name in value:
+                size += field.size(value[field.options.name], registry)
+            elif field.options.defaultVal is not None:
+                size += field.size(field.options.defaultVal, registry)
+        return size
 
     def serialize(self, value, buffer: ByteBuffer, registry):
         if self.options.options.is_deprecated():
@@ -45,8 +48,11 @@ class ClassType(ISerializable):
                 if field.options.defaultVal is None and value[field.options.name] is None:
                     raise ValueError("field '" + str(field.options.name) + "' is missing")
 
-        for element in list(filter(lambda x: (x.options.name in value) or x.options.defaultVal is not None, self.options.fields)):
-            element.serialize(value[element.options.name] if element.options.name in value else element.options.defaultVal, buffer, registry)
+        for element in list(
+                filter(lambda x: (x.options.name in value) or x.options.defaultVal is not None, self.options.fields)):
+            element.serialize(
+                value[element.options.name] if element.options.name in value else element.options.defaultVal, buffer,
+                registry)
 
     def deserialize(self, buffer, registry):
         map = {}

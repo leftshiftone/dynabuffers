@@ -82,7 +82,8 @@ class NamespaceResolver:
 
         return NamespaceDescription(path[-1:][0].namespace, list(map(lambda n: n.path[0], path)))
 
-    def __get_namespace(self, names: List[str], namespaces: List[NamespaceDescription]) -> Union[NamespaceDescription, None]:
+    def __get_namespace(self, names: List[str], namespaces: List[NamespaceDescription]) -> Union[
+        NamespaceDescription, None]:
         ns_name = names[0]
         ns = self.__find_namespace_by_name(ns_name, namespaces)
         if len(names) == 1:
