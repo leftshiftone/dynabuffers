@@ -1,0 +1,10 @@
+namespace outgoing {
+    class Response {
+      ner: [NERResult]
+    }
+
+    class NERResult {
+        @NotBlank
+        text: string
+    }
+}
