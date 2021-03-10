@@ -35,6 +35,7 @@ jobs:
       - run:
           <<: *prepare-image
       - checkout
+      - run: echo $OSSRH_SIGN_KEY_CONTENT | base64 --decode > "$OSSRH_SIGN_KEY_PATH"
       - run: mkdir -p $TEST_RESULTS_PATH
       - restore_cache:
           key: gradle-{{ checksum "build.gradle" }}-{{ checksum "dynabuffers-java/build.gradle" }}
@@ -100,10 +101,11 @@ jobs:
           fingerprints:
             - "59:6b:14:54:aa:d7:5c:21:d4:55:ec:78:45:83:55:f5"
       - checkout
+      - run: echo $OSSRH_SIGN_KEY_CONTENT | base64 --decode > "$OSSRH_SIGN_KEY_PATH"
       - run: git config --local user.email "ci@leftshift.one" && git config --local user.name "Continuous Integration"
       - run: ./gradlew dependencies installDependencies
       - run: ./gradlew build --stacktrace
-      - run: ./gradlew final publish -Prelease.useLastTag=true --stacktrace
+      - run: ./gradlew final publish -Prelease.useLastTag=true --max-workers 1 closeAndReleaseRepository --stacktrace
       - run:
           <<: *webhook-failed
 
@@ -169,12 +171,16 @@ workflows:
   build:
     jobs:
       - build:
-          context: asteria
+          context:
+            - asteria
+            - maven-central
           filters:
             tags:
               ignore: /.*/
       - webhook-completed:
-          context: asteria
+          context:
+            - asteria
+            - maven-central
           filters:
             tags:
               ignore: /.*/
@@ -190,22 +196,30 @@ workflows:
                 - master
     jobs:
       - build:
-          context: asteria
+          context:
+            - asteria
+            - maven-central
       - webhook-completed:
-          context: asteria
+          context:
+            - asteria
+            - maven-central
           requires:
             - build
   release:
     jobs:
       - release:
-          context: asteria
+          context:
+            - asteria
+            - maven-central
           filters:
             branches:
               ignore: /.*/
             tags:
               only: /^v\d+\.\d+\.\d+$/
       - webhook-completed:
-          context: asteria
+          context:
+            - asteria
+            - maven-central
           filters:
             branches:
               ignore: /.*/
@@ -223,8 +237,12 @@ workflows:
                 - master
     jobs:
       - code-analytics:
-          context: asteria
+          context:
+            - asteria
+            - maven-central
       - webhook-completed:
-          context: asteria
+          context:
+            - asteria
+            - maven-central
           requires:
             - code-analytics
