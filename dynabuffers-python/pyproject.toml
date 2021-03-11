@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dynabuffers"
-version = "1.1.1"
+version = "1.1.2"
 description = "Dynamic cross platform serialization library."
 authors = ["Leftshift One <contact@leftshift.one>"]
 
