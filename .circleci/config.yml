@@ -105,7 +105,7 @@ jobs:
       - run: git config --local user.email "ci@leftshift.one" && git config --local user.name "Continuous Integration"
       - run: ./gradlew dependencies installDependencies
       - run: ./gradlew build --stacktrace
-      - run: ./gradlew final publish -Prelease.useLastTag=true --max-workers 1 closeAndReleaseRepository --stacktrace
+      - run: ./gradlew final publish -x :dynabuffers-java:publishMavenPomPublicationToSonatypeRepository -Prelease.useLastTag=true --max-workers 1 closeAndReleaseRepository --stacktrace
       - run:
           <<: *webhook-failed
 
