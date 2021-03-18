@@ -8,7 +8,7 @@ class VersionWrapper:
         try:
             return int(self._version.split(".")[0])
         except ValueError as err:
-            raise ValueError("Dynabuffers major version cannot be extracted from: {}".format(self._version)) from err
+            raise ValueError(f"Dynabuffers major version cannot be extracted from: {self._version}") from err
 
 
-DYNABUFFERS_VERSION = VersionWrapper("1.2.0-SNAPSHOT")
+DYNABUFFERS_VERSION = VersionWrapper("2.0.0")
