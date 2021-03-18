@@ -188,8 +188,8 @@ testing = ["pathlib2", "unittest2", "jaraco.itertools", "func-timeout"]
 
 [metadata]
 lock-version = "1.1"
-python-versions = "3.5"
-content-hash = "6627fa9b749a7be707426602eef2a0cb79722ef676448fc6e19e9830587521c6"
+python-versions = ">3.5.0, <=3.9.0"
+content-hash = "52026f8ba8e0f62be6351e1ffc423251159c88b934bdf23c29153550e43ba6b7"
 
 [metadata.files]
 antlr4-python3-runtime = [
