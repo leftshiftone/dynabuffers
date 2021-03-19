@@ -7,7 +7,7 @@ import dynabuffers.exception.DynabuffersException
 class DynabuffersVersion(private val version: String) {
 
     companion object {
-        val current = DynabuffersVersion("1.2.0-SNAPSHOT")
+        val current = DynabuffersVersion("2.2.0")
     }
 
     fun getMajor(): Byte {
