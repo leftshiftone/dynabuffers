@@ -144,25 +144,32 @@ task generateGrammarSourcePython(type: AntlrTask) {
 generateGrammarSource.dependsOn generateGrammarSourceJava
 generateGrammarSource.dependsOn generateGrammarSourcePython
 
+
+def versionClassDirPython = "${project(":dynabuffers-python").projectDir}/dynabuffers/header" as String
+def versionClassNamePython = "DynabuffersVersion.py" as String
+def versionClassPython = "$versionClassDirPython/$versionClassNamePython" as String
+
+def versionClassDirJava = "${project(":dynabuffers-java").projectDir}/src/main/kotlin/dynabuffers/header" as String
+def versionClassNameJava = "DynabuffersVersion.kt" as String
+def versionClassJava = "$versionClassDirJava/$versionClassNameJava" as String
+
 task generateVersionClassJava(type: Copy) {
-    def dstPath = "${projectDir}/src/main/kotlin/dynabuffers/header"
-    from "${projectDir}/src/main/resources/templates"
-    into dstPath
+    from "${project(":dynabuffers-java").projectDir}/src/main/resources/templates"
+    into versionClassDirJava
     include "DynabuffersVersion.vm"
-    rename ("DynabuffersVersion.vm", "DynabuffersVersion.kt")
+    rename("DynabuffersVersion.vm", versionClassNameJava)
     doLast {
-        replaceVersionInTemplate("$dstPath/DynabuffersVersion.kt")
+        replaceVersionInTemplate(versionClassJava)
     }
 }
 
 task generateVersionClassPython(type: Copy) {
-    def dstPath = "${project(":dynabuffers-python").projectDir}/dynabuffers/header"
     from "${project(":dynabuffers-python").projectDir}/resources/templates"
-    into dstPath
+    into versionClassDirPython
     include "DynabuffersVersion.vm"
-    rename ("DynabuffersVersion.vm", "DynabuffersVersion.py")
+    rename("DynabuffersVersion.vm", versionClassNamePython)
     doLast {
-        replaceVersionInTemplate("$dstPath/DynabuffersVersion.py")
+        replaceVersionInTemplate(versionClassPython)
     }
 }
 
@@ -194,12 +201,11 @@ task setVersionPython() {
         logger.quiet("Updated version in ${pyprojectTomlPath} to ${version.toString()}")
     }
 }
+
 task commitVersions() {
     doLast {
         // python
         String pyprojectTomlPath = "${project(":dynabuffers-python").projectDir}/pyproject.toml"
-        String versionClassPython = "${project(":dynabuffers-python").projectDir}/dynabuffers/header/DynabuffersVersion.py"
-        String versionClassJava = "${project(":dynabuffers-java").projectDir}/src/main/kotlin/dynabuffers/header/DynabuffersVersion.kt"
         executeAssertExitCode(["git", "add", pyprojectTomlPath])
         executeAssertExitCode(["git", "add", versionClassPython])
         executeAssertExitCode(["git", "add", versionClassJava])
