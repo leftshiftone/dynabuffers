@@ -1,0 +1,24 @@
+namespace incoming {
+
+    class Request {
+        text: string
+        identityIds: [string]
+        languages: [string]
+        minScore: float
+        noOfMatches: int = 1
+    }
+}
+
+namespace outgoing {
+
+    class Response {
+        matches: [Match]
+    }
+    class Match {
+        identityId: string
+        intentId: string
+        score: float
+        language: string
+        utterance: string
+    }
+}

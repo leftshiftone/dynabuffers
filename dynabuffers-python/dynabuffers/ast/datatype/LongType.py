@@ -7,7 +7,7 @@ class LongType(ISerializable):
         return 8
 
     def serialize(self, value, buffer, registry):
-        buffer.putLong(value)
+        buffer.putLong(value if isinstance(value, int) else int(value))
 
     def deserialize(self, buffer, registry):
         return buffer.getLong()

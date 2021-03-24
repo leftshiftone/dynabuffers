@@ -68,7 +68,7 @@ class NamespaceResolver:
         waypoints = []
         # Read waypoints from bytes, 2 waypoints per byte
         for byte in namespace_bytes:
-            waypoints.append(byte & 0xF0)
+            waypoints.append((byte & 0xF0) >> 4)
             waypoints.append(byte & 0x0F)
         waypoints = waypoints[:len_namespace_path]
 

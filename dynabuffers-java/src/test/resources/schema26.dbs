@@ -1,0 +1,8 @@
+class Request {
+    text: string = 123
+    oneInt: int = 1
+    twoFloat: float = 2.0
+    threeShort: short = 3
+    fourLong: long = 4
+    trueBoolean: boolean = true
+}

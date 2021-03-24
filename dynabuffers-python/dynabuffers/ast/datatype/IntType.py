@@ -7,7 +7,7 @@ class IntType(ISerializable):
         return 4
 
     def serialize(self, value, buffer, registry):
-        buffer.putInt(value)
+        buffer.putInt(value if isinstance(value, int) else int(value))
 
     def deserialize(self, buffer, registry):
         return buffer.getInt()
