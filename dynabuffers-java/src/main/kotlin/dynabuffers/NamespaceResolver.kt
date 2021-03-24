@@ -37,7 +37,7 @@ class NamespaceResolver(private val tree: List<IType>) {
         val namespacePathBuffer = ByteArray(kotlin.math.ceil(namespaceDepth / 2.0).toInt())
         serialized.get(namespacePathBuffer)
         val path = namespacePathBuffer.toList()
-            .flatMap { listOf((it.toInt() shr 4).toByte(), it and 0x0F) }
+            .flatMap { listOf(((it.toInt() and 0xF0) shr 4).toByte(), it and 0x0F) }
             .take(namespaceDepth)
 
         return getNamepacesFromPath(path)
