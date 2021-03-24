@@ -2,9 +2,8 @@
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/leftshiftone/dynabuffers.svg?style=flat-square)](https://github.com/leftshiftone/dynabuffers/tags)
 
 
-[![Bintray](https://img.shields.io/badge/dynamic/json.svg?label=bintray&query=name&style=flat-square&url=https%3A%2F%2Fapi.bintray.com%2Fpackages%2Fleftshiftone%2Fdynabuffers%2Fone.leftshift.dynabuffers.dynabuffers%2Fversions%2F_latest)](https://bintray.com/leftshiftone/dynabuffers/one.leftshift.dynabuffers.dynabuffers/_latestVersion)
+![Maven Central](https://img.shields.io/maven-central/v/one.leftshift.dynabuffers/dynabuffers?style=flat-square)
 [![PyPI](https://img.shields.io/pypi/v/dynabuffers?style=flat-square)](https://pypi.org/project/dynabuffers/)
-
 # DynaBuffers
 
 DynaBuffers is a cross platform serialization library architected for dynamic serialization while taking maximum memory efficiency into account. 
