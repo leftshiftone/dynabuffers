@@ -27,7 +27,7 @@ class Schema26Test : AbstractDynabuffersTest() {
             "fourLong" to 4L,
             "trueBoolean" to true
         )
-        val serialized = engine.serialize(mapOf())
+        val serialized = engine.serialize(reference)
         val deserialized = engine.deserialize(serialized)
         Assertions.assertThat(deserialized).isEqualTo(reference)
     }
