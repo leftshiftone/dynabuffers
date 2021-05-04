@@ -11,4 +11,4 @@ class VersionWrapper:
             raise ValueError("Dynabuffers major version cannot be extracted from: {}".format(self._version)) from err
 
 
-DYNABUFFERS_VERSION = VersionWrapper("2.2.0")
+DYNABUFFERS_VERSION = VersionWrapper("2.3.0")
