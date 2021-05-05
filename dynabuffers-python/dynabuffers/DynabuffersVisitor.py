@@ -21,34 +21,47 @@ from dynabuffers.ast.structural.ClassOptions import ClassOptions, ClassOptionsOp
 from dynabuffers.ast.structural.FieldOptions import FieldOptions, FieldOptionsOptions
 from dynabuffers.ast.structural.UnionOptions import UnionOptions, UnionOptionsOptions
 from dynabuffers.ast.structural.Value import Value, ValueOptions
+from dynabuffers.TypeValidator import DynabuffersTypeValidator
 
 
 class DynabuffersVisitor(DynabuffersBaseVisitor):
 
+    def __init__(self):
+        self.type_validator = DynabuffersTypeValidator()
+
+    def visitCompilation(self, ctx: DynabuffersParser.CompilationContext):
+        result = self.visitChildren(ctx)
+        self.type_validator.validate()
+        return result
+
     def visitEnumType(self, ctx: DynabuffersParser.EnumTypeContext):
+        self.type_validator.add_available_type(ctx)
         name = str(ctx.getChild(1))
         values = []
         for index in range(3, ctx.getChildCount() - 1):
             values.append(str(ctx.getChild(index)))
-
         return EnumType(EnumTypeOptions(name, values))
 
     def visitClassType(self, ctx: DynabuffersParser.ClassTypeContext):
+        self.type_validator.add_available_type(ctx)
         values = super().visitClassType(ctx)
-        options = next(filter(lambda x: isinstance(x, ClassOptions), values), ClassOptions(ClassOptionsOptions(False, False, False)))
+        options = next(filter(lambda x: isinstance(x, ClassOptions), values),
+                       ClassOptions(ClassOptionsOptions(False, False, False)))
 
         fields = list(filter(lambda x: isinstance(x, FieldType), values))
         return ClassType(ClassTypeOptions(ctx.getChild(1).getText(), fields, options))
 
+
     def visitUnionType(self, ctx: DynabuffersParser.UnionTypeContext):
+        self.type_validator.add_available_type(ctx)
         values = []
         for i in range(3, ctx.getChildCount() - 1):
             # TODO: remove workaround
             if str(ctx.getChild(i)) != "{":
                 values.append(str(ctx.getChild(i)))
 
-        options = next(filter(lambda x: isinstance(x, UnionOptions), values), UnionOptions(UnionOptionsOptions(False, False, False)))
-
+        options = next(filter(lambda x: isinstance(x, UnionOptions), values),
+                       UnionOptions(UnionOptionsOptions(False, False, False)))
         return UnionType(UnionTypeOptions(str(ctx.getChild(1)), values, options))
 
     def visitFieldType(self, ctx: DynabuffersParser.FieldTypeContext):
@@ -79,6 +92,7 @@ class DynabuffersVisitor(DynabuffersBaseVisitor):
         if ctx.getText() == "map":
             return MapType(MapTypeOptions("utf-8"))
         else:
+            self.type_validator.add_used_type(ctx)
             return RefType(RefTypeOptions(ctx.getText()))
 
     def visitArrayType(self, ctx: DynabuffersParser.ArrayTypeContext):
