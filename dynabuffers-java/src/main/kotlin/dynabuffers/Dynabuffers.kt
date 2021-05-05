@@ -62,9 +62,9 @@ class Dynabuffers {
             val errorListener = DynabuffersExceptionListener()
             parser.addErrorListener(errorListener)
 
-            val visitor = DynabuffersVisitor(charset)
+            val visitor = DynabuffersVisitor(charset, TypeValidator())
             val astList = visitor.visit(parser.compilation())
-                    ?: throw DynabuffersException("invalid dynabuffers scheme")
+                ?: throw DynabuffersException("invalid dynabuffers scheme")
 
             if (errorListener.get() != null) {
                 throw DynabuffersException(errorListener.get())
