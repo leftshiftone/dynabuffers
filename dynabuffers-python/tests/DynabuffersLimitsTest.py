@@ -3,7 +3,7 @@ import unittest
 from dynabuffers.Dynabuffers import Dynabuffers
 
 
-class DynabuffersTest(unittest.TestCase):
+class DynabuffersLimitsTest(unittest.TestCase):
 
     def test_schema_with_too_many_nested_namespaces(self):
         engine = Dynabuffers.parse(

@@ -28,22 +28,39 @@ import dynabuffers.ast.structural.Annotation
 import org.antlr.v4.runtime.ParserRuleContext
 import java.nio.charset.Charset
 import java.util.*
-import kotlin.collections.ArrayList
+import kotlin.Any
+import kotlin.Int
+import kotlin.String
 
-class DynabuffersVisitor(private val charset: Charset) : DynabuffersBaseVisitor<List<IType>>() {
+class DynabuffersVisitor(private val charset: Charset, private val typeValidator: TypeValidator) :
+    DynabuffersBaseVisitor<List<IType>>() {
+
+    override fun visitCompilation(ctx: DynabuffersParser.CompilationContext?): List<IType>? {
+        val result = visitChildren(ctx)
+        typeValidator.validate()
+        return result
+    }
 
     override fun visitEnumType(ctx: DynabuffersParser.EnumTypeContext): List<IType> {
+        typeValidator.addAvailableType(ctx)
         return listOf(EnumType(EnumTypeOptions(ctx.textAt(1), ctx.textAt(3, 2), charset)))
     }
 
     override fun visitUnionType(ctx: DynabuffersParser.UnionTypeContext): List<IType> {
+        typeValidator.addAvailableType(ctx)
         val list = super.visitUnionType(ctx)
         val unionOptions = (list.firstOrNull { it is UnionOptions }
-                ?: UnionOptions(UnionOptions.UnionOptionsOptions(false, false, false))) as UnionOptions
+            ?: UnionOptions(UnionOptions.UnionOptionsOptions(false, false, false))) as UnionOptions
 
         // TODO: remove workaround
-        return listOf(UnionType(UnionType.UnionTypeOptions(ctx.textAt(1), ctx.textAt(3, 2)
-                .filter { it != "{" && it != "}" }, unionOptions)))
+        return listOf(
+            UnionType(
+                UnionType.UnionTypeOptions(
+                    ctx.textAt(1), ctx.textAt(3, 2)
+                        .filter { it != "{" && it != "}" }, unionOptions
+                )
+            )
+        )
     }
 
     override fun visitFieldType(ctx: DynabuffersParser.FieldTypeContext): List<IType> {
@@ -54,7 +71,17 @@ class DynabuffersVisitor(private val charset: Charset) : DynabuffersBaseVisitor<
         val datatype = list[annotations.size] as ISerializable
         val options = list.firstOrNull { it is FieldOptions } ?: FieldOptions(FieldOptions.FieldOptionsOptions(false))
         val defaultVal = list.filter { it is Value }.map { (it as Value).options.value }.firstOrNull()
-        return listOf(FieldType(FieldType.FieldTypeOptions(name, annotations, datatype, options as FieldOptions, defaultVal)))
+        return listOf(
+            FieldType(
+                FieldType.FieldTypeOptions(
+                    name,
+                    annotations,
+                    datatype,
+                    options as FieldOptions,
+                    defaultVal
+                )
+            )
+        )
     }
 
     override fun visitDataType(ctx: DynabuffersParser.DataTypeContext): List<IType> {
@@ -67,7 +94,10 @@ class DynabuffersVisitor(private val charset: Charset) : DynabuffersBaseVisitor<
             "byte" -> listOf(ByteType())
             "short" -> listOf(ShortType())
             "map" -> listOf(MapType(MapType.MapTypeOptions(charset)))
-            else -> listOf(RefType(RefType.RefTypeOptions(ctx.text)))
+            else -> {
+                typeValidator.addUsedType(ctx)
+                return listOf(RefType(RefType.RefTypeOptions(ctx.text)))
+            }
         }
     }
 
@@ -82,9 +112,11 @@ class DynabuffersVisitor(private val charset: Charset) : DynabuffersBaseVisitor<
     }
 
     override fun visitClassType(ctx: DynabuffersParser.ClassTypeContext): List<IType> {
+        typeValidator.addAvailableType(ctx)
+
         val list = super.visitClassType(ctx)
         val classOptions = list.firstOrNull { it is ClassOptions }
-                ?: ClassOptions(ClassOptions.ClassOptionsOptions(false, false, false))
+            ?: ClassOptions(ClassOptions.ClassOptionsOptions(false, false, false))
 
         val fields = list.filter { it is FieldType }.map { it as FieldType }
         val options = ClassType.ClassTypeOptions(ctx.textAt(1), fields, classOptions as ClassOptions)
@@ -99,25 +131,41 @@ class DynabuffersVisitor(private val charset: Charset) : DynabuffersBaseVisitor<
     }
 
     override fun visitValue(ctx: DynabuffersParser.ValueContext): List<IType> {
-        return listOf(Value(Value.ValueTypeOptions(when (ctx.text) {
-            "[]" -> ArrayList<Any>()
-            "[:]" -> HashMap<String, Any>()
-            else -> ctx.text
-        })))
+        return listOf(
+            Value(
+                Value.ValueTypeOptions(
+                    when (ctx.text) {
+                        "[]" -> ArrayList<Any>()
+                        "[:]" -> HashMap<String, Any>()
+                        else -> ctx.text
+                    }
+                )
+            )
+        )
     }
 
     override fun visitClassOptions(ctx: DynabuffersParser.ClassOptionsContext): List<IType> {
-        return listOf(ClassOptions(ClassOptions.ClassOptionsOptions(
-                ctx.text.contains("primary"),
-                ctx.text.contains("deprecated"),
-                ctx.text.contains("implicit"))))
+        return listOf(
+            ClassOptions(
+                ClassOptions.ClassOptionsOptions(
+                    ctx.text.contains("primary"),
+                    ctx.text.contains("deprecated"),
+                    ctx.text.contains("implicit")
+                )
+            )
+        )
     }
 
     override fun visitUnionOptions(ctx: DynabuffersParser.UnionOptionsContext): List<IType> {
-        return listOf(UnionOptions(UnionOptions.UnionOptionsOptions(
-                ctx.text.contains("primary"),
-                ctx.text.contains("deprecated"),
-                ctx.text.contains("implicit"))))
+        return listOf(
+            UnionOptions(
+                UnionOptions.UnionOptionsOptions(
+                    ctx.text.contains("primary"),
+                    ctx.text.contains("deprecated"),
+                    ctx.text.contains("implicit")
+                )
+            )
+        )
     }
 
     override fun visitFieldOptions(ctx: DynabuffersParser.FieldOptionsContext): List<IType> {
@@ -128,7 +176,7 @@ class DynabuffersVisitor(private val charset: Charset) : DynabuffersBaseVisitor<
         val name = ctx.getChild(1).text
         val list = super.visitNamespaceType(ctx).filter { !(it is NamespaceType) }.map { it as ISerializable }
         val nestedNamespaces = super.visitNamespaceType(ctx).filter { it is NamespaceType }.map { it as NamespaceType }
-        return listOf(NamespaceType(NamespaceType.NamespaceTypeOptions(name, list),  nestedNamespaces))
+        return listOf(NamespaceType(NamespaceType.NamespaceTypeOptions(name, list), nestedNamespaces))
     }
 
     override fun aggregateResult(aggregate: List<IType>?, nextResult: List<IType>?): List<IType> {
@@ -139,6 +187,7 @@ class DynabuffersVisitor(private val charset: Charset) : DynabuffersBaseVisitor<
     }
 
     private fun ParserRuleContext.textAt(index: Int) = this.getChild(index).text
-    private fun ParserRuleContext.textAt(left: Int, right: Int) = (left..this.childCount - right).map { this.textAt(it) }
+    private fun ParserRuleContext.textAt(left: Int, right: Int) =
+        (left..this.childCount - right).map { this.textAt(it) }
 
 }
