@@ -19,7 +19,7 @@ class Schema22Test : AbstractDynabuffersTest() {
     }
 
     @TestFactory
-    fun test() = listOf(
+    fun test() = listOf<Long>(
         9223372036854775807,
         2147483647,
         -2147483648
