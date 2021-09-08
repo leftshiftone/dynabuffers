@@ -23,8 +23,6 @@ class DynabuffersEngine(object):
             return self.serialize({"value": value})
 
         if namespace_names is not None:
-            if NAMESPACE_KEY in value:
-                raise Exception("{} is already present in dictionary - use serialize/1".format(NAMESPACE_KEY))
             if isinstance(namespace_names, List):
                 value[NAMESPACE_KEY] = '.'.join(namespace_names)
             if isinstance(namespace_names, str):

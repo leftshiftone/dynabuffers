@@ -27,12 +27,10 @@ class DynabuffersEngine(private val tree: List<IType>) {
     }
 
     fun serialize(map: Map<String, Any?>, namespaceName: String): ByteArray {
-        if (map.containsKey(SpecialKey.NAMESPACE.key)) throw IllegalStateException("Nope sir")
         return serialize(map.plus(SpecialKey.NAMESPACE.key to namespaceName))
     }
 
     fun serialize(map: Map<String, Any?>, namespaceNames: List<String>): ByteArray {
-        if (map.containsKey(SpecialKey.NAMESPACE.key)) throw IllegalStateException("Nope sir")
         return serialize(map.plus(SpecialKey.NAMESPACE.key to namespaceNames.joinToString(".")))
     }
 
