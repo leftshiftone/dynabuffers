@@ -126,6 +126,7 @@ class Product {
         engine = Dynabuffers.parse("class Data { type:string? }")
         result = engine.deserialize(engine.serialize({}))
 
+        self.assertEqual(result["type"], None)
         self.assertEqual({"type": None}, result)
 
     def test_missing_list_optional(self):

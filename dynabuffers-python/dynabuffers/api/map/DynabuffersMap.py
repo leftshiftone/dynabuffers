@@ -96,17 +96,17 @@ class DynabuffersMap(dict):
         if key == ":type":
             return False
         field = next((x for x in self.clazz.options.fields if x.options.name == key), None)
-        return isinstance(field.options.dataType, OptionType) if field is not None else False
+        return isinstance(field.options.datatype, OptionType) if field is not None else False
 
     def is_ref_type(self, key: str) -> bool:
         if key == ":type":
             return False
-        field = next((x for x in self.clazz.options.fields if x.options.name == key), None)
+        field = next((x.options.datatype for x in self.clazz.options.fields if x.options.name == key), None)
         return isinstance(field, RefType)
 
     def get_ref_type(self, key: str) -> ClassType:
         field = next((x for x in self.clazz.options.fields if x.options.name == key), None)
-        name = field.options.dataType.options.name
+        name = field.options.datatype.options.name
         type = next((x for x in self.tree if x.options.name == name), False)
 
         source = self.raw_map[key]
