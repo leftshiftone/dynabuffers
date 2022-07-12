@@ -19,7 +19,8 @@ class Schema26(unittest.TestCase):
             "twoFloat": 2.0,
             "threeShort": 3,
             "fourLong": 4,
-            "trueBoolean": True
+            "trueBoolean": True,
+            "falseBoolean": False
         }
         result = self.engine.deserialize(self.engine.serialize({}))
         self.assertEqual(result, obj)
