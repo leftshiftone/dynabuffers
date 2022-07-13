@@ -7,7 +7,7 @@ class BooleanType(ISerializable):
         return 1
 
     def serialize(self, value, buffer, registry):
-        if value:
+        if value in [True, "true"]:
             buffer.put(bytes([1]))
         else:
             buffer.put(bytes([0]))

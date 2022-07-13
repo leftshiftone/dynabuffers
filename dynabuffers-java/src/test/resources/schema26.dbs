@@ -5,4 +5,5 @@ class Request {
     threeShort: short = 3
     fourLong: long = 4
     trueBoolean: boolean = true
+    falseBoolean: boolean = false
 }
