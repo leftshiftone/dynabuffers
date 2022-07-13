@@ -14,7 +14,7 @@ class Schema26Test : AbstractDynabuffersTest() {
 
     @BeforeEach
     fun setUp() {
-        engine = Dynabuffers.parse(Schema08Test::class.java.getResourceAsStream("/schema26.dbs"))
+        engine = Dynabuffers.parse(Schema26Test::class.java.getResourceAsStream("/schema26.dbs"))
     }
 
     @Test
@@ -25,7 +25,8 @@ class Schema26Test : AbstractDynabuffersTest() {
             "twoFloat" to 2.0f,
             "threeShort" to 3.toShort(),
             "fourLong" to 4L,
-            "trueBoolean" to true
+            "trueBoolean" to true,
+            "falseBoolean" to false
         )
         val serialized = engine.serialize(reference)
         val deserialized = engine.deserialize(serialized)
