@@ -101,4 +101,4 @@ dmypy.json
 *.rar
 hs_err_pid*
 .sdkmanrc
-
+.tool-versions
